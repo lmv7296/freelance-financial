@@ -1,4 +1,4 @@
-const DEFAULT_BASE_URL = "http://localhost:8080";
+const DEFAULT_BASE_URL = "http://localhost:8085";
 
 export class ApiClientError extends Error {
   constructor(message, status, payload = null) {
