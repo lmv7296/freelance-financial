@@ -12,11 +12,20 @@ import {
   Wallet,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/AuthContext";
 
 export function LandingHero() {
+  const router = useRouter();
   const { isAuthenticated, user, openLogin, openRegister } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, router]);
 
   return (
     <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-32">

@@ -12,6 +12,7 @@ import {
   Mail,
   ShieldCheck,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ import {
 } from "@/schemas/authSchema";
 
 export function AuthModal() {
+  const router = useRouter();
   const {
     authModalOpen,
     authModalMode,
@@ -83,11 +85,12 @@ export function AuthModal() {
     try {
       if (isRegister) {
         await register({ email, password });
-        setSuccessMessage("Account succesvol aangemaakt! Je bent ingelogd.");
       } else {
         await login({ email, password });
       }
       resetForm();
+      closeAuthModal();
+      router.push("/dashboard");
     } catch (err) {
       setServerError(
         err?.message ||
