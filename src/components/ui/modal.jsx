@@ -53,15 +53,16 @@ export function Modal({
       md: "sm:max-w-md",
       lg: "sm:max-w-lg",
       xl: "sm:max-w-xl",
-      "2xl": "sm:max-w-2xl",
-      full: "sm:max-w-4xl",
+      "2xl": "sm:max-w-2xl md:max-w-3xl",
+      "3xl": "sm:max-w-3xl md:max-w-4xl",
+      full: "sm:max-w-5xl",
     }[maxWidth] || "sm:max-w-lg";
 
   return createPortal(
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-6 overflow-y-auto"
     >
       {/* Backdrop */}
       <button
@@ -77,7 +78,7 @@ export function Modal({
         ref={modalRef}
         className={cn(
           "relative w-full rounded-2xl bg-card text-card-foreground border border-border/80 shadow-2xl",
-          "flex flex-col max-h-[90vh] overflow-hidden z-10 font-sans",
+          "flex flex-col max-h-[94vh] sm:max-h-[92vh] overflow-hidden z-10 font-sans",
           "transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
           "animate-in fade-in zoom-in-95",
           maxWidthClasses,

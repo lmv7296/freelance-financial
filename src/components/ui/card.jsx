@@ -52,16 +52,16 @@ function Card({
       "bg-gradient-to-br from-purple-500/20 via-purple-500/10 to-purple-500/5 text-purple-600 dark:text-purple-400 border-purple-500/25",
   };
 
-  // Surface styles: crisp border + clean elevation so cards pop against background
+  // Surface styles: crisp specular border + translucent depth so cards pop against background
   const variantStyles = {
     elevated:
-      "border border-border/80 bg-card shadow-sm hover:shadow-md hover:border-foreground/20",
+      "border border-border/70 dark:border-white/[0.08] bg-card/95 backdrop-blur-md shadow-xs hover:-translate-y-0.5 hover:shadow-md hover:border-border transition-all duration-200 ease-out",
     glass:
-      "border border-border/70 bg-card/85 backdrop-blur-xl shadow-md hover:shadow-xl",
+      "border border-border/60 dark:border-white/[0.12] bg-card/75 backdrop-blur-xl shadow-md hover:shadow-xl hover:border-foreground/20 transition-all duration-200 ease-out",
     outlined:
-      "border border-border/90 shadow-none bg-card hover:shadow-xs hover:border-foreground/30",
+      "border border-border/80 dark:border-white/[0.06] shadow-none bg-card/80 hover:shadow-xs hover:border-foreground/20 transition-all duration-200 ease-out",
     filled:
-      "border border-border/40 shadow-none bg-muted/60 dark:bg-muted/30 hover:bg-muted/80",
+      "border border-border/40 dark:border-white/[0.04] shadow-none bg-muted/50 hover:bg-muted/70 transition-all duration-200 ease-out",
   };
 
   // HeroUI chip styles (punchy borders & saturated hues)
@@ -115,7 +115,7 @@ function Card({
     "group/card rounded-2xl relative flex flex-col justify-between overflow-hidden transition-all duration-200 ease-out font-sans",
     variantStyles[variant] || variantStyles.elevated,
     isClickable &&
-      "cursor-pointer active:scale-[0.98] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+      "cursor-pointer active:scale-[0.985] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
     className,
   );
 
@@ -218,7 +218,7 @@ function Card({
         {/* Main Metric Value */}
         {value !== undefined && value !== null && (
           <div className="flex-1 flex flex-col justify-between my-1">
-            <div className="text-2xl font-bold tracking-tight text-foreground font-sans tabular-nums">
+            <div className="text-2xl font-bold tracking-tight text-foreground font-mono tabular-nums">
               {value}
             </div>
 

@@ -1,177 +1,197 @@
 ---
-name: c
+name: frontend-design
 description: >-
   Use this skill whenever creating, modifying, or styling UI components, pages, forms,
-  or dashboards in this project. Enforces shadcn/ui primitives customized with an expressive
-  Material Design 3 and HeroUI fusion, governed by strict Anti-AI-Slop design constraints:
-  bespoke typography pairings, nuanced contextual palettes, custom iconography, intentional
-  cubic-bezier easing curves, and a pre-flight Slop Test checklist.
+  or dashboards in this project. Enforces a distinctive Design Thesis (Anthropic), Apple-grade
+  fluid interaction physics (Emil Kowalski / WWDC: interruptible springs, pointer-down response,
+  velocity handoff, rubber-banding, depth), and Material Design 3 + HeroUI shadcn primitives
+  governed by strict Anti-AI-Slop constraints.
 ---
 
-# Material Design 3 + HeroUI Fusion Guide with Anti-AI-Slop Constraints
+# Frontend Design & Fluid Interaction Engineering Guide
 
-This design system blends the **structural clarity and elevation logic of Google Material Design 3 (M3)** with the **radiant, tactile aesthetics of HeroUI (formerly NextUI)**, governed by **strict anti-AI-slop design constraints**.
+This skill governs all frontend architecture, visual aesthetics, and interaction mechanics. It synthesizes three proven pillars:
 
-Every generated UI must feel intentional, artisanal, and production-grade. Generic "AI template" patterns are explicitly prohibited.
-
----
-
-## 1. Context & Audience Inference (Phase 0 Mandate)
-
-**Before writing a single line of CSS, JSX, or layout code, you MUST infer and anchor to the domain context:**
-
-1. **Target Audience**: Who is using this screen? (e.g., freelance contractors, finance managers, designers, enterprise ops).
-2. **Emotional Posture**: What sentiment must the interface evoke?
-   - _Financial / Invoicing_: Confidence, precision, trustworthiness, tactile control.
-   - _Not_: Over-hyped tech-SaaS neon glow, toyish gamification, or corporate monotony.
-3. **Information Density**: Financial workflows require clear hierarchy, legible tabular numbers, and scannable statuses—never bloated, empty decorative fluff.
+1. **Anthropic Frontend Design Thesis**: Give every interface an opinionated visual identity and a clear point of view before writing code. Build with the subject's authentic materials and pass the **Subject Swap Test**.
+2. **Apple Fluid Interaction Engineering (Emil Kowalski / WWDC)**: Interfaces that feel like a physical extension of the user—zero latency on pointer-down, direct 1:1 manipulation, fully interruptible spring physics, momentum projection, rubber-banding, optical typography, and spatial consistency.
+3. **Material Design 3 + HeroUI Shadcn System**: Structural elevation logic, tactile pill primitives, radiant glassmorphic surface depth, and gradient icon pods, bound by strict **Anti-AI-Slop** negative constraints.
 
 ---
 
-## 2. Anti-AI Typography Criteria
+## The Five-Phase Design Loop
 
-### Prohibited Typography
+Every screen or interactive component must progress through these five phases before completion:
 
-- **STRICTLY FORBIDDEN**: Default, overused "AI-standard" font selections:
-  - `Inter`, `Roboto`, `Arial`, plain browser default `system-ui`, or `Space Grotesk`.
-- **STRICTLY FORBIDDEN**: Mismatched font fallbacks that silently drop to browser Times New Roman or Georgia.
-
-### Required Typographic System
-
-- **Curated Pairings**: Pair fonts with distinct character suited to the project voice:
-  - _Editorial Financial_: Character-rich modern sans (e.g., `Geist`, `Plus Jakarta Sans`, `Outfit`, `Cabinet Grotesk`) paired with a purposeful display serif for large milestones or monospaced tabular figures (`Geist Mono`, `JetBrains Mono`) for financial figures.
-- **Tabular Numerics**: All numeric financial data (revenues, invoice amounts, percentages) must use tabular figure styling (`tabular-nums` / `font-mono`) to prevent visual jitter and align data cleanly.
-- **Hierarchy & Tracking**:
-  - Headings: `tracking-tight font-semibold` or `font-bold`.
-  - Uppercase tags/badges: `tracking-wider text-[11px] font-bold uppercase`.
-  - Body: `leading-relaxed text-sm text-muted-foreground`.
+```
+[1. Frame Subject] ➔ [2. Design Thesis] ➔ [3. Swap Test] ➔ [4. Fluid Build] ➔ [5. Rendered Critique]
+```
 
 ---
 
-## 3. Color Palette Restrictions & Depth Logic
+## Phase 1: Frame the Subject & Constraints
 
-### Prohibited Color Schemes
+**Before writing a single line of CSS or JSX, anchor to the concrete subject:**
 
-- **STRICTLY FORBIDDEN**: Generic "AI SaaS defaults":
-  - Neon purple/indigo gradients (`#6366F1` to `#8B5CF6`) plastered on stark `#FFFFFF` or pitch black `#000000`.
-  - Flat, desaturated grayish card soup with zero warmth or depth.
-  - Lazy single-layer drop shadows (`shadow-md` with harsh opacity).
-
-### Required Color & Surface Architecture
-
-- **Nuanced, Contextual Palettes**:
-  - Ground the app in purposeful undertones: slate-tinted zinc, warm stone, deep obsidian (`oklch(0.14 ...)`), and rich emerald / amber / sapphire accent roles.
-- **Multi-Layered Surface Depth**:
-  - **Glassmorphic Tonal Surface**: `bg-card/90 backdrop-blur-md border border-border/70`
-  - **Luminous Rim Borders**: Soft 1px outlines (`border-border/70` in light mode, `border-white/[0.08]` in dark mode).
-  - **Gradient-Toned Icon Pods**: Never plain flat squares. Use dual-stop soft radial or diagonal gradient pods with colored borders:
-
-    ```jsx
-    // Amber / Pending Warning Pod
-    <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/20 via-amber-500/10 to-amber-500/5 text-amber-600 dark:text-amber-400 border border-amber-500/25 shadow-xs">
-      <Clock className="size-5" />
-    </div>
-
-    // Emerald / Revenue Success Pod
-    <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/20 via-emerald-500/10 to-emerald-500/5 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 shadow-xs">
-      <DollarSign className="size-5" />
-    </div>
-    ```
+1. **The Concrete Subject**: What specific real-world domain is being built? (e.g. Dutch freelance installations, trade contracting invoicing, KV-meter electrical reports).
+2. **Audience & Context**: Who uses this interface and in what setting? (e.g. a busy tradesperson on a mobile phone in a van vs. an accountant on a desktop).
+3. **The Single Job**: What is the singular goal of this screen? (e.g. create a split-item invoice and send a WhatsApp payment request within 30 seconds).
+4. **Emotional Posture**:
+   - _Financial / Field Work_: Precision, craftsmanship, clarity, tactile reliability, confidence.
+   - _Forbidden_: Over-hyped AI-tech neon gradients, playful gamification, or sterile corporate table soup.
+5. **Real Domain Copy**: Never use placeholder text like "Lorem ipsum", "John Doe", "Acme Inc", or "Seamless solutions". Use authentic domain data (`Jan & Sophie de Vries • CV Ketel Onderhoud`, `NL84920194B01`, `Pitch 14 Vredenburg Markt`).
 
 ---
 
-## 4. The "Slop Test" Layout Checklist (Pre-Flight Negative Constraints)
+## Phase 2: Formulate the Design Thesis
 
-Before finalizing any component or page layout, run through this checklist and eliminate all flagged patterns:
+> "The hero is a thesis. Open with the most characteristic thing in the subject's world."
 
-- [ ] **NO Cookie-Cutter Uniform Card Grids**:
-  - _Prohibited_: An endless grid where every single card has the exact same width, height, and content structure.
-  - _Required_: Asymmetric rhythm, Bento-grid layouts, primary/secondary card weighting, or combined master-detail panes.
-- [ ] **NO Emoji Arrays in Place of Icons**:
-  - _Prohibited_: Using emojis (e.g. 💰, 📈, 🚀, ⏳, 📄, ⚠️) as interface iconography.
-  - _Required_: Crisp, hand-picked SVGs from `lucide-react` or Radix icons, styled inside coherent icon containers.
-- [ ] **NO Predictable AI Placeholder Copy**:
-  - _Prohibited_: "Lorem ipsum", "John Doe", "Acme Corporation", "Manage your workflows with our cutting-edge AI tools", "Track everything seamlessly".
-  - _Required_: Realistic, grounded domain data (e.g., "Elena Rostova • Branding Retainer", "INV-2041 • Due in 5 days", "Stripe Connect Payout • Processing").
-- [ ] **NO Giant Dead Space**:
-  - _Prohibited_: Empty cards with a tiny number in the corner and 80% blank white space.
-  - _Required_: Balanced vertical distribution, contextual trend pills, secondary micro-stats, or inline progress bars.
-
----
-
-## 5. Motion, Easing & Micro-Interactions
-
-### Prohibited Motion
-
-- **STRICTLY FORBIDDEN**: Browser-default `linear` transitions (`transition: all 0.2s linear`) or harsh un-eased snapping.
-
-### Required Motion Principles
-
-- **Curated Cubic-Bezier Easing**:
-  - **Entrance / Elevation Lift**: Use snappy deceleration curves:
-    - CSS: `cubic-bezier(0.16, 1, 0.3, 1)` (out-expo) or Tailwind: `ease-out duration-300`.
-  - **Tactile Compression**:
-    - Quick responsive return: `active:scale-[0.98] transition-transform duration-150 ease-out`.
-- **Realistic Timing Standards**:
-  - Micro-toggles and button presses: **100ms – 150ms**
-  - Card hover lifts and elevation shifts: **250ms – 300ms**
-  - Modals, drawers, and expand/collapse accordions: **350ms – 400ms**
-- **Dynamic Hover States**:
-  - Elevated cards must subtly lift on hover (`hover:-translate-y-1 hover:shadow-xl hover:border-border/90`).
+1. **The Visual World Thesis**:
+   - State what makes this visual world unique in one clear sentence.
+   - Avoid the 3 cliché AI aesthetics:
+     - ❌ Cliché 1: Warm cream background (`#F4F1EA`) + terracotta serif.
+     - ❌ Cliché 2: Dark `#000000` pitch background + single neon acid-green/violet accent.
+     - ❌ Cliché 3: Dry monochrome broadsheet with hairline borders and zero radius.
+   - Instead, craft intentional, subject-specific palettes (e.g. deep indigo obsidian `#1E1B4B`, crisp slate borders, emerald verified accents, and luminous warm white cards).
+2. **Typography with Optical Sizing**:
+   - Headings: `font-bold tracking-tight` (as type gets larger, letter-spacing tightens).
+   - Data & Numerics: All currency, dates, invoice IDs, and percentages MUST use tabular numerics (`tabular-nums font-mono`) to prevent visual jitter during updates.
+   - Eyebrows & Tags: `text-[10px] sm:text-[11px] font-bold tracking-wider uppercase`.
+   - Body Copy: `text-sm leading-relaxed text-muted-foreground`.
+3. **Structure is Information, Not Decoration**:
+   - Never use arbitrary `01 / 02 / 03` step badges unless the content is genuinely an ordered sequence.
+   - Dividers and badges must encode category, state, or boundary—never decorative fluff.
 
 ---
 
-## 6. Accessibility & Visual Validation Mandate
+## Phase 3: The Subject Swap Test
 
-- **Color Contrast (WCAG 2.1 AA / AAA)**:
-  - Faint yellow-on-white or low-contrast gray text is strictly forbidden.
-  - Status text must pair dark saturated foregrounds with tinted backgrounds:
-    - `bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25`
-    - `bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25`
-    - `bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/25`
-- **Focus Rings**:
-  - Every interactive surface must support visible, high-contrast keyboard focus indicators (`focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-hidden`).
-- **Touch Target Discipline**:
-  - Interactive elements must maintain a minimum bounding box of 40×40px (`h-10` minimum for primary actions, pill buttons with ample horizontal padding `px-5`).
+Before proceeding to code, run the **Subject Swap Test**:
+
+> **"If we swap out the company logo and copy with a different company in a completely different industry, does this design still look like it could be theirs?"**
+
+- If **YES**: The design is generic, templated AI slop. Reject it and integrate distinctive domain artifacts (e.g., invoice preview receipts, KvK verification pills, physical meter badges, trade categorizations).
+- If **NO**: The design has a true point of view rooted in the subject's real world. Proceed to build.
 
 ---
 
-## 7. Component Implementation Standards
+## Phase 4: Apple Fluid Interaction Engineering
 
-### 1. Cards (`@/components/ui/card` + `ReusableCard`)
+Interfaces should behave like continuous physical objects, not stepped state machines.
 
-- Always apply M3 corner radius: **`rounded-2xl`** (16px) or **`rounded-3xl`** (24px).
-- Pair with HeroUI surface finishes:
-  - **`elevated`**: `border border-border/70 bg-card/90 backdrop-blur-md shadow-xs hover:-translate-y-1 hover:shadow-xl hover:border-border/90 transition-all duration-300 ease-out`
-  - **`glass`**: `border border-white/20 dark:border-white/10 bg-card/60 backdrop-blur-xl shadow-lg hover:-translate-y-1 hover:shadow-2xl`
-  - **`outlined`**: `border border-border/90 shadow-none bg-card hover:-translate-y-1 hover:shadow-md hover:border-foreground/30`
-  - **`filled` (Tonal)**: `border-none shadow-none bg-muted/60 dark:bg-muted/30 hover:bg-muted/80 hover:-translate-y-0.5`
+### 1. Response — Kill Latency on the Press
+- **Respond on pointer-down, never on release**: Active feedback must occur the instant a finger or cursor touches the element.
+- **Instant Press Feedback**:
+  ```css
+  /* Respond immediately on press */
+  .interactive-element:active {
+    transform: scale(0.97);
+    transition: transform 100ms ease-out;
+  }
+  ```
+- **Audit All Artificial Latencies**: Eliminate arbitrary timers, excessive debounces on user inputs, and click delays.
 
-### 2. Buttons (`@/components/ui/button`)
+### 2. Direct Manipulation — 1:1 Pointer Tracking
+- When a user drags a drawer, slider, or sheet, the element must stay glued 1:1 to the pointer.
+- Preserve the exact grab offset: never snap to the center of the element on touch.
+- Use Pointer Events with `setPointerCapture` so tracking persists even if the cursor escapes the element bounds.
 
-- M3 Pill Shape: **`rounded-full`** with tactile press scaling (`active:scale-[0.97]`).
-- Primary CTA: High contrast, subtle resting shadow, hover elevation (`rounded-full px-5 font-semibold shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] transition-all`).
-- Secondary: Pill outline with tonal background hover (`rounded-full px-5 border-border/80 hover:bg-muted/60 active:scale-[0.97] transition-all font-medium`).
+### 3. Interruptibility — The #1 Motion Principle
+- **Never lock user input during an animation.** If a modal or sheet is animating in, the user must be able to fling it back immediately.
+- **Animate from Presentation (Current) Value**: On interrupt, read the element's live rendered transform and animate from where it currently is, NOT from a static target value.
+- **Springs over `@keyframes`**: CSS `@keyframes` and linear transitions snap or break on reversal. Use spring physics that naturally blend velocity upon re-targeting.
 
-### 3. Status Chips & Trend Badges
+### 4. Spring Mechanics (Behavior Over Fixed Duration)
+Apple frames spring motion with two intuitive designer parameters instead of generic physics triplets:
+- **Damping Ratio**:
+  - `1.0` = **Critically Damped** (No bounce, smooth rapid settle). Use this as the default for 90% of UI transitions (dialogs, dropdowns, page navigations).
+  - `0.8` = **Sub-critically Damped** (Slight bounce). Use ONLY when preceding physical momentum exists (e.g. a flick, drag release, or toss).
+- **Response**: Speed of target reach in seconds (typically `0.3s` to `0.4s`).
+- **Standard Apple Web Parameters**:
 
-- Pill capsules with 1px border and optional glowing status dots:
+| Interaction | Damping | Response | Motion Feel |
+| :--- | :--- | :--- | :--- |
+| **Dialog / Popover Open** | `1.0` | `0.35s` | Critically damped, zero bounce |
+| **Card Hover Lift / Drop** | `1.0` | `0.25s` | Snappy elevation shift |
+| **Drawer / Bottom Sheet** | `0.8` | `0.30s` | Subtle physical settle |
+| **Swipe / Fling Dismiss** | `0.8` | `0.40s` | Momentum follow-through |
+
+### 5. Velocity Handoff & Momentum Projection
+When releasing a gesture:
+1. **Pass gesture velocity** directly into the spring's initial velocity.
+2. **Project the resting position** using Apple's exponential decay formula:
+   ```js
+   // decelerationRate: 0.998 standard, 0.99 snappy
+   function project(initialVelocity /* px/s */, decelerationRate = 0.998) {
+     return (initialVelocity / 1000) * decelerationRate / (1 - decelerationRate);
+   }
+
+   const projectedEndpoint = currentPosition + project(releaseVelocity);
+   const targetSnap = nearestSnapPoint(projectedEndpoint);
+   animateSpringTo(targetSnap, { velocity: releaseVelocity });
+   ```
+
+### 6. Asymptotic Rubber-Banding
+When dragging beyond hard bounds (e.g. list boundaries, drawer limits), apply Apple's asymptotic resistance formula:
+```js
+function rubberband(overshoot, dimension, constant = 0.55) {
+  return (overshoot * dimension * constant) / (dimension + constant * Math.abs(overshoot));
+}
+```
+
+### 7. Spatial Consistency
+- **Symmetric Trajectories**: What slides in from the right must dismiss to the right. Never enter from the right and exit to the bottom.
+- **Anchored Origins**: Context menus and popovers must scale out from the trigger button (`transform-origin: trigger`), reinforcing spatial causality.
+
+### 8. Materials, Vibrancy & Depth
+- **Translucent Depth**: Use `backdrop-blur-md` or `backdrop-blur-xl` with semi-opaque surfaces (`bg-card/90` or `bg-background/80`).
+- **Specular Rim Highlights**: 1px micro-borders (`border border-border/70` in light mode, `border-white/[0.08]` in dark mode) to simulate physical light reflection on glass edges.
+- **Gradient-Toned Icon Pods**:
   ```jsx
-  <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-    <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-    Settled
-  </span>
+  <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 text-primary border border-primary/25 shadow-xs">
+    <Icon className="size-5" />
+  </div>
   ```
 
 ---
 
-## 8. Summary Checklist for Code Generation
+## Phase 5: The Pre-Flight Slop Test Checklist
 
-Before outputting code, verify:
+Before concluding any UI work, verify every item:
 
-1. Did I choose purposeful, non-generic typography with tabular numerals for data?
-2. Did I eliminate generic purple SaaS gradients and flat drop shadows?
-3. Did the layout pass the **Slop Test** (no identical cookie-cutter cards, zero emojis as icons, realistic domain copy)?
-4. Are hover and press interactions governed by intentional cubic-bezier easing curves?
-5. Is the design custom-tailored to the target industry rather than a generic tech template?
-6. Are color contrast ratios and keyboard focus rings fully compliant with production accessibility standards?
+- [ ] **NO Cookie-Cutter Identical Grids**: Cards have varied hierarchy, distinct weightings, or contextual badges—not identical cookie-cutter boxes.
+- [ ] **NO Emojis as UI Icons**: Emojis (💰, 🚀, 📄) are forbidden as interface iconography. Use crisp Lucide SVGs styled in coherent icon pods.
+- [ ] **NO Generic AI Purple Gradients**: Avoid `#6366F1` to `#8B5CF6` gradient soup slapped onto dead gray backgrounds.
+- [ ] **NO Dead Space**: Cards balance vertical rhythm with micro-stats, status badges, and clear actions.
+- [ ] **Tabular Numbers for Data**: All numeric, currency, and count displays use `tabular-nums font-mono`.
+- [ ] **Tactile Press Feedback**: Interactive buttons, cards, and tabs implement responsive press scaling (`active:scale-[0.97]` or `active:scale-[0.98]`).
+- [ ] **High-Contrast Accessibility (WCAG 2.1 AA/AAA)**: Status badges pair rich, legible foregrounds with tinted backgrounds (`text-emerald-700 bg-emerald-500/15`).
+- [ ] **Visible Focus Rings**: All interactive controls support `focus-visible:ring-2 focus-visible:ring-primary/20`.
+- [ ] **Touch Target Safety**: All tap targets have a minimum hit area of 40×40px (`h-9.5` or `h-10` minimum for primary actions).
+- [ ] **Reduced Motion Alternative**: Support `@media (prefers-reduced-motion: reduce)` by falling back to gentle opacity cross-fades without physical translation shock.
+
+---
+
+## Component Primitives Reference
+
+### 1. Elevated Cards
+```jsx
+<Card className="rounded-2xl border border-border/70 bg-card/90 backdrop-blur-md shadow-xs hover:-translate-y-1 hover:shadow-lg hover:border-border transition-all duration-300 ease-out">
+  {/* Content */}
+</Card>
+```
+
+### 2. Pill Buttons
+```jsx
+<Button className="rounded-full px-5 h-9.5 font-semibold shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] transition-all cursor-pointer">
+  {/* Action */}
+</Button>
+```
+
+### 3. Status Capsule Badges
+```jsx
+<span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
+  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+  Voldaan
+</span>
+```

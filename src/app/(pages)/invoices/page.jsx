@@ -2,6 +2,7 @@
 
 import {
   Check,
+  Clock,
   Copy,
   Download,
   ExternalLink,
@@ -17,192 +18,17 @@ import { InfoModal } from "@/components/InfoModal";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-
-// Invoices spanning Electricians, Plumbers, Market Stalls (Marktkooplieden), Homeowners, and Local Businesses
-const INITIAL_INVOICES = [
-  {
-    id: "INV-2046",
-    client: "Koraal Vastgoedbeheer (Property Mgmt)",
-    tradeType: "Electrician",
-    project: "Multi-Unit Electrical Inspection & Emergency Lighting",
-    issued: "Oct 12, 2026",
-    due: "Oct 26, 2026",
-    dueDateRelative: "Due in 14 days",
-    amount: "€2,850.00",
-    status: "Pending",
-    method: "Factuur (Net 30)",
-  },
-  {
-    id: "INV-2045",
-    client: "De Kaasboer (Market Stall 14)",
-    tradeType: "Market Trader (Markt)",
-    project: "Weekly Market Stall Cheese & Dairy Batch #42",
-    issued: "Oct 10, 2026",
-    due: "Oct 24, 2026",
-    dueDateRelative: "Due in 12 days",
-    amount: "€1,240.00",
-    status: "Pending",
-    method: "PIN / Tap Terminal",
-  },
-  {
-    id: "INV-2044",
-    client: "Mark & Sophie van Beek",
-    tradeType: "Electrician",
-    project: "3-Phase Fuse Box Upgrade & EV Wallbox Installation",
-    issued: "Oct 06, 2026",
-    due: "Oct 20, 2026",
-    dueDateRelative: "Paid Oct 08",
-    amount: "€1,450.00",
-    status: "Paid",
-    method: "Tikkie / iDEAL QR",
-  },
-  {
-    id: "INV-2043",
-    client: "Bistro De Waag",
-    tradeType: "Plumber",
-    project: "Commercial Kitchen Line Flushing & Grease Trap Servicing",
-    issued: "Sep 20, 2026",
-    due: "Oct 04, 2026",
-    dueDateRelative: "Overdue by 8 days",
-    amount: "€620.00",
-    status: "Overdue",
-    method: "Factuur (Net 14)",
-  },
-  {
-    id: "INV-2042",
-    client: "Bakkerij 't Stoepje (Pitch 22)",
-    tradeType: "Market Trader (Markt)",
-    project: "Saturday Market Fresh Produce Batch #19",
-    issued: "Sep 28, 2026",
-    due: "Oct 12, 2026",
-    dueDateRelative: "Paid Oct 04",
-    amount: "€890.00",
-    status: "Paid",
-    method: "Contant (Cash) & PIN",
-  },
-  {
-    id: "INV-2041",
-    client: "Arthur & Claire Pendleton",
-    tradeType: "Plumber",
-    project: "Emergency Water Pipe Burst & Valve Replacement",
-    issued: "Sep 24, 2026",
-    due: "Oct 08, 2026",
-    dueDateRelative: "Paid Sep 25",
-    amount: "€480.00",
-    status: "Paid",
-    method: "PIN on Site (Tap)",
-  },
-  {
-    id: "INV-2040",
-    client: "Elena Rostova",
-    tradeType: "Electrician",
-    project: "Living Room LED Rail Wiring & Short-Circuit Fix",
-    issued: "Sep 15, 2026",
-    due: "Sep 29, 2026",
-    dueDateRelative: "Paid Sep 20",
-    amount: "€540.00",
-    status: "Paid",
-    method: "Tikkie / Instant QR",
-  },
-  {
-    id: "INV-2039",
-    client: "Jan de Marktman (Bloemen & Planten)",
-    tradeType: "Market Trader (Markt)",
-    project: "Pitch Power Distribution Box & Weatherproof Cabling",
-    issued: "Oct 11, 2026",
-    due: "Oct 25, 2026",
-    dueDateRelative: "Unsent Draft",
-    amount: "€720.00",
-    status: "Draft",
-    method: "Factuur / Direct Bank",
-  },
-];
-
-const STATUS_FILTERS = ["All", "Pending", "Paid", "Overdue", "Draft"];
-
-// Schema for Create Invoice FormModal
-const CREATE_INVOICE_FIELDS = [
-  {
-    name: "client",
-    label: "Customer / Client Name",
-    placeholder: "e.g. Mark & Sophie van Beek or De Kaasboer",
-    required: true,
-    colSpan: 1,
-  },
-  {
-    name: "tradeType",
-    label: "Trade or Specialty",
-    type: "select",
-    required: true,
-    colSpan: 1,
-    options: [
-      { label: "Electrician", value: "Electrician" },
-      { label: "Market Trader (Markt)", value: "Market Trader (Markt)" },
-      { label: "Plumber", value: "Plumber" },
-      { label: "General Contractor / Vakman", value: "Contractor" },
-      { label: "Commercial / Facility", value: "Commercial" },
-    ],
-    defaultValue: "Electrician",
-  },
-  {
-    name: "project",
-    label: "Job Description / Market Batch",
-    placeholder:
-      "e.g. Fuse box upgrade, emergency pipe repair, Saturday stall batch #20",
-    required: true,
-    colSpan: 2,
-  },
-  {
-    name: "amount",
-    label: "Total Amount (€)",
-    prefix: "€",
-    placeholder: "0.00",
-    required: true,
-    colSpan: 1,
-  },
-  {
-    name: "method",
-    label: "Payment Rail / Method",
-    type: "select",
-    colSpan: 1,
-    options: [
-      { label: "PIN / Tap Terminal (On site)", value: "PIN / Tap Terminal" },
-      { label: "Tikkie / iDEAL QR", value: "Tikkie / iDEAL QR" },
-      { label: "Factuur (Net 14)", value: "Factuur (Net 14)" },
-      { label: "Factuur (Net 30)", value: "Factuur (Net 30)" },
-      { label: "Contant (Cash) & PIN", value: "Contant (Cash) & PIN" },
-    ],
-    defaultValue: "PIN / Tap Terminal",
-  },
-  {
-    name: "due",
-    label: "Payment Due Date",
-    type: "date",
-    required: true,
-    colSpan: 1,
-  },
-  {
-    name: "status",
-    label: "Initial Status",
-    type: "select",
-    colSpan: 1,
-    options: [
-      { label: "Pending (Due)", value: "Pending" },
-      { label: "Paid (Settled)", value: "Paid" },
-      { label: "Draft (Unsent)", value: "Draft" },
-    ],
-    defaultValue: "Pending",
-  },
-  {
-    name: "notes",
-    label: "Job Notes / VAT Specification",
-    type: "textarea",
-    placeholder:
-      "e.g. Includes 21% BTW, 2 hours labor + parts (NEN 3140 verified)...",
-    rows: 2,
-    colSpan: 2,
-  },
-];
+import {
+  DEFAULT_LINE_ITEMS,
+  INITIAL_INVOICES,
+  STATUS_FILTERS,
+} from "@/data/invoices";
+import { getRelativeDueDateLabel } from "@/lib/dateUtils";
+import { calculateLineItemsTotals, formatEuro } from "@/lib/formatCurrency";
+import {
+  CREATE_INVOICE_FIELDS,
+  CREATE_INVOICE_STEPS,
+} from "@/schemas/invoiceFormSchema";
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState(INITIAL_INVOICES);
@@ -238,26 +64,48 @@ export default function InvoicesPage() {
   };
 
   const handleCreateInvoice = (formData) => {
-    let rawAmount = String(formData.amount || "0").replace(/[^\d.,]/g, "");
-    if (!rawAmount.startsWith("€")) rawAmount = `€${rawAmount}`;
-    if (!rawAmount.includes(".")) rawAmount = `${rawAmount}.00`;
+    const isBedrijf = formData.clientType === "bedrijf";
+    const clientName = isBedrijf
+      ? formData.companyName?.trim() || "Zakelijke Opdrachtgever"
+      : formData.clientName?.trim() || "Particuliere Klant";
+
+    const items =
+      Array.isArray(formData.items) && formData.items.length > 0
+        ? formData.items
+        : DEFAULT_LINE_ITEMS;
+
+    const { total } = calculateLineItemsTotals(items, formData.vatRate || "21");
+    const formattedAmount = formatEuro(total);
+
+    const mainProjectDesc =
+      items
+        .map((it) => it.description?.trim())
+        .filter(Boolean)
+        .join(" • ") || "Geleverde werkzaamheden & materialen";
 
     const newInvoice = {
-      id: `INV-${Math.floor(2050 + Math.random() * 500)}`,
-      client: formData.client,
+      id:
+        formData.invoiceNumber?.trim() ||
+        `INV-${Math.floor(2050 + Math.random() * 500)}`,
+      client: clientName,
       tradeType: formData.tradeType || "Electrician",
-      project: formData.project,
-      issued: "Oct 13, 2026",
-      due: formData.due || "Oct 27, 2026",
-      dueDateRelative:
-        formData.status === "Paid"
-          ? "Paid on creation"
-          : formData.status === "Draft"
-            ? "Unsent Draft"
-            : "Due in 14 days",
-      amount: rawAmount,
+      project: mainProjectDesc,
+      issued: new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+      }).format(new Date()),
+      due: formData.due
+        ? new Intl.DateTimeFormat("en-US", {
+            month: "short",
+            day: "2-digit",
+            year: "numeric",
+          }).format(new Date(formData.due))
+        : "Oct 27, 2026",
+      dueDateRelative: getRelativeDueDateLabel(formData.due, formData.status),
+      amount: formattedAmount,
       status: formData.status || "Pending",
-      method: formData.method || "PIN / Tap Terminal",
+      method: formData.method || "Tikkie / iDEAL QR",
     };
 
     setInvoices((prev) => [newInvoice, ...prev]);
@@ -302,74 +150,91 @@ export default function InvoicesPage() {
       {/* 1. Header Section */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Invoices & Billing
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wider uppercase border border-indigo-500/25 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300">
+              <FileText className="size-3" />
+              Facturatie & Betaalverzoeken
+            </span>
+            <span className="text-xs text-muted-foreground font-mono">
+              iDEAL • Tikkie • PIN • Factuur
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground mt-1">
+            Facturen & Betalingen
           </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Track issued jobs, market batches, pending PIN settlements, and
-            Tikkie / bank receipts.
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+            Volg uitgegeven opdrachten, marktomzet, PIN-afhandelingen en
+            digitale betaalverzoeken.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={() => alert("Exporting CSV report...")}
-            className="rounded-full px-4 shadow-xs hover:bg-muted/60 active:scale-[0.97] transition-all font-medium text-xs h-9 cursor-pointer"
+            onClick={() => alert("Exporteren van CSV-rapportage...")}
+            className="rounded-full px-4 shadow-2xs hover:bg-muted/70 active:scale-[0.97] transition-all font-medium text-xs h-9 cursor-pointer"
           >
             <Download className="size-3.5 mr-1.5" />
-            Export CSV
+            Exporteer CSV
           </Button>
           <Button
             onClick={() => setIsCreateModalOpen(true)}
             className="rounded-full px-4.5 shadow-sm hover:shadow-md active:scale-[0.97] transition-all font-semibold text-xs h-9 cursor-pointer"
           >
             <Plus className="size-4 mr-1.5" />
-            New Invoice / Bill
+            Nieuwe Factuur / Betaalverzoek
           </Button>
         </div>
       </div>
 
-      {/* 2. Key Metrics Row */}
+      {/* 2. Key Metrics Row (Asymmetric Bento with Gradient Icon Pods) */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card
-          title="Total Billed"
-          description="Aggregate invoiced & sales YTD"
-          value="€28,790.00"
+          title="Totaal Gefactureerd"
+          description="Cumulatief YTD excl. BTW"
+          value="€28.790,00"
           trend="+16.4%"
-          trendLabel="vs last quarter"
+          trendLabel="t.o.v. vorig kwartaal"
+          icon={<FileText className="size-5" />}
+          iconColor="primary"
           variant="elevated"
         />
 
         <Card
-          title="Awaiting Settlement"
-          description={`${pendingCount} invoices & orders pending`}
-          value="€4,090.00"
-          trend="Due in 12-14 days"
+          title="Openstaand Saldo"
+          description={`${pendingCount} facturen in afwachting`}
+          value="€4.090,00"
+          trend="Vervaltijd 12-14 dagen"
           trendDirection="neutral"
+          icon={<Clock className="size-5" />}
+          iconColor="amber"
           variant="elevated"
         />
 
         <Card
-          title="Overdue Balance"
-          description={`${overdueCount} account requiring notice`}
-          value="€620.00"
-          trend="Action required"
+          title="Vervallen Saldo"
+          description={`${overdueCount} dossier vereist herinnering`}
+          value="€620,00"
+          trend="Herinnering vereist"
           trendDirection="down"
+          icon={<Mail className="size-5" />}
+          iconColor="rose"
           variant="elevated"
         />
 
         <Card
-          title="Settled this Month"
-          description="Completed PIN, Tikkie & bank payouts"
-          value="€14,850.00"
+          title="Voldaan deze Maand"
+          description="Ontvangen via PIN, Tikkie & bank"
+          value="€14.850,00"
           trend="+11.2%"
-          trendLabel="vs previous cycle"
+          trendLabel="t.o.v. vorige cyclus"
+          icon={<Check className="size-5" />}
+          iconColor="emerald"
           variant="elevated"
         />
       </div>
 
-      {/* 3. Search & Filter Bar */}
+      {/* 3. Search & Filter Bar (Apple-style tactile pills) */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* Status Filter Tabs */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
@@ -385,13 +250,13 @@ export default function InvoicesPage() {
                 key={filter}
                 type="button"
                 onClick={() => setActiveFilter(filter)}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-all duration-150 cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 active:scale-[0.96] cursor-pointer ${
                   isActive
                     ? "bg-foreground text-background shadow-xs"
-                    : "bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/40"
+                    : "bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/50"
                 }`}
               >
-                <span>{filter}</span>
+                <span>{filter === "All" ? "Alle Facturen" : filter}</span>
                 <span
                   className={`rounded-full px-1.5 py-0.2 text-[10px] font-mono ${
                     isActive
@@ -408,28 +273,31 @@ export default function InvoicesPage() {
 
         {/* Search Input */}
         <div className="relative w-full sm:w-72">
-          <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Search className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search invoice, client, or trade..."
+            placeholder="Zoek factuur, klant of vak..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-9 text-xs rounded-full"
+            className="pl-9.5 h-9 text-xs rounded-full border-border/70 dark:border-white/[0.08]"
           />
         </div>
       </div>
 
-      {/* 4. Invoices Table Card */}
-      <Card variant="elevated" className="overflow-hidden">
+      {/* 4. Invoices Table Card with Specular Rim & Translucent Depth */}
+      <Card
+        variant="elevated"
+        className="overflow-hidden border border-border/70 dark:border-white/[0.08] shadow-xs backdrop-blur-md bg-card/90"
+      >
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm font-sans border-collapse">
             <thead>
               <tr className="border-b border-border/70 bg-muted/40 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                <th className="py-3 px-5">Invoice</th>
-                <th className="py-3 px-5">Client & Job / Order</th>
-                <th className="py-3 px-5">Issued / Due</th>
-                <th className="py-3 px-5 text-right">Amount</th>
+                <th className="py-3 px-5">Factuur & Betaalwijze</th>
+                <th className="py-3 px-5">Opdrachtgever & Omschrijving</th>
+                <th className="py-3 px-5">Vervaldatum</th>
+                <th className="py-3 px-5 text-right">Bedrag (incl. BTW)</th>
                 <th className="py-3 px-5 text-center">Status</th>
-                <th className="py-3 px-5 text-right">Actions</th>
+                <th className="py-3 px-5 text-right">Acties</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/40 text-xs">
@@ -441,12 +309,12 @@ export default function InvoicesPage() {
                   >
                     {/* Invoice ID & Method */}
                     <td className="py-3.5 px-5 font-mono font-medium text-foreground">
-                      <div className="flex items-center gap-2">
-                        <FileText className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex size-8 items-center justify-center rounded-lg bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                          <FileText className="size-4" />
+                        </div>
                         <div>
-                          <p className="font-semibold text-foreground">
-                            {inv.id}
-                          </p>
+                          <p className="font-bold text-foreground">{inv.id}</p>
                           <p className="text-[10px] text-muted-foreground font-sans">
                             {inv.method}
                           </p>
@@ -456,11 +324,11 @@ export default function InvoicesPage() {
 
                     {/* Client & Job/Order Description */}
                     <td className="py-3.5 px-5">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <p className="font-semibold text-foreground">
                           {inv.client}
                         </p>
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-muted text-muted-foreground font-medium">
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-muted text-muted-foreground font-medium shrink-0">
                           {inv.tradeType}
                         </span>
                       </div>
@@ -500,11 +368,11 @@ export default function InvoicesPage() {
                         <button
                           type="button"
                           onClick={() => handleCopyLink(inv.id)}
-                          className="size-7 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
-                          title="Copy payment / Tikkie link"
+                          className="size-7.5 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:scale-90 transition-all cursor-pointer"
+                          title="Kopieer Tikkie / betaallink"
                         >
                           {copiedId === inv.id ? (
-                            <Check className="size-3.5 text-emerald-600" />
+                            <Check className="size-4 text-emerald-600" />
                           ) : (
                             <Copy className="size-3.5" />
                           )}
@@ -516,10 +384,12 @@ export default function InvoicesPage() {
                           <button
                             type="button"
                             onClick={() =>
-                              alert(`Sent payment reminder to ${inv.client}`)
+                              alert(
+                                `Betaalherinnering verstuurd naar ${inv.client}`,
+                              )
                             }
-                            className="size-7 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
-                            title="Send payment reminder"
+                            className="size-7.5 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:scale-90 transition-all cursor-pointer"
+                            title="Stuur herinnering"
                           >
                             <Mail className="size-3.5" />
                           </button>
@@ -529,8 +399,8 @@ export default function InvoicesPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedInvoiceForInfo(inv)}
-                          className="size-7 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
-                          title="View invoice details"
+                          className="size-7.5 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:scale-90 transition-all cursor-pointer"
+                          title="Bekijk factuurgegevens"
                         >
                           <ExternalLink className="size-3.5" />
                         </button>
@@ -545,10 +415,10 @@ export default function InvoicesPage() {
                     className="py-12 text-center text-muted-foreground"
                   >
                     <p className="text-sm font-medium">
-                      No invoices match your filter
+                      Geen facturen gevonden die voldoen aan je filter
                     </p>
                     <p className="text-xs mt-1">
-                      Try resetting the search or filter tabs.
+                      Probeer een andere zoekterm of filtertab.
                     </p>
                   </td>
                 </tr>
@@ -558,18 +428,19 @@ export default function InvoicesPage() {
         </div>
       </Card>
 
-      {/* 5. Reusable FormModal: Create Invoice (Entirely Driven by Props) */}
+      {/* 5. Reusable FormModal: Create Invoice (Multi-Step Wizard with Live Client Preview) */}
       <FormModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateInvoice}
-        title="Create Invoice / Bill"
-        description="Draft a bill for trade services, market stall orders, or direct on-site jobs."
+        title="Nieuwe Factuur / Betaalverzoek"
+        description="Maak in 3 overzichtelijke stappen een factuur aan met live voorbeeld zoals de klant het ontvangt."
         icon={<FilePlus2 className="size-5" />}
+        steps={CREATE_INVOICE_STEPS}
         fields={CREATE_INVOICE_FIELDS}
-        submitLabel="Issue Invoice"
-        maxWidth="lg"
-        footerNote="Invoices are logged in your VAT (BTW) ledger and can be shared via Tikkie link or PDF."
+        submitLabel="Factuur Aanmaken & Versturen"
+        maxWidth="xl"
+        footerNote="Facturen en betaalverzoeken worden direct gesynchroniseerd in je overzicht en BTW-administratie."
       />
 
       {/* 6. Reusable InfoModal: View Invoice Information (Entirely Driven by Props) */}

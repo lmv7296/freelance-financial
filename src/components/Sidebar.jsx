@@ -9,6 +9,7 @@ import {
   FileText,
   HelpCircle,
   LayoutDashboard,
+  LogIn,
   LogOut,
   Plus,
   Receipt,
@@ -20,6 +21,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -87,6 +89,7 @@ const NAV_ITEMS = [
 export function Sidebar({ className }) {
   const pathname = usePathname() || "/dashboard";
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { user, isAuthenticated, logout, openLogin } = useAuth();
 
   return (
     <aside
@@ -101,14 +104,14 @@ export function Sidebar({ className }) {
       {/* 1. Header / Workspace Brand Pod */}
       <div
         className={cn(
-          "flex items-center h-18 px-4 border-b border-border/50",
+          "flex items-center h-18 px-4 border-b border-border/60 dark:border-white/[0.08]",
           isCollapsed ? "justify-center px-2" : "justify-start",
         )}
       >
         <Link
           href="/dashboard"
           className={cn(
-            "flex items-center gap-3 min-w-0 group",
+            "flex items-center gap-3 min-w-0 group active:scale-[0.98] transition-transform",
             isCollapsed && "justify-center",
           )}
         >
@@ -121,7 +124,7 @@ export function Sidebar({ className }) {
                 FreelanceFin
               </span>
               <span className="text-[11px] font-medium text-muted-foreground flex items-center gap-1">
-                Trade & Market Pro <ChevronDown className="size-3 opacity-60" />
+                Vakman & Markt Pro <ChevronDown className="size-3 opacity-60" />
               </span>
             </div>
           )}
@@ -132,7 +135,7 @@ export function Sidebar({ className }) {
       <button
         type="button"
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3.5 top-9 -translate-y-1/2 z-50 flex size-7 items-center justify-center rounded-full bg-card border border-border shadow-xs ring-4 ring-background text-muted-foreground hover:text-foreground hover:bg-muted active:scale-95 transition-all duration-200 cursor-pointer"
+        className="absolute -right-3.5 top-9 -translate-y-1/2 z-50 flex size-7 items-center justify-center rounded-full bg-card border border-border shadow-xs ring-4 ring-background text-muted-foreground hover:text-foreground hover:bg-muted active:scale-90 transition-all duration-200 cursor-pointer"
         title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         {isCollapsed ? (
@@ -147,15 +150,19 @@ export function Sidebar({ className }) {
         {isCollapsed ? (
           <Button
             size="icon"
-            className="size-11 rounded-2xl shadow-xs hover:shadow-md active:scale-95 transition-all mx-auto flex"
-            title="Create New Invoice"
+            onClick={() => window.location.assign("/invoices")}
+            className="size-11 rounded-2xl shadow-xs hover:shadow-md active:scale-95 transition-all mx-auto flex cursor-pointer"
+            title="Nieuwe Factuur / Betaalverzoek"
           >
             <Plus className="size-5" />
           </Button>
         ) : (
-          <Button className="w-full justify-center gap-2 rounded-full font-semibold shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] transition-all text-xs h-10">
+          <Button
+            onClick={() => window.location.assign("/invoices")}
+            className="w-full justify-center gap-2 rounded-full font-semibold shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] transition-all text-xs h-10 cursor-pointer"
+          >
             <Plus className="size-4" />
-            <span>New Invoice</span>
+            <span>Nieuwe Factuur</span>
           </Button>
         )}
       </div>
@@ -183,16 +190,16 @@ export function Sidebar({ className }) {
                   title={isCollapsed ? item.label : undefined}
                   className={cn(
                     "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium",
-                    "transition-all duration-200 ease-out",
+                    "transition-all duration-150 ease-out active:scale-[0.98]",
                     isActive
-                      ? "bg-primary/10 text-primary font-semibold shadow-xs"
+                      ? "bg-primary/10 text-primary font-semibold shadow-xs border border-primary/20"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
                     isCollapsed && "justify-center px-0 py-3",
                   )}
                 >
                   {/* Active Indicator Accent Bar */}
                   {isActive && (
-                    <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-primary" />
+                    <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-primary" />
                   )}
 
                   <Icon
@@ -226,45 +233,100 @@ export function Sidebar({ className }) {
             })}
           </div>
         ))}
+
+        {/* VAT / BTW Readiness Mini Banner in Sidebar */}
+        {!isCollapsed && (
+          <div className="mx-1 rounded-2xl border border-border/70 dark:border-white/[0.08] bg-muted/40 p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-foreground">
+                BTW-Kluis Q4
+              </span>
+              <span className="text-[10px] font-mono font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20">
+                75% gedekt
+              </span>
+            </div>
+            <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden border border-border/40">
+              <div className="h-full bg-emerald-500 rounded-full w-3/4" />
+            </div>
+            <p className="text-[10px] text-muted-foreground leading-tight">
+              €3.712 van €4.950 gereserveerd voor Belastingdienst.
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* 5. User Profile Footer */}
-      <div className="p-3 border-t border-border/50 bg-muted/20">
-        <div
-          className={cn(
-            "flex items-center gap-3 p-1.5 rounded-xl",
-            isCollapsed ? "justify-center" : "justify-between",
-          )}
-        >
-          <div className="flex items-center gap-2.5 min-w-0">
-            {/* User Avatar with online indicator */}
-            <div className="relative size-9 shrink-0 rounded-full bg-gradient-to-tr from-primary to-primary/70 text-primary-foreground flex items-center justify-center font-bold text-xs shadow-xs">
-              ER
-              <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 ring-2 ring-card" />
+      {/* 5. User Profile Footer (Authenticated or Login CTA) */}
+      <div className="p-3 border-t border-border/60 dark:border-white/[0.08] bg-muted/20">
+        {isAuthenticated && user ? (
+          <div
+            className={cn(
+              "flex items-center gap-3 p-1.5 rounded-xl",
+              isCollapsed ? "justify-center" : "justify-between",
+            )}
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              {/* User Avatar with online indicator */}
+              <div
+                className="relative size-9 shrink-0 rounded-full bg-gradient-to-tr from-primary to-primary/80 text-primary-foreground flex items-center justify-center font-bold text-xs shadow-xs"
+                title={user.email}
+              >
+                {user.email ? user.email.slice(0, 2).toUpperCase() : "U"}
+                <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 ring-2 ring-card" />
+              </div>
+
+              {!isCollapsed && (
+                <div className="min-w-0 flex flex-col">
+                  <span className="text-xs font-semibold text-foreground truncate">
+                    {user.email}
+                  </span>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 truncate font-mono flex items-center gap-1">
+                    <span className="size-1.5 rounded-full bg-emerald-500" />
+                    Ingelogd
+                  </span>
+                </div>
+              )}
             </div>
 
             {!isCollapsed && (
-              <div className="min-w-0 flex flex-col">
-                <span className="text-xs font-semibold text-foreground truncate">
-                  Elena Rostova
-                </span>
-                <span className="text-[10px] text-muted-foreground truncate font-mono">
-                  elena@designops.co
-                </span>
-              </div>
+              <button
+                type="button"
+                onClick={logout}
+                className="size-7 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive active:scale-90 transition-all cursor-pointer"
+                title="Uitloggen"
+              >
+                <LogOut className="size-3.5" />
+              </button>
             )}
           </div>
-
-          {!isCollapsed && (
-            <button
-              type="button"
-              className="size-7 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-              title="Sign out"
-            >
-              <LogOut className="size-3.5" />
-            </button>
-          )}
-        </div>
+        ) : (
+          <div
+            className={cn(
+              "flex items-center gap-2 p-1.5",
+              isCollapsed ? "justify-center" : "justify-between",
+            )}
+          >
+            {isCollapsed ? (
+              <button
+                type="button"
+                onClick={openLogin}
+                className="size-9 flex items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary/20 active:scale-90 transition-all cursor-pointer"
+                title="Inloggen"
+              >
+                <LogIn className="size-4" />
+              </button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openLogin}
+                className="w-full justify-center gap-2 rounded-xl text-xs font-semibold cursor-pointer border-primary/30 text-primary hover:bg-primary/10"
+              >
+                <LogIn className="size-3.5" />
+                <span>Inloggen / Registreren</span>
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </aside>
   );
