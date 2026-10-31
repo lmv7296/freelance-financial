@@ -42,6 +42,21 @@ export function getTermDaysFromMethod(method = "") {
 }
 
 /**
+ * Parses a date string. Date-only "YYYY-MM-DD" is read as local midnight instead of UTC,
+ * so it doesn't shift a day back in timezones behind UTC.
+ *
+ * @param {string} dateStr - Input date string
+ * @returns {Date}
+ */
+export function parseLocalDate(dateStr) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr);
+  if (match) {
+    return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  }
+  return new Date(dateStr);
+}
+
+/**
  * Formats a YYYY-MM-DD or date string to Dutch readable date (e.g. "8 nov. 2026").
  *
  * @param {string|Date} dateVal - Input date
@@ -50,7 +65,7 @@ export function getTermDaysFromMethod(method = "") {
 export function formatDutchDate(dateVal) {
   if (!dateVal) return "";
   try {
-    const d = typeof dateVal === "string" ? new Date(dateVal) : dateVal;
+    const d = typeof dateVal === "string" ? parseLocalDate(dateVal) : dateVal;
     if (Number.isNaN(d.getTime())) return String(dateVal);
 
     return new Intl.DateTimeFormat("nl-NL", {
