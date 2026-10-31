@@ -20,6 +20,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { SidebarTaxWidget } from "@/components/tax-vault/SidebarTaxWidget";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { cn } from "@/lib/utils";
@@ -234,25 +235,8 @@ export function Sidebar({ className }) {
           </div>
         ))}
 
-        {/* VAT / BTW Readiness Mini Banner in Sidebar */}
-        {!isCollapsed && (
-          <div className="mx-1 rounded-2xl border border-border/70 dark:border-white/[0.08] bg-muted/40 p-3 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-foreground">
-                BTW-Kluis Q4
-              </span>
-              <span className="text-[10px] font-mono font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20">
-                75% gedekt
-              </span>
-            </div>
-            <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden border border-border/40">
-              <div className="h-full bg-emerald-500 rounded-full w-3/4" />
-            </div>
-            <p className="text-[10px] text-muted-foreground leading-tight">
-              €3.712 van €4.950 gereserveerd voor Belastingdienst.
-            </p>
-          </div>
-        )}
+        {/* Tax Vault summary: next BTW return and set-aside advice */}
+        {!isCollapsed && <SidebarTaxWidget />}
       </div>
 
       {/* 5. User Profile Footer (Authenticated or Login CTA) */}

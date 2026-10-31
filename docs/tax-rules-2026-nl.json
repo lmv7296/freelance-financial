@@ -1,0 +1,182 @@
+{
+  "_comment": "Seed for the tax_rules table. One row per rule. Verified against belastingdienst.nl on 2026-10-30. Values are for people BELOW AOW age; AOW-age variants are separate rows with condition {\"reached_aow_age\": true}. Percentages are stored as decimals (0.3575 = 35,75%).",
+  "tax_year": 2026,
+  "jurisdiction": "NL",
+  "rules": [
+    {
+      "key": "ib.box1.brackets",
+      "legal_form": "eenmanszaak",
+      "label": "Tarieven box 1 (onder AOW-leeftijd)",
+      "value_type": "brackets",
+      "value": [
+        { "from": 0, "to": 38883, "rate": 0.3575 },
+        { "from": 38883, "to": 78426, "rate": 0.3756 },
+        { "from": 78426, "to": null, "rate": 0.495 }
+      ],
+      "conditions": { "reached_aow_age": false },
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/inkomstenbelasting/heffingskortingen_boxen_tarieven/boxen_en_tarieven/box_1/box_1",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "ib.deduction_rate_cap",
+      "legal_form": "eenmanszaak",
+      "label": "Maximaal tarief voordeel aftrekposten (incl. ondernemersaftrek en mkb-winstvrijstelling)",
+      "value_type": "percentage",
+      "value": 0.3756,
+      "conditions": {},
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/veranderingen-inkomstenbelasting-2026/ondernemersaftrek-2026/zelfstandigenaftrek-2026",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "ib.algemene_heffingskorting",
+      "legal_form": "eenmanszaak",
+      "label": "Algemene heffingskorting (op verzamelinkomen)",
+      "value_type": "piecewise",
+      "_formula": "credit = base + rate * (income - from), for the segment the income falls in",
+      "value": [
+        { "from": 0, "to": 29736, "base": 3115, "rate": 0 },
+        { "from": 29736, "to": 78426, "base": 3115, "rate": -0.06398 },
+        { "from": 78426, "to": null, "base": 0, "rate": 0 }
+      ],
+      "conditions": { "reached_aow_age": false },
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/nl/voorlopige-aanslag/content/voorlopige-aanslag-tarieven-en-heffingskortingen",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "ib.arbeidskorting",
+      "legal_form": "eenmanszaak",
+      "label": "Arbeidskorting (op arbeidsinkomen)",
+      "value_type": "piecewise",
+      "_formula": "credit = base + rate * (income - from), for the segment the income falls in",
+      "value": [
+        { "from": 0, "to": 11965, "base": 0, "rate": 0.08324 },
+        { "from": 11965, "to": 25845, "base": 996, "rate": 0.31009 },
+        { "from": 25845, "to": 45592, "base": 5300, "rate": 0.0195 },
+        { "from": 45592, "to": 132920, "base": 5685, "rate": -0.0651 },
+        { "from": 132920, "to": null, "base": 0, "rate": 0 }
+      ],
+      "conditions": { "reached_aow_age": false },
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/nl/voorlopige-aanslag/content/voorlopige-aanslag-tarieven-en-heffingskortingen",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "ib.zelfstandigenaftrek",
+      "legal_form": "eenmanszaak",
+      "label": "Zelfstandigenaftrek",
+      "value_type": "amount",
+      "value": 1200,
+      "conditions": { "meets_hours_criterion": true, "reached_aow_age": false },
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/veranderingen-inkomstenbelasting-2026/ondernemersaftrek-2026/zelfstandigenaftrek-2026",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "ib.zelfstandigenaftrek",
+      "legal_form": "eenmanszaak",
+      "label": "Zelfstandigenaftrek (AOW-leeftijd bereikt aan begin van het jaar)",
+      "value_type": "amount",
+      "value": 600,
+      "conditions": { "meets_hours_criterion": true, "reached_aow_age": true },
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/veranderingen-inkomstenbelasting-2026/ondernemersaftrek-2026/zelfstandigenaftrek-2026",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "ib.startersaftrek",
+      "legal_form": "eenmanszaak",
+      "label": "Startersaftrek (bovenop zelfstandigenaftrek)",
+      "value_type": "amount",
+      "value": 2123,
+      "conditions": { "meets_hours_criterion": true, "is_starter": true },
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/veranderingen-inkomstenbelasting-2026/ondernemersaftrek-2026/zelfstandigenaftrek-2026",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "ib.urencriterium_hours",
+      "legal_form": "eenmanszaak",
+      "label": "Urencriterium (minimaal aantal uur per kalenderjaar)",
+      "value_type": "number",
+      "value": 1225,
+      "conditions": {},
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/veranderingen-inkomstenbelasting-2026/ondernemersaftrek-2026/zelfstandigenaftrek-2026",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "ib.mkb_winstvrijstelling",
+      "legal_form": "eenmanszaak",
+      "label": "Mkb-winstvrijstelling (over winst na ondernemersaftrek)",
+      "value_type": "percentage",
+      "value": 0.127,
+      "conditions": {},
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/winst/inkomstenbelasting/inkomstenbelasting_voor_ondernemers/mkb_winstvrijstelling",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "zvw.rate_entrepreneur",
+      "legal_form": "eenmanszaak",
+      "label": "Inkomensafhankelijke bijdrage Zvw (ondernemer)",
+      "value_type": "percentage",
+      "value": 0.0485,
+      "conditions": {},
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/prive/werk_en_inkomen/zorgverzekeringswet/veranderingen-bijdrage-zvw/percentages-zvw",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "zvw.max_income",
+      "legal_form": "eenmanszaak",
+      "label": "Maximumbijdrage-inkomen Zvw",
+      "value_type": "amount",
+      "value": 79409,
+      "conditions": {},
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/fisin/fisin2026/inkomensafhankelijke_bijdrage_zorgverzekeringswet",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "btw.rates",
+      "legal_form": null,
+      "label": "Btw-tarieven",
+      "value_type": "list",
+      "value": [
+        { "rubriek": "1a", "rate": 0.21, "label": "Hoog tarief" },
+        { "rubriek": "1b", "rate": 0.09, "label": "Laag tarief" },
+        { "rubriek": "1e", "rate": 0, "label": "0% of niet bij u belast" }
+      ],
+      "conditions": {},
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/nl/btw/content/ik-moet-btw-aangifte-doen-hoe-vul-ik-die-in",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "btw.kor_threshold",
+      "legal_form": null,
+      "label": "Omzetgrens kleineondernemersregeling (KOR) per kalenderjaar",
+      "value_type": "amount",
+      "value": 20000,
+      "conditions": {},
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/btw/hoe_werkt_de_btw/kleineondernemersregeling/kleineondernemersregeling",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "btw.deadline_rule",
+      "legal_form": null,
+      "label": "Btw-aangifte en betaling: uiterlijk laatste dag van de maand na het tijdvak",
+      "value_type": "deadline_rule",
+      "value": { "months_after_period_end": 1, "day": "last" },
+      "conditions": {},
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/nl/btw/content/uiterste-aangifte-en-betaaldatums",
+      "verified_at": "2026-10-30"
+    },
+    {
+      "key": "ib.deadline_rule",
+      "legal_form": "eenmanszaak",
+      "label": "Aangifte inkomstenbelasting: uiterlijk 1 mei van het volgende jaar (uitstel tot 1 september mogelijk)",
+      "value_type": "deadline_rule",
+      "value": {
+        "month": 5,
+        "day": 1,
+        "year_offset": 1,
+        "extension": { "month": 9, "day": 1 }
+      },
+      "conditions": {},
+      "source_url": "https://www.belastingdienst.nl/wps/wcm/connect/nl/belastingaangifte/content/ik-moet-aangifte-doen-maar-ik-wil-graag-uitstel-kan-dat",
+      "verified_at": "2026-10-30"
+    }
+  ]
+}
