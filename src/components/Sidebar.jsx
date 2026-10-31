@@ -20,65 +20,67 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { SidebarTaxWidget } from "@/components/tax-vault/SidebarTaxWidget";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   {
-    group: "Overview",
+    group: "nav.groups.overview",
     items: [
       {
-        label: "Dashboard",
+        labelKey: "nav.dashboard",
         href: "/dashboard",
         icon: LayoutDashboard,
       },
       {
-        label: "Invoices",
+        labelKey: "nav.invoices",
         href: "/invoices",
         icon: FileText,
         badge: "3 pending",
         badgeVariant: "warning",
       },
       {
-        label: "Clients",
+        labelKey: "nav.clients",
         href: "/clients",
         icon: Users,
       },
       {
-        label: "Expenses",
+        labelKey: "nav.expenses",
         href: "/expenses",
         icon: Receipt,
       },
     ],
   },
   {
-    group: "Finance Tools",
+    group: "nav.groups.financeTools",
     items: [
       {
-        label: "Tax Vault",
+        labelKey: "nav.taxVault",
         href: "/tax-vault",
         icon: Wallet,
         badge: "Q4 prep",
         badgeVariant: "neutral",
       },
       {
-        label: "Reports",
+        labelKey: "nav.reports",
         href: "/reports",
         icon: BarChart3,
       },
     ],
   },
   {
-    group: "Preferences",
+    group: "nav.groups.preferences",
     items: [
       {
-        label: "Settings",
+        labelKey: "nav.settings",
         href: "/settings",
         icon: Settings,
       },
       {
-        label: "Help & Support",
+        labelKey: "nav.support",
         href: "/support",
         icon: HelpCircle,
       },
@@ -90,6 +92,7 @@ export function Sidebar({ className }) {
   const pathname = usePathname() || "/dashboard";
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { user, isAuthenticated, logout, openLogin } = useAuth();
+  const t = useT();
 
   return (
     <aside
@@ -136,7 +139,7 @@ export function Sidebar({ className }) {
         type="button"
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute -right-3.5 top-9 -translate-y-1/2 z-50 flex size-7 items-center justify-center rounded-full bg-card border border-border shadow-xs ring-4 ring-background text-muted-foreground hover:text-foreground hover:bg-muted active:scale-90 transition-all duration-200 cursor-pointer"
-        title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        title={isCollapsed ? t("sidebar.expand") : t("sidebar.collapse")}
       >
         {isCollapsed ? (
           <ChevronsRight className="size-3.5" />
@@ -152,7 +155,7 @@ export function Sidebar({ className }) {
             size="icon"
             onClick={() => window.location.assign("/invoices")}
             className="size-11 rounded-2xl shadow-xs hover:shadow-md active:scale-95 transition-all mx-auto flex cursor-pointer"
-            title="Nieuwe Factuur / Betaalverzoek"
+            title={t("sidebar.newInvoiceTitle")}
           >
             <Plus className="size-5" />
           </Button>
@@ -162,7 +165,7 @@ export function Sidebar({ className }) {
             className="w-full justify-center gap-2 rounded-full font-semibold shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] transition-all text-xs h-10 cursor-pointer"
           >
             <Plus className="size-4" />
-            <span>Nieuwe Factuur</span>
+            <span>{t("sidebar.newInvoice")}</span>
           </Button>
         )}
       </div>
@@ -173,7 +176,7 @@ export function Sidebar({ className }) {
           <div key={section.group} className="space-y-1">
             {!isCollapsed && (
               <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70 mb-2">
-                {section.group}
+                {t(section.group)}
               </p>
             )}
 
@@ -187,7 +190,7 @@ export function Sidebar({ className }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  title={isCollapsed ? item.label : undefined}
+                  title={isCollapsed ? t(item.labelKey) : undefined}
                   className={cn(
                     "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium",
                     "transition-all duration-150 ease-out active:scale-[0.98]",
@@ -213,7 +216,7 @@ export function Sidebar({ className }) {
 
                   {!isCollapsed && (
                     <div className="flex flex-1 items-center justify-between min-w-0">
-                      <span className="truncate">{item.label}</span>
+                      <span className="truncate">{t(item.labelKey)}</span>
                       {item.badge && (
                         <span
                           className={cn(
@@ -234,25 +237,8 @@ export function Sidebar({ className }) {
           </div>
         ))}
 
-        {/* VAT / BTW Readiness Mini Banner in Sidebar */}
-        {!isCollapsed && (
-          <div className="mx-1 rounded-2xl border border-border/70 dark:border-white/[0.08] bg-muted/40 p-3 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-foreground">
-                BTW-Kluis Q4
-              </span>
-              <span className="text-[10px] font-mono font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20">
-                75% gedekt
-              </span>
-            </div>
-            <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden border border-border/40">
-              <div className="h-full bg-emerald-500 rounded-full w-3/4" />
-            </div>
-            <p className="text-[10px] text-muted-foreground leading-tight">
-              €3.712 van €4.950 gereserveerd voor Belastingdienst.
-            </p>
-          </div>
-        )}
+        {/* Tax Vault summary: next BTW return and set-aside advice */}
+        {!isCollapsed && <SidebarTaxWidget />}
       </div>
 
       {/* 5. User Profile Footer (Authenticated or Login CTA) */}
@@ -281,7 +267,7 @@ export function Sidebar({ className }) {
                   </span>
                   <span className="text-[10px] text-emerald-600 dark:text-emerald-400 truncate font-mono flex items-center gap-1">
                     <span className="size-1.5 rounded-full bg-emerald-500" />
-                    Ingelogd
+                    {t("sidebar.loggedIn")}
                   </span>
                 </div>
               )}
@@ -292,7 +278,7 @@ export function Sidebar({ className }) {
                 type="button"
                 onClick={logout}
                 className="size-7 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive active:scale-90 transition-all cursor-pointer"
-                title="Uitloggen"
+                title={t("sidebar.logout")}
               >
                 <LogOut className="size-3.5" />
               </button>
@@ -310,7 +296,7 @@ export function Sidebar({ className }) {
                 type="button"
                 onClick={openLogin}
                 className="size-9 flex items-center justify-center rounded-xl bg-primary/10 text-primary hover:bg-primary/20 active:scale-90 transition-all cursor-pointer"
-                title="Inloggen"
+                title={t("sidebar.login")}
               >
                 <LogIn className="size-4" />
               </button>
@@ -322,7 +308,7 @@ export function Sidebar({ className }) {
                 className="w-full justify-center gap-2 rounded-xl text-xs font-semibold cursor-pointer border-primary/30 text-primary hover:bg-primary/10"
               >
                 <LogIn className="size-3.5" />
-                <span>Inloggen / Registreren</span>
+                <span>{t("sidebar.loginRegister")}</span>
               </Button>
             )}
           </div>
