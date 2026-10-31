@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { taxVaultApi } from "@/lib/api/taxVault";
 import { formatDutchDate, parseLocalDate } from "@/lib/dateUtils";
 import { formatEuro } from "@/lib/formatCurrency";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 // Show the deadline in warning colors when it's this close
@@ -24,6 +25,7 @@ function daysUntil(dateStr) {
  * Shows no figures when the backend can't provide them.
  */
 export function SidebarTaxWidget() {
+  const t = useT();
   const [overview, setOverview] = useState(null);
   const [hasError, setHasError] = useState(false);
 
@@ -56,14 +58,16 @@ export function SidebarTaxWidget() {
     >
       <div className="flex items-center justify-between gap-2">
         <span className="text-[11px] font-bold text-foreground truncate">
-          {nextPeriod ? `Btw ${nextPeriod.label}` : "Belastingkluis"}
+          {nextPeriod
+            ? t("taxWidget.vatPeriod", { period: nextPeriod.label })
+            : t("taxWidget.title")}
         </span>
         <ChevronRight className="size-3.5 shrink-0 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
       </div>
 
       {hasError ? (
         <p className="text-[10px] text-muted-foreground leading-tight">
-          Schattingen nog niet beschikbaar.
+          {t("taxWidget.unavailable")}
         </p>
       ) : !overview ? (
         <div className="space-y-1.5 animate-pulse">
@@ -84,7 +88,7 @@ export function SidebarTaxWidget() {
               >
                 {formatEuro(Math.abs(nextPeriod.balance))}
                 <span className="ml-1 font-sans text-[10px] font-medium text-muted-foreground">
-                  {isRefund ? "terug" : "te betalen"}
+                  {isRefund ? t("taxWidget.refund") : t("taxWidget.toPay")}
                 </span>
               </p>
               <p
@@ -95,25 +99,27 @@ export function SidebarTaxWidget() {
                     : "text-muted-foreground",
                 )}
               >
-                Uiterlijk {formatDutchDate(nextPeriod.deadline)}
-                {days !== null && days >= 0 && ` (nog ${days} d)`}
-                {days !== null && days < 0 && " (te laat)"}
+                {t("taxWidget.deadline", {
+                  date: formatDutchDate(nextPeriod.deadline),
+                })}
+                {days !== null &&
+                  days >= 0 &&
+                  ` ${t("taxWidget.daysLeft", { count: days })}`}
+                {days !== null && days < 0 && ` ${t("taxWidget.late")}`}
               </p>
             </>
           ) : (
             <p className="text-[10px] text-muted-foreground leading-tight">
               {overview.vat?.enabled
-                ? "Geen open btw-periode."
-                : "Geen btw-aangifte (KOR)."}
+                ? t("taxWidget.noOpenPeriod")
+                : t("taxWidget.kor")}
             </p>
           )}
           {overview.set_aside && (
             <p className="border-t border-border/50 pt-1.5 text-[10px] text-muted-foreground leading-tight">
-              Zet{" "}
-              <span className="font-mono font-semibold text-foreground">
-                {formatEuro(overview.set_aside.monthly_amount)}
-              </span>{" "}
-              per maand opzij
+              {t("taxWidget.setAside", {
+                amount: formatEuro(overview.set_aside.monthly_amount),
+              })}
             </p>
           )}
         </>
