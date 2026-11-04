@@ -504,5 +504,124 @@
     "fieldRequired": "{field} is verplicht.",
     "checkingAccess": "Even geduld…",
     "saving": "Opslaan…"
+  },
+  "landing": {
+    "tagline": "Vakman & zzp",
+    "nav": {
+      "features": "Wat kun je doen?",
+      "howItWorks": "Hoe het werkt",
+      "dashboard": "Dashboard",
+      "login": "Inloggen",
+      "register": "Account aanmaken"
+    },
+    "hero": {
+      "eyebrow": "Voor vakmensen en zzp'ers in Nederland",
+      "title": "Financiële rust tussen klussen door.",
+      "subtitle": "Maak je factuur direct na de klus, laat klanten betalen via iDEAL, stuur je bonnetjes via WhatsApp en zie hoeveel btw en belasting je opzij moet zetten.",
+      "register": "Account aanmaken",
+      "login": "Inloggen",
+      "seeFeatures": "Bekijk alle functies",
+      "toDashboard": "Naar je dashboard",
+      "newInvoice": "Nieuwe factuur maken",
+      "highlights": "Bonnetjes via WhatsApp · iDEAL en QR-code op locatie · Belastingregels van dit jaar, met bronnen"
+    },
+    "preview": {
+      "title": "Zo ziet het eruit",
+      "subtitle": "Belastingkluis, bonnetjes en facturen in één app",
+      "badge": "Voorbeeld",
+      "footnote": "Voorbeeldgegevens. In de app zie je je eigen cijfers.",
+      "vatTitle": "Belastingkluis · btw Q4",
+      "vatDue": "te betalen · uiterlijk {date}",
+      "vatSales": "Btw over omzet (1a)",
+      "vatInput": "Voorbelasting (5b)",
+      "receiptTitle": "Bonnetje via WhatsApp",
+      "receiptStatus": "Te controleren",
+      "receiptShop": "Bouwmarkt",
+      "receiptItems": "Materialen · kabel en wandcontactdozen",
+      "receiptVat": "incl. {amount} btw",
+      "receiptRead": "Winkel, datum, bedrag en btw automatisch uitgelezen.",
+      "invoiceTitle": "Factuur 2026-042",
+      "invoiceStatus": "Betaald",
+      "invoiceClient": "Fam. de Vries",
+      "invoiceJob": "Groepenkast vervangen",
+      "invoiceVat": "incl. 21% btw",
+      "invoicePaid": "Betaald via iDEAL-QR op locatie"
+    },
+    "features": {
+      "eyebrow": "Wat kun je doen?",
+      "title": "Alles wat een vakman nodig heeft. Niets wat in de weg zit.",
+      "subtitle": "Geen overbodige boekhoudmodules of ingewikkelde balansen. Gewoon facturen, betalingen, bonnetjes en zicht op wat je aan de Belastingdienst moet betalen.",
+      "items": {
+        "invoices": {
+          "badge": "Facturen",
+          "title": "Factureren direct na de klus",
+          "description": "Maak je factuur op je telefoon zodra de klus klaar is. Zet arbeidsuren en materialen op aparte regels, met automatische btw-berekening.",
+          "highlight": "Versturen via WhatsApp of e-mail"
+        },
+        "payments": {
+          "badge": "Betalen",
+          "title": "iDEAL-betaalverzoek en QR-code",
+          "description": "Stuur je klant een betaallink, of laat de QR-code ter plekke scannen. Je ziet in de app welke facturen betaald zijn en welke nog openstaan.",
+          "highlight": "Betaallink of QR-code op locatie"
+        },
+        "receipts": {
+          "badge": "Bonnetjes",
+          "title": "Bonnetjes via WhatsApp",
+          "description": "Maak een foto van je bonnetje en stuur hem via WhatsApp. De app leest winkel, datum, bedrag en btw uit en zet de uitgave klaar om te controleren.",
+          "highlight": "Ook voor je medewerkers"
+        },
+        "taxVault": {
+          "badge": "Belastingkluis",
+          "title": "Weten wat je opzij moet zetten",
+          "description": "Zie hoeveel btw je per kwartaal moet betalen en een schatting van je inkomstenbelasting, berekend met de belastingregels van dit jaar. Met de bronnen erbij.",
+          "highlight": "Met de deadlines van de Belastingdienst"
+        },
+        "accountant": {
+          "badge": "Boekhouder",
+          "title": "Rapporten en export voor je boekhouder",
+          "description": "Download winst en verlies, een btw-overzicht, je facturen en je uitgaven als PDF of Excel. Of stuur een export direct naar je boekhouder.",
+          "highlight": "Per maand, kwartaal of jaar"
+        },
+        "clients": {
+          "badge": "Klanten",
+          "title": "Klanten op één plek",
+          "description": "Je klantgegevens staan klaar. Bij een nieuwe factuur typ je een paar letters en de klant is ingevuld.",
+          "highlight": "Snel invullen bij nieuwe facturen"
+        }
+      }
+    },
+    "steps": {
+      "eyebrow": "Zo werkt het",
+      "title": "Van klus tot belastingaangifte",
+      "subtitle": "Je administratie doe je meteen, op je telefoon. Niet achteraf achter een computer.",
+      "items": {
+        "invoice": {
+          "title": "Klus klaar? Factuur erachteraan",
+          "description": "Kies je klant, voeg uren en materialen toe en stuur de factuur met een iDEAL-betaallink."
+        },
+        "receipt": {
+          "title": "Bonnetje? Foto via WhatsApp",
+          "description": "Stuur een foto van je bonnetje naar je FreelanceFin-nummer. De uitgave staat daarna in de app, klaar om te controleren."
+        },
+        "taxVault": {
+          "title": "Zie wat je opzij moet zetten",
+          "description": "De Belastingkluis rekent met je facturen en goedgekeurde uitgaven uit hoeveel btw en belasting eraan komt, en wanneer."
+        }
+      }
+    },
+    "cta": {
+      "title": "Minder administratie. Begin vandaag.",
+      "subtitle": "Maak een account aan en zet je facturen, bonnetjes en btw op één plek.",
+      "register": "Account aanmaken",
+      "login": "Inloggen",
+      "toDashboard": "Naar je dashboard"
+    },
+    "footer": {
+      "tagline": "Financieel beheer voor vakmensen en zzp'ers.",
+      "dashboard": "Dashboard",
+      "login": "Inloggen",
+      "register": "Account aanmaken",
+      "copyright": "© {year} FreelanceFin. Alle rechten voorbehouden."
+    }
   }
 }

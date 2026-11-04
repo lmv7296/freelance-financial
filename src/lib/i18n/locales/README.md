@@ -8,7 +8,8 @@ new texts are added there first, then to every other language.
 1. Copy `en.json` to `<code>.json` (ISO 639-1 code, e.g. `de.json`) and translate the
    values. Leave the keys and the `{placeholders}` as they are.
 2. In `src/lib/i18n/dictionaries.js`: import the file, add it to `DICTIONARIES` and to
-   `SUPPORTED_LANGUAGES` (the label is the language's own name, e.g. "Deutsch").
+   `SUPPORTED_LANGUAGES` (the label is the language's own name, e.g. "Deutsch"; the
+   locale sets how amounts and dates look, e.g. "de-DE").
 3. Run `pnpm i18n:check`. It lists missing keys, extra keys and placeholders that
    don't match the Dutch file.
 

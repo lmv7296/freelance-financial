@@ -11,9 +11,16 @@ export const DEFAULT_LANGUAGE = "nl";
 
 /** Languages the user can choose in Settings → Language & display */
 export const SUPPORTED_LANGUAGES = [
-  { code: "nl", label: "Nederlands" },
-  { code: "en", label: "English" },
+  { code: "nl", label: "Nederlands", locale: "nl-NL" },
+  { code: "en", label: "English", locale: "en-GB" },
 ];
+
+/** Locale tag for number and date formatting, e.g. "nl-NL" */
+export function localeFor(language) {
+  return (
+    SUPPORTED_LANGUAGES.find((l) => l.code === language)?.locale ?? "nl-NL"
+  );
+}
 
 const DICTIONARIES = { nl, en };
 

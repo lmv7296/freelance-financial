@@ -504,5 +504,124 @@
     "fieldRequired": "{field} is required.",
     "checkingAccess": "One moment…",
     "saving": "Saving…"
+  },
+  "landing": {
+    "tagline": "Trades & freelancers",
+    "nav": {
+      "features": "What can you do?",
+      "howItWorks": "How it works",
+      "dashboard": "Dashboard",
+      "login": "Log in",
+      "register": "Create account"
+    },
+    "hero": {
+      "eyebrow": "For tradespeople and freelancers in the Netherlands",
+      "title": "Financial peace of mind between jobs.",
+      "subtitle": "Send your invoice right after the job, let clients pay with iDEAL, send your receipts via WhatsApp and see how much VAT and tax to set aside.",
+      "register": "Create account",
+      "login": "Log in",
+      "seeFeatures": "See all features",
+      "toDashboard": "Go to your dashboard",
+      "newInvoice": "Create a new invoice",
+      "highlights": "Receipts via WhatsApp · iDEAL and QR code on site · This year's tax rules, with sources"
+    },
+    "preview": {
+      "title": "What it looks like",
+      "subtitle": "Tax Vault, receipts and invoices in one app",
+      "badge": "Example",
+      "footnote": "Example data. In the app you see your own numbers.",
+      "vatTitle": "Tax Vault · VAT Q4",
+      "vatDue": "to pay · by {date}",
+      "vatSales": "VAT on sales (1a)",
+      "vatInput": "Input VAT (5b)",
+      "receiptTitle": "Receipt via WhatsApp",
+      "receiptStatus": "To review",
+      "receiptShop": "DIY store",
+      "receiptItems": "Materials · cable and wall sockets",
+      "receiptVat": "incl. {amount} VAT",
+      "receiptRead": "Shop, date, amount and VAT read automatically.",
+      "invoiceTitle": "Invoice 2026-042",
+      "invoiceStatus": "Paid",
+      "invoiceClient": "The de Vries family",
+      "invoiceJob": "Fuse box replaced",
+      "invoiceVat": "incl. 21% VAT",
+      "invoicePaid": "Paid with iDEAL QR on site"
+    },
+    "features": {
+      "eyebrow": "What can you do?",
+      "title": "Everything a tradesperson needs. Nothing in the way.",
+      "subtitle": "No unnecessary bookkeeping modules or complicated balance sheets. Just invoices, payments, receipts and a clear view of what you owe the tax office.",
+      "items": {
+        "invoices": {
+          "badge": "Invoices",
+          "title": "Invoice right after the job",
+          "description": "Create your invoice on your phone as soon as the job is done. Put hours and materials on separate lines, with VAT calculated automatically.",
+          "highlight": "Send via WhatsApp or email"
+        },
+        "payments": {
+          "badge": "Payments",
+          "title": "iDEAL payment request and QR code",
+          "description": "Send your client a payment link, or let them scan the QR code on site. The app shows which invoices are paid and which are still open.",
+          "highlight": "Payment link or QR code on site"
+        },
+        "receipts": {
+          "badge": "Receipts",
+          "title": "Receipts via WhatsApp",
+          "description": "Take a photo of your receipt and send it via WhatsApp. The app reads the shop, date, amount and VAT and puts the expense ready for review.",
+          "highlight": "For your employees too"
+        },
+        "taxVault": {
+          "badge": "Tax Vault",
+          "title": "Know what to set aside",
+          "description": "See how much VAT you owe per quarter and an estimate of your income tax, calculated with this year's tax rules. With the sources included.",
+          "highlight": "With the tax office's deadlines"
+        },
+        "accountant": {
+          "badge": "Accountant",
+          "title": "Reports and exports for your accountant",
+          "description": "Download profit and loss, a VAT summary, your invoices and your expenses as PDF or Excel. Or send an export straight to your accountant.",
+          "highlight": "Per month, quarter or year"
+        },
+        "clients": {
+          "badge": "Clients",
+          "title": "Clients in one place",
+          "description": "Your client details are ready. On a new invoice, type a few letters and the client is filled in.",
+          "highlight": "Quick to fill in on new invoices"
+        }
+      }
+    },
+    "steps": {
+      "eyebrow": "How it works",
+      "title": "From job to tax return",
+      "subtitle": "Do your admin straight away, on your phone. Not afterwards behind a computer.",
+      "items": {
+        "invoice": {
+          "title": "Job done? Send the invoice",
+          "description": "Choose your client, add hours and materials and send the invoice with an iDEAL payment link."
+        },
+        "receipt": {
+          "title": "Receipt? Photo via WhatsApp",
+          "description": "Send a photo of your receipt to your FreelanceFin number. The expense then shows up in the app, ready for review."
+        },
+        "taxVault": {
+          "title": "See what to set aside",
+          "description": "The Tax Vault uses your invoices and approved expenses to work out how much VAT and tax is coming, and when."
+        }
+      }
+    },
+    "cta": {
+      "title": "Less admin. Start today.",
+      "subtitle": "Create an account and keep your invoices, receipts and VAT in one place.",
+      "register": "Create account",
+      "login": "Log in",
+      "toDashboard": "Go to your dashboard"
+    },
+    "footer": {
+      "tagline": "Financial admin for tradespeople and freelancers.",
+      "dashboard": "Dashboard",
+      "login": "Log in",
+      "register": "Create account",
+      "copyright": "© {year} FreelanceFin. All rights reserved."
+    }
   }
 }

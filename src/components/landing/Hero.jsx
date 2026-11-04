@@ -12,11 +12,28 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { formatCurrency } from "@/lib/formatCurrency";
+import { localeFor } from "@/lib/i18n/dictionaries";
+import { usePreferences } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
+// Example figures for the preview; they add up (1.764 = 21% of 8.400, etc.)
+const EXAMPLE = {
+  vatDue: 1452,
+  vatSales: 1764,
+  vatInput: 312,
+  vatDeadline: new Date(2027, 0, 31),
+  receiptTotal: 96.8,
+  receiptVat: 16.8,
+  invoiceTotal: 1452,
+};
+
 export function LandingHero() {
+  const { t, language } = usePreferences();
+  const locale = localeFor(language);
+  const money = (value) => formatCurrency(value, "EUR", locale);
   const router = useRouter();
-  const { isAuthenticated, user, openLogin, openRegister } = useAuth();
+  const { isAuthenticated, openLogin, openRegister } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -29,19 +46,17 @@ export function LandingHero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto space-y-6">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Voor vakmensen en zzp'ers in Nederland
+            {t("landing.hero.eyebrow")}
           </p>
 
           {/* Main Title */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.12]">
-            Financiële rust tussen klussen door.
+            {t("landing.hero.title")}
           </h1>
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-            Maak je factuur direct na de klus, laat klanten betalen via iDEAL,
-            stuur je bonnetjes via WhatsApp en zie hoeveel btw en belasting je
-            opzij moet zetten.
+            {t("landing.hero.subtitle")}
           </p>
 
           {/* Actions */}
@@ -55,7 +70,7 @@ export function LandingHero() {
                     "rounded-full px-7 font-bold shadow-md hover:shadow-lg",
                   )}
                 >
-                  <span>Ga naar Dashboard ({user?.email})</span>
+                  <span>{t("landing.hero.toDashboard")}</span>
                   <ArrowRight className="size-4" />
                 </Link>
                 <Link
@@ -65,7 +80,7 @@ export function LandingHero() {
                     "rounded-full px-6",
                   )}
                 >
-                  Nieuwe Factuur Maken
+                  {t("landing.hero.newInvoice")}
                 </Link>
               </div>
             ) : (
@@ -75,7 +90,7 @@ export function LandingHero() {
                   onClick={openRegister}
                   className="w-full sm:w-auto rounded-full px-8 font-bold shadow-md hover:shadow-lg active:scale-98 transition-all cursor-pointer h-12"
                 >
-                  <span>Account aanmaken</span>
+                  <span>{t("landing.hero.register")}</span>
                   <ArrowRight className="size-4 ml-2" />
                 </Button>
                 <Button
@@ -84,7 +99,7 @@ export function LandingHero() {
                   onClick={openLogin}
                   className="w-full sm:w-auto rounded-full px-7 cursor-pointer h-12 border-border/80 hover:bg-muted"
                 >
-                  <span>Inloggen</span>
+                  <span>{t("landing.hero.login")}</span>
                 </Button>
                 <a
                   href="#features"
@@ -93,15 +108,14 @@ export function LandingHero() {
                     "w-full sm:w-auto rounded-full px-6 text-muted-foreground hover:text-foreground h-12",
                   )}
                 >
-                  Bekijk alle functies
+                  {t("landing.hero.seeFeatures")}
                 </a>
               </>
             )}
           </div>
 
           <p className="pt-4 text-xs text-muted-foreground">
-            Bonnetjes via WhatsApp · iDEAL & QR-code op locatie ·
-            Belastingregels van dit jaar, met bronnen
+            {t("landing.hero.highlights")}
           </p>
         </div>
 
@@ -112,15 +126,15 @@ export function LandingHero() {
               <div className="flex items-center gap-3">
                 <div>
                   <h3 className="text-sm font-bold text-foreground">
-                    Zo ziet het eruit
+                    {t("landing.preview.title")}
                   </h3>
                   <p className="text-[11px] text-muted-foreground">
-                    Belastingkluis, bonnetjes en facturen in één app
+                    {t("landing.preview.subtitle")}
                   </p>
                 </div>
               </div>
               <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-muted text-muted-foreground border border-border/70">
-                Voorbeeld
+                {t("landing.preview.badge")}
               </span>
             </div>
 
@@ -129,24 +143,30 @@ export function LandingHero() {
               <div className="rounded-2xl border border-border/70 bg-muted/40 p-4 space-y-3">
                 <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                   <Wallet className="size-3.5 text-primary" />
-                  Belastingkluis · Btw Q4
+                  {t("landing.preview.vatTitle")}
                 </span>
                 <div className="space-y-1">
                   <p className="text-2xl font-extrabold tracking-tight text-foreground">
-                    € 1.452,00
+                    {money(EXAMPLE.vatDue)}
                   </p>
                   <p className="text-[11px] text-muted-foreground">
-                    te betalen · uiterlijk 31 jan. 2027
+                    {t("landing.preview.vatDue", {
+                      date: EXAMPLE.vatDeadline.toLocaleDateString(locale, {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      }),
+                    })}
                   </p>
                 </div>
                 <dl className="space-y-1 border-t border-border/40 pt-2 text-[10px] text-muted-foreground">
                   <div className="flex justify-between">
-                    <dt>Btw over omzet (1a)</dt>
-                    <dd className="font-mono">€ 1.764,00</dd>
+                    <dt>{t("landing.preview.vatSales")}</dt>
+                    <dd className="font-mono">{money(EXAMPLE.vatSales)}</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt>Voorbelasting (5b)</dt>
-                    <dd className="font-mono">− € 312,00</dd>
+                    <dt>{t("landing.preview.vatInput")}</dt>
+                    <dd className="font-mono">− {money(EXAMPLE.vatInput)}</dd>
                   </div>
                 </dl>
               </div>
@@ -156,30 +176,32 @@ export function LandingHero() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                     <MessageCircle className="size-3.5 text-emerald-500" />
-                    Bonnetje via WhatsApp
+                    {t("landing.preview.receiptTitle")}
                   </span>
                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">
-                    Te controleren
+                    {t("landing.preview.receiptStatus")}
                   </span>
                 </div>
                 <div className="space-y-0.5">
                   <p className="text-xs font-semibold text-foreground">
-                    Bouwmarkt
+                    {t("landing.preview.receiptShop")}
                   </p>
                   <p className="text-[11px] text-muted-foreground">
-                    Materialen · kabel en wandcontactdozen
+                    {t("landing.preview.receiptItems")}
                   </p>
                 </div>
                 <div className="flex items-baseline justify-between pt-1">
                   <span className="text-lg font-bold text-foreground">
-                    € 96,80
+                    {money(EXAMPLE.receiptTotal)}
                   </span>
                   <span className="text-[10px] text-muted-foreground font-mono">
-                    incl. € 16,80 btw
+                    {t("landing.preview.receiptVat", {
+                      amount: money(EXAMPLE.receiptVat),
+                    })}
                   </span>
                 </div>
                 <p className="text-[10px] text-muted-foreground pt-1 border-t border-border/40">
-                  Winkel, datum, bedrag en btw automatisch uitgelezen.
+                  {t("landing.preview.receiptRead")}
                 </p>
               </div>
 
@@ -188,36 +210,36 @@ export function LandingHero() {
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                     <FileCheck2 className="size-3.5 text-emerald-500" />
-                    Factuur 2026-042
+                    {t("landing.preview.invoiceTitle")}
                   </span>
                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                    Betaald
+                    {t("landing.preview.invoiceStatus")}
                   </span>
                 </div>
                 <div className="space-y-0.5">
                   <p className="text-xs font-semibold text-foreground">
-                    Fam. de Vries
+                    {t("landing.preview.invoiceClient")}
                   </p>
                   <p className="text-[11px] text-muted-foreground">
-                    Groepenkast vervangen
+                    {t("landing.preview.invoiceJob")}
                   </p>
                 </div>
                 <div className="flex items-baseline justify-between pt-1">
                   <span className="text-lg font-bold text-foreground">
-                    € 1.452,00
+                    {money(EXAMPLE.invoiceTotal)}
                   </span>
                   <span className="text-[10px] text-muted-foreground font-mono">
-                    incl. 21% btw
+                    {t("landing.preview.invoiceVat")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-emerald-600 dark:text-emerald-400 pt-1 border-t border-border/40">
                   <QrCode className="size-3" />
-                  <span>Betaald via iDEAL-QR op locatie</span>
+                  <span>{t("landing.preview.invoicePaid")}</span>
                 </div>
               </div>
             </div>
             <p className="pt-4 text-center text-[10px] text-muted-foreground">
-              Voorbeeldgegevens. In de app zie je je eigen cijfers.
+              {t("landing.preview.footnote")}
             </p>
           </div>
         </div>
