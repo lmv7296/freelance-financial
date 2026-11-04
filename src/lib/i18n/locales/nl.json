@@ -1,0 +1,454 @@
+{
+  "nav": {
+    "groups": {
+      "overview": "Overzicht",
+      "financeTools": "Financiën",
+      "preferences": "Voorkeuren"
+    },
+    "dashboard": "Dashboard",
+    "invoices": "Facturen",
+    "clients": "Klanten",
+    "expenses": "Uitgaven",
+    "taxVault": "Belastingkluis",
+    "reports": "Rapporten",
+    "settings": "Instellingen",
+    "support": "Help & support"
+  },
+  "sidebar": {
+    "newInvoice": "Nieuwe factuur",
+    "newInvoiceTitle": "Nieuwe factuur / betaalverzoek",
+    "expand": "Zijbalk uitklappen",
+    "collapse": "Zijbalk inklappen",
+    "loggedIn": "Ingelogd",
+    "logout": "Uitloggen",
+    "login": "Inloggen",
+    "loginRegister": "Inloggen / registreren"
+  },
+  "taxWidget": {
+    "title": "Belastingkluis",
+    "vatPeriod": "Btw {period}",
+    "toPay": "te betalen",
+    "refund": "terug",
+    "deadline": "Uiterlijk {date}",
+    "daysLeft": "(nog {count} d)",
+    "late": "(te laat)",
+    "unavailable": "Schattingen nog niet beschikbaar.",
+    "noOpenPeriod": "Geen open btw-periode.",
+    "kor": "Geen btw-aangifte (KOR).",
+    "setAside": "Zet {amount} per maand opzij"
+  },
+  "settings": {
+    "badge": "Instellingen",
+    "title": "Instellingen",
+    "subtitle": "Bedrijfsgegevens, lijsten voor snelle invoer en je persoonlijke voorkeuren.",
+    "groups": {
+      "company": "Bedrijf",
+      "personal": "Persoonlijk"
+    },
+    "nav": {
+      "lists": "Lijsten & snelle selectie",
+      "company": "Bedrijfsgegevens",
+      "invoices": "Facturen",
+      "whatsapp": "WhatsApp-bonnetjes",
+      "display": "Taal & weergave",
+      "account": "Account & beveiliging",
+      "notifications": "Meldingen",
+      "tax": "Belasting"
+    },
+    "common": {
+      "save": "Opslaan",
+      "saved": "Opgeslagen",
+      "saveFailed": "Opslaan mislukt.",
+      "unsaved": "Niet-opgeslagen wijzigingen",
+      "discard": "Wijzigingen ongedaan maken",
+      "cancel": "Annuleer",
+      "retry": "Opnieuw proberen",
+      "loadFailed": "Instellingen konden niet geladen worden",
+      "unavailableTitle": "Nog niet beschikbaar",
+      "unavailableBody": "De server voor deze instellingen is (nog) niet bereikbaar. Probeer het later opnieuw."
+    },
+    "lists": {
+      "title": "Lijsten & snelle selectie",
+      "description": "Gedeeld met iedereen in je bedrijf. Gebruikt bij 'Nieuwe uitgave toevoegen'.",
+      "merchantsTitle": "Snelle selectie: winkels",
+      "merchantsHint": "Deze winkels verschijnen als knoppen, in deze volgorde. De categorie wordt automatisch ingevuld.",
+      "merchantName": "Naam winkel",
+      "defaultCategory": "Standaard categorie",
+      "noCategory": "Geen categorie",
+      "addMerchant": "Winkel toevoegen",
+      "preview": "Zo ziet het eruit",
+      "previewEmpty": "Nog geen winkels.",
+      "categoriesTitle": "Categorieën",
+      "categoriesHint": "Een categorie hernoemen past ook de winkels hierboven aan.",
+      "addCategory": "Categorie toevoegen",
+      "paymentMethodsTitle": "Betaalmethoden",
+      "paymentMethodsHint": "Hoe een uitgave betaald is.",
+      "addPaymentMethod": "Betaalmethode toevoegen",
+      "invalidEntry": "Lege of dubbele namen zijn niet toegestaan.",
+      "moveUp": "Omhoog",
+      "moveDown": "Omlaag",
+      "remove": "Verwijderen"
+    },
+    "company": {
+      "title": "Bedrijfsgegevens",
+      "description": "Komen op je facturen te staan. Gedeeld met je bedrijf.",
+      "groupBusiness": "Onderneming",
+      "groupAddress": "Adres",
+      "groupContact": "Contact & bank",
+      "companyName": "Bedrijfsnaam (zoals bij de KvK)",
+      "tradeName": "Handelsnaam",
+      "tradeNameHint": "Optioneel. Wordt op facturen getoond als die anders is.",
+      "kvk": "KvK-nummer",
+      "vatNumber": "Btw-identificatienummer",
+      "vatNumberHint": "Dit is je btw-id voor facturen, niet je omzetbelastingnummer.",
+      "street": "Straat en huisnummer",
+      "postalCode": "Postcode",
+      "city": "Plaats",
+      "country": "Land",
+      "countryHint": "Landcode, bijv. NL of BE.",
+      "email": "E-mail voor facturen",
+      "phone": "Telefoon",
+      "website": "Website",
+      "iban": "IBAN",
+      "ibanHint": "Rekening waarop klanten betalen.",
+      "logo": "Logo",
+      "logoHint": "PNG, JPG of SVG, maximaal 2 MB. Wordt direct opgeslagen.",
+      "logoUpload": "Logo uploaden",
+      "logoReplace": "Vervangen",
+      "logoRemove": "Verwijderen",
+      "logoType": "Alleen PNG, JPG of SVG.",
+      "logoSize": "Het bestand is groter dan 2 MB.",
+      "errors": {
+        "kvk": "Een KvK-nummer bestaat uit 8 cijfers.",
+        "vat": "Gebruik het formaat NL123456789B01.",
+        "postalCode": "Gebruik het formaat 1234 AB.",
+        "iban": "Dit IBAN klopt niet (controlecijfer).",
+        "email": "Voer een geldig e-mailadres in.",
+        "phone": "Voer een geldig telefoonnummer in."
+      }
+    },
+    "invoices": {
+      "title": "Facturen",
+      "description": "Standaardwaarden voor nieuwe facturen.",
+      "groupNumbering": "Nummering",
+      "prefix": "Voorvoegsel",
+      "prefixHint": "Bijv. het jaar, zodat nummers per jaar oplopen.",
+      "nextNumber": "Volgend nummer",
+      "padding": "Aantal cijfers",
+      "paddingNone": "Geen voorloopnullen",
+      "paddingDigits": "{count} cijfers",
+      "preview": "Volgende factuur",
+      "groupPayment": "Betaling",
+      "term": "Betaaltermijn",
+      "termDays": "{count} dagen",
+      "termCustom": "Anders…",
+      "defaultVat": "Standaard btw-tarief",
+      "defaultPaymentMethod": "Standaard betaalmethode",
+      "noDefault": "Geen standaard",
+      "footer": "Tekst onderaan de factuur",
+      "footerHint": "Bijv. betaalinstructies of een bedankje.",
+      "errors": {
+        "term": "Kies een termijn tussen 1 en 365 dagen.",
+        "nextNumber": "Het volgende nummer moet 1 of hoger zijn."
+      }
+    },
+    "whatsapp": {
+      "title": "WhatsApp-bonnetjes",
+      "description": "Alleen bonnetjes van deze nummers worden automatisch als uitgave verwerkt.",
+      "receivingNumber": "Stuur bonnetjes naar",
+      "notConfigured": "Nog niet ingesteld",
+      "copy": "Kopieer",
+      "copied": "Gekopieerd",
+      "sendersTitle": "Toegestane afzenders",
+      "sendersHint": "Zet een nummer op inactief om tijdelijk geen bonnetjes meer te verwerken.",
+      "empty": "Nog geen nummers toegevoegd.",
+      "active": "Actief",
+      "receiptsCount": "{count} bonnetjes",
+      "remove": "Nummer verwijderen",
+      "confirmRemove": "Ja, verwijder",
+      "addTitle": "Nummer toevoegen",
+      "name": "Naam",
+      "namePlaceholder": "Bijv. Kees",
+      "phone": "Telefoonnummer",
+      "add": "Toevoegen",
+      "nameRequired": "Vul een naam in.",
+      "phoneInvalid": "Voer een geldig telefoonnummer in.",
+      "duplicate": "Dit nummer staat er al in."
+    },
+    "display": {
+      "title": "Taal & weergave",
+      "description": "Alleen voor jou. Wordt direct toegepast.",
+      "language": "Taal",
+      "theme": "Thema",
+      "themes": {
+        "system": "Systeem",
+        "light": "Licht",
+        "dark": "Donker"
+      },
+      "synced": "Opgeslagen.",
+      "localOnly": "Opgeslagen op dit apparaat. Wordt gesynchroniseerd zodra de server bereikbaar is."
+    },
+    "account": {
+      "title": "Account & beveiliging",
+      "description": "Je inloggegevens en sessies.",
+      "currentEmail": "Huidig e-mailadres",
+      "changeEmail": "E-mailadres wijzigen",
+      "newEmail": "Nieuw e-mailadres",
+      "currentPassword": "Huidig wachtwoord",
+      "emailInvalid": "Voer een geldig e-mailadres in.",
+      "emailTaken": "Dit e-mailadres is al in gebruik.",
+      "emailChanged": "E-mailadres gewijzigd.",
+      "changePassword": "Wachtwoord wijzigen",
+      "changePasswordHint": "Je andere apparaten worden daarna uitgelogd.",
+      "newPassword": "Nieuw wachtwoord",
+      "confirmPassword": "Herhaal nieuw wachtwoord",
+      "passwordRequired": "Vul je wachtwoord in.",
+      "passwordTooShort": "Minimaal {count} tekens.",
+      "passwordTooLong": "Maximaal {count} tekens.",
+      "passwordMismatch": "De wachtwoorden zijn niet gelijk.",
+      "wrongPassword": "Dit wachtwoord klopt niet.",
+      "passwordChanged": "Wachtwoord gewijzigd.",
+      "sessions": "Sessies",
+      "sessionsHint": "Telefoon kwijt of ingelogd op een gedeelde computer? Log overal uit.",
+      "logoutAll": "Overal uitloggen",
+      "logoutAllConfirm": "Ook op dit apparaat uitloggen?",
+      "logoutAllYes": "Ja, overal uitloggen"
+    },
+    "notifications": {
+      "title": "Meldingen",
+      "description": "E-mails die je ontvangt. Alleen voor jou.",
+      "vatDeadline": "Herinnering btw-aangifte",
+      "vatDeadlineHint": "Een e-mail voordat de btw-aangifte en betaling binnen moeten zijn.",
+      "daysBefore": "Hoeveel dagen van tevoren",
+      "daysBeforeOption": "{count} dagen van tevoren",
+      "incomeTax": "Herinnering aangifte inkomstenbelasting",
+      "incomeTaxHint": "Een e-mail voor de deadline van de jaarlijkse aangifte.",
+      "overdue": "Vervallen facturen",
+      "overdueHint": "Een e-mail als een klant niet op tijd heeft betaald.",
+      "receipts": "Bonnetjes om te controleren",
+      "receiptsHint": "Als er nieuwe bonnetjes via WhatsApp binnenkomen.",
+      "receiptsOptions": {
+        "off": "Geen e-mail",
+        "instant": "Direct bij elk bonnetje",
+        "daily": "Eén samenvatting per dag"
+      }
+    },
+    "tax": {
+      "title": "Belasting",
+      "description": "Instellingen voor de schattingen in de Belastingkluis.",
+      "itemLegalForm": "Rechtsvorm",
+      "itemVat": "Btw-aangifteperiode en kleineondernemersregeling",
+      "itemDeductions": "Urencriterium, startersaftrek en AOW-leeftijd",
+      "itemAccountant": "Gegevens van je boekhouder",
+      "open": "Belastinginstellingen openen",
+      "goToVault": "Naar de Belastingkluis"
+    }
+  },
+  "onboarding": {
+    "title": "Je account instellen",
+    "subtitle": "Nog een paar gegevens, dan kun je aan de slag.",
+    "step": "Stap {current} van {total}",
+    "back": "Terug",
+    "next": "Volgende",
+    "finish": "Opslaan en beginnen",
+    "saving": "Opslaan…",
+    "saveFailed": "Opslaan is niet gelukt. Probeer het opnieuw.",
+    "notSaved": "De server heeft niet alles opgeslagen. Nog leeg: {fields}. Probeer het later opnieuw.",
+    "required": "Verplicht",
+    "steps": {
+      "about": "Over jou",
+      "business": "Je bedrijf",
+      "review": "Controleren"
+    },
+    "fullName": "Volledige naam",
+    "fullNamePlaceholder": "Jan de Vries",
+    "phone": "Telefoonnummer",
+    "phoneHint": "Met landcode, bijvoorbeeld +31 6 1234 5678.",
+    "phoneInvalid": "Vul een geldig telefoonnummer in.",
+    "email": "E-mailadres",
+    "businessName": "Bedrijfsnaam",
+    "businessNamePlaceholder": "De Vries Bouw & Montage",
+    "legalForm": "Rechtsvorm",
+    "legalForms": {
+      "eenmanszaak": "Eenmanszaak / zzp",
+      "vof": "Vof",
+      "bv": "Bv"
+    },
+    "legalFormHints": {
+      "eenmanszaak": "Je onderneemt alleen, op eigen naam.",
+      "vof": "Je onderneemt samen met een of meer vennoten.",
+      "bv": "Je bedrijf is een besloten vennootschap."
+    },
+    "legalFormLimited": "De schattingen in de Belastingkluis werken voorlopig alleen voor een eenmanszaak.",
+    "vatNumber": "Btw-identificatienummer (optioneel)",
+    "vatNumberHint": "Staat in je brief van de Belastingdienst. Mag je later invullen.",
+    "vatNumberInvalid": "Dit is geen geldig btw-identificatienummer.",
+    "vatNumberInvalidNl": "Gebruik NL + 9 cijfers + B + 2 cijfers, bijvoorbeeld NL123456789B01.",
+    "country": "Land",
+    "notFilled": "Niet ingevuld",
+    "edit": "Wijzigen"
+  },
+  "verifyEmail": {
+    "bannerTitle": "Bevestig je e-mailadres",
+    "bannerText": "We hebben een bevestigingslink gestuurd naar {email}.",
+    "resend": "Opnieuw versturen",
+    "resending": "Versturen…",
+    "resent": "Verstuurd, kijk ook in je spam.",
+    "resendFailed": "Versturen is niet gelukt.",
+    "checking": "Je e-mailadres wordt bevestigd…",
+    "successTitle": "E-mailadres bevestigd",
+    "successText": "Bedankt! Je account is nu volledig actief.",
+    "failedTitle": "Bevestigen niet gelukt",
+    "failedText": "De link is ongeldig of verlopen. Vraag in de app een nieuwe link aan.",
+    "missingToken": "Deze link is onvolledig. Open de link opnieuw vanuit de e-mail.",
+    "toDashboard": "Naar het dashboard",
+    "toHome": "Naar de startpagina"
+  },
+  "support": {
+    "badge": "Help",
+    "title": "Help & support",
+    "subtitle": "Antwoorden op veelgestelde vragen, of neem contact met ons op.",
+    "searchPlaceholder": "Zoek een vraag…",
+    "noResults": "Geen vragen gevonden. Stuur ons gerust een e-mail.",
+    "goTo": "Naar {page}",
+    "groups": {
+      "expenses": "Uitgaven & bonnetjes",
+      "tax": "Belastingkluis & rapporten",
+      "account": "Account"
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Staat je vraag er niet bij? Stuur ons een e-mail.",
+      "send": "E-mail sturen",
+      "copy": "Kopieer adres",
+      "copied": "Gekopieerd",
+      "tip": "Vermeld wat je deed en wat er misging. Een schermafbeelding helpt.",
+      "mailSubject": "Vraag over FreelanceFin",
+      "mailBody": "\n\n---\nAccount: {email}",
+      "notConfigured": "Het support-e-mailadres is nog niet ingesteld (NEXT_PUBLIC_SUPPORT_EMAIL)."
+    },
+    "faq": {
+      "whatsapp": {
+        "q": "Hoe stuur ik bonnetjes via WhatsApp?",
+        "a": "Bij Instellingen → WhatsApp-bonnetjes staat het nummer waar je je bonnetjes naartoe stuurt. Alleen bonnetjes van nummers die bij 'Toegestane afzenders' staan worden verwerkt. Voeg daar je eigen nummer toe, en dat van iedereen die bonnetjes voor je bedrijf stuurt."
+      },
+      "statuses": {
+        "q": "Wat betekenen de statussen van een uitgave?",
+        "a": "Wordt verwerkt: het bonnetje wordt uitgelezen.\nTe controleren: kijk de gegevens na en keur de uitgave goed of af.\nGoedgekeurd: de uitgave telt mee, ook in de Belastingkluis.\nAfgekeurd: de uitgave telt niet mee."
+      },
+      "manualExpense": {
+        "q": "Kan ik een uitgave ook zelf invoeren?",
+        "a": "Ja, met 'Nieuwe uitgave' op de pagina Uitgaven. Winkels die je vaak gebruikt kun je bij Instellingen → Lijsten & snelle selectie als knop toevoegen, met een vaste categorie."
+      },
+      "estimates": {
+        "q": "Hoe nauwkeurig zijn de bedragen in de Belastingkluis?",
+        "a": "Het zijn schattingen op basis van je facturen, je goedgekeurde uitgaven en de belastingregels van dat jaar. Het is geen fiscaal advies: de echte aangifte doe je met je boekhouder. Hoe completer je fiscale instellingen (Instellingen → Belasting), hoe beter de schatting."
+      },
+      "noIncomeTax": {
+        "q": "Waarom zie ik geen schatting voor de inkomstenbelasting?",
+        "a": "De schatting werkt voorlopig alleen voor een eenmanszaak. Heb je een eenmanszaak en zie je toch niets? Controleer dan of je fiscale instellingen compleet zijn bij Instellingen → Belasting."
+      },
+      "accountant": {
+        "q": "Hoe geef ik mijn gegevens aan mijn boekhouder?",
+        "a": "Kies in de Belastingkluis 'Nieuwe export'. Kies de periode en de bestanden die je boekhouder wil hebben. Je kunt de export downloaden of direct naar je boekhouder laten mailen."
+      },
+      "reports": {
+        "q": "Welke rapporten kan ik downloaden?",
+        "a": "Op de pagina Rapporten: winst & verlies, een btw-overzicht, facturen & openstaande posten en uitgaven per categorie. Klik op een rapport, kies de periode en PDF of Excel, en bevestig. Het bestand komt in je downloads."
+      },
+      "verifyEmail": {
+        "q": "Ik heb geen bevestigingsmail ontvangen.",
+        "a": "Kijk ook in je spam. Zolang je e-mailadres niet bevestigd is, staat er bovenaan de app een melding met de knop 'Opnieuw versturen'."
+      },
+      "changeLogin": {
+        "q": "Hoe wijzig ik mijn e-mailadres of wachtwoord?",
+        "a": "Bij Instellingen → Account & beveiliging. Je bevestigt de wijziging met je huidige wachtwoord. Na een nieuw wachtwoord word je op je andere apparaten uitgelogd."
+      },
+      "logoutAll": {
+        "q": "Ik ben mijn telefoon kwijt of heb ingelogd op een gedeelde computer.",
+        "a": "Gebruik 'Overal uitloggen' bij Instellingen → Account & beveiliging. Daarmee word je op alle apparaten uitgelogd. Wijzig voor de zekerheid ook je wachtwoord."
+      },
+      "loggedOut": {
+        "q": "Waarom moet ik opnieuw inloggen?",
+        "a": "Je sessie is verlopen, of je bent uitgelogd via 'Overal uitloggen' of na een wachtwoordwijziging. Log opnieuw in; je gegevens blijven gewoon bewaard."
+      },
+      "languageTheme": {
+        "q": "Hoe verander ik de taal of het thema?",
+        "a": "Bij Instellingen → Taal & weergave. Je kiest Nederlands of Engels en een licht, donker of systeemthema. Dit geldt alleen voor jou."
+      }
+    }
+  },
+  "reports": {
+    "badge": "Rapporten",
+    "title": "Rapporten",
+    "subtitle": "Download een overzicht van je cijfers. Het rapport wordt gemaakt met je actuele gegevens.",
+    "download": "Rapport downloaden",
+    "downloaded": "{filename} staat in je downloads.",
+    "loadFailed": "Rapporten konden niet geladen worden.",
+    "notAvailable": "Rapporten zijn nog niet beschikbaar. De server ondersteunt ze nog niet.",
+    "reportNotAvailable": "Nog niet beschikbaar",
+    "downloadFailed": "Het rapport kon niet gemaakt worden.",
+    "retry": "Opnieuw proberen",
+    "periodTypes": {
+      "month": "Maand",
+      "quarter": "Kwartaal",
+      "year": "Heel jaar",
+      "custom": "Eigen periode"
+    },
+    "modal": {
+      "description": "Kies de periode en het bestandstype.",
+      "period": "Periode",
+      "month": "Maand",
+      "quarter": "Kwartaal",
+      "quarterOption": "Kwartaal {quarter}",
+      "year": "Jaar",
+      "from": "Van",
+      "to": "Tot en met",
+      "format": "Bestandstype",
+      "confirmTitle": "Wil je dit rapport downloaden?",
+      "confirmText": "{report} over {period}, als {format}.",
+      "invalidRange": "Kies een begindatum die vóór de einddatum ligt.",
+      "cancel": "Annuleer",
+      "confirm": "Ja, downloaden",
+      "downloading": "Rapport maken…"
+    },
+    "types": {
+      "profit_loss": {
+        "title": "Winst & verlies",
+        "description": "Je omzet min je kosten over een periode.",
+        "includes": [
+          "Omzet uit je facturen, zonder btw",
+          "Kosten per categorie, zonder btw",
+          "Resultaat: winst of verlies over de periode"
+        ]
+      },
+      "vat_summary": {
+        "title": "Btw-overzicht",
+        "description": "Gerekende en betaalde btw, om je aangifte te controleren.",
+        "includes": [
+          "Btw over je omzet, per tarief",
+          "Btw op je kosten (voorbelasting)",
+          "Saldo: te betalen of terug te krijgen"
+        ]
+      },
+      "invoices": {
+        "title": "Facturen & openstaande posten",
+        "description": "Je facturen in de periode en wat nog openstaat.",
+        "includes": [
+          "Alle facturen in de periode, met status",
+          "Openstaande en te late facturen op de einddatum",
+          "Omzet per klant"
+        ]
+      },
+      "expenses": {
+        "title": "Uitgaven per categorie",
+        "description": "Al je uitgaven in de periode, gegroepeerd per categorie.",
+        "includes": [
+          "Alle uitgaven in de periode",
+          "Totalen per categorie, met btw",
+          "Welke uitgaven een bonnetje hebben"
+        ]
+      }
+    }
+  }
+}

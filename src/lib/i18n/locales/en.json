@@ -1,0 +1,454 @@
+{
+  "nav": {
+    "groups": {
+      "overview": "Overview",
+      "financeTools": "Finance",
+      "preferences": "Preferences"
+    },
+    "dashboard": "Dashboard",
+    "invoices": "Invoices",
+    "clients": "Clients",
+    "expenses": "Expenses",
+    "taxVault": "Tax Vault",
+    "reports": "Reports",
+    "settings": "Settings",
+    "support": "Help & support"
+  },
+  "sidebar": {
+    "newInvoice": "New invoice",
+    "newInvoiceTitle": "New invoice / payment request",
+    "expand": "Expand sidebar",
+    "collapse": "Collapse sidebar",
+    "loggedIn": "Signed in",
+    "logout": "Sign out",
+    "login": "Sign in",
+    "loginRegister": "Sign in / register"
+  },
+  "taxWidget": {
+    "title": "Tax Vault",
+    "vatPeriod": "VAT {period}",
+    "toPay": "to pay",
+    "refund": "refund",
+    "deadline": "Due {date}",
+    "daysLeft": "({count} d left)",
+    "late": "(overdue)",
+    "unavailable": "Estimates not available yet.",
+    "noOpenPeriod": "No open VAT period.",
+    "kor": "No VAT return (KOR).",
+    "setAside": "Set aside {amount} per month"
+  },
+  "settings": {
+    "badge": "Settings",
+    "title": "Settings",
+    "subtitle": "Company details, lists for quick entry and your personal preferences.",
+    "groups": {
+      "company": "Company",
+      "personal": "Personal"
+    },
+    "nav": {
+      "lists": "Lists & quick selection",
+      "company": "Company details",
+      "invoices": "Invoices",
+      "whatsapp": "WhatsApp receipts",
+      "display": "Language & display",
+      "account": "Account & security",
+      "notifications": "Notifications",
+      "tax": "Tax"
+    },
+    "common": {
+      "save": "Save",
+      "saved": "Saved",
+      "saveFailed": "Saving failed.",
+      "unsaved": "Unsaved changes",
+      "discard": "Discard changes",
+      "cancel": "Cancel",
+      "retry": "Try again",
+      "loadFailed": "Settings could not be loaded",
+      "unavailableTitle": "Not available yet",
+      "unavailableBody": "The server for these settings can't be reached (yet). Please try again later."
+    },
+    "lists": {
+      "title": "Lists & quick selection",
+      "description": "Shared with everyone in your company. Used in 'Add new expense'.",
+      "merchantsTitle": "Quick selection: shops",
+      "merchantsHint": "These shops show up as buttons, in this order. Their category is filled in automatically.",
+      "merchantName": "Shop name",
+      "defaultCategory": "Default category",
+      "noCategory": "No category",
+      "addMerchant": "Add shop",
+      "preview": "Preview",
+      "previewEmpty": "No shops yet.",
+      "categoriesTitle": "Categories",
+      "categoriesHint": "Renaming a category also updates the shops above.",
+      "addCategory": "Add category",
+      "paymentMethodsTitle": "Payment methods",
+      "paymentMethodsHint": "How an expense was paid.",
+      "addPaymentMethod": "Add payment method",
+      "invalidEntry": "Empty or duplicate names aren't allowed.",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "remove": "Remove"
+    },
+    "company": {
+      "title": "Company details",
+      "description": "Shown on your invoices. Shared with your company.",
+      "groupBusiness": "Business",
+      "groupAddress": "Address",
+      "groupContact": "Contact & bank",
+      "companyName": "Company name (as registered at the KvK)",
+      "tradeName": "Trade name",
+      "tradeNameHint": "Optional. Shown on invoices when it's different.",
+      "kvk": "KvK number",
+      "vatNumber": "VAT ID (btw-id)",
+      "vatNumberHint": "Your VAT ID for invoices, not your VAT tax number.",
+      "street": "Street and number",
+      "postalCode": "Postal code",
+      "city": "City",
+      "country": "Country",
+      "countryHint": "Country code, e.g. NL or BE.",
+      "email": "Email for invoices",
+      "phone": "Phone",
+      "website": "Website",
+      "iban": "IBAN",
+      "ibanHint": "Account your clients pay to.",
+      "logo": "Logo",
+      "logoHint": "PNG, JPG or SVG, up to 2 MB. Saved right away.",
+      "logoUpload": "Upload logo",
+      "logoReplace": "Replace",
+      "logoRemove": "Remove",
+      "logoType": "Only PNG, JPG or SVG.",
+      "logoSize": "The file is larger than 2 MB.",
+      "errors": {
+        "kvk": "A KvK number has 8 digits.",
+        "vat": "Use the format NL123456789B01.",
+        "postalCode": "Use the format 1234 AB.",
+        "iban": "This IBAN isn't valid (checksum).",
+        "email": "Enter a valid email address.",
+        "phone": "Enter a valid phone number."
+      }
+    },
+    "invoices": {
+      "title": "Invoices",
+      "description": "Defaults for new invoices.",
+      "groupNumbering": "Numbering",
+      "prefix": "Prefix",
+      "prefixHint": "E.g. the year, so numbers restart each year.",
+      "nextNumber": "Next number",
+      "padding": "Digits",
+      "paddingNone": "No leading zeros",
+      "paddingDigits": "{count} digits",
+      "preview": "Next invoice",
+      "groupPayment": "Payment",
+      "term": "Payment term",
+      "termDays": "{count} days",
+      "termCustom": "Other…",
+      "defaultVat": "Default VAT rate",
+      "defaultPaymentMethod": "Default payment method",
+      "noDefault": "No default",
+      "footer": "Invoice footer text",
+      "footerHint": "E.g. payment instructions or a thank-you note.",
+      "errors": {
+        "term": "Choose a term between 1 and 365 days.",
+        "nextNumber": "The next number must be 1 or higher."
+      }
+    },
+    "whatsapp": {
+      "title": "WhatsApp receipts",
+      "description": "Only receipts from these numbers are turned into expenses automatically.",
+      "receivingNumber": "Send receipts to",
+      "notConfigured": "Not set up yet",
+      "copy": "Copy",
+      "copied": "Copied",
+      "sendersTitle": "Allowed senders",
+      "sendersHint": "Set a number to inactive to pause its receipts.",
+      "empty": "No numbers added yet.",
+      "active": "Active",
+      "receiptsCount": "{count} receipts",
+      "remove": "Remove number",
+      "confirmRemove": "Yes, remove",
+      "addTitle": "Add number",
+      "name": "Name",
+      "namePlaceholder": "E.g. Kees",
+      "phone": "Phone number",
+      "add": "Add",
+      "nameRequired": "Enter a name.",
+      "phoneInvalid": "Enter a valid phone number.",
+      "duplicate": "This number is already on the list."
+    },
+    "display": {
+      "title": "Language & display",
+      "description": "Just for you. Applied right away.",
+      "language": "Language",
+      "theme": "Theme",
+      "themes": {
+        "system": "System",
+        "light": "Light",
+        "dark": "Dark"
+      },
+      "synced": "Saved.",
+      "localOnly": "Saved on this device. It will sync once the server can be reached."
+    },
+    "account": {
+      "title": "Account & security",
+      "description": "Your sign-in details and sessions.",
+      "currentEmail": "Current email",
+      "changeEmail": "Change email",
+      "newEmail": "New email",
+      "currentPassword": "Current password",
+      "emailInvalid": "Enter a valid email address.",
+      "emailTaken": "This email address is already in use.",
+      "emailChanged": "Email changed.",
+      "changePassword": "Change password",
+      "changePasswordHint": "Your other devices will be signed out afterwards.",
+      "newPassword": "New password",
+      "confirmPassword": "Repeat new password",
+      "passwordRequired": "Enter your password.",
+      "passwordTooShort": "At least {count} characters.",
+      "passwordTooLong": "At most {count} characters.",
+      "passwordMismatch": "The passwords don't match.",
+      "wrongPassword": "This password is incorrect.",
+      "passwordChanged": "Password changed.",
+      "sessions": "Sessions",
+      "sessionsHint": "Lost your phone or signed in on a shared computer? Sign out everywhere.",
+      "logoutAll": "Sign out everywhere",
+      "logoutAllConfirm": "This device will be signed out too. Continue?",
+      "logoutAllYes": "Yes, sign out everywhere"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Emails you receive. Just for you.",
+      "vatDeadline": "VAT return reminder",
+      "vatDeadlineHint": "An email before the VAT return and payment are due.",
+      "daysBefore": "How many days ahead",
+      "daysBeforeOption": "{count} days ahead",
+      "incomeTax": "Income tax return reminder",
+      "incomeTaxHint": "An email before the yearly return deadline.",
+      "overdue": "Overdue invoices",
+      "overdueHint": "An email when a client hasn't paid on time.",
+      "receipts": "Receipts to review",
+      "receiptsHint": "When new receipts arrive via WhatsApp.",
+      "receiptsOptions": {
+        "off": "No email",
+        "instant": "Right away for each receipt",
+        "daily": "One daily summary"
+      }
+    },
+    "tax": {
+      "title": "Tax",
+      "description": "Settings for the estimates in the Tax Vault.",
+      "itemLegalForm": "Legal form",
+      "itemVat": "VAT return period and small business scheme (KOR)",
+      "itemDeductions": "Hours criterion, starter deduction and state pension age",
+      "itemAccountant": "Your accountant's details",
+      "open": "Open tax settings",
+      "goToVault": "Go to the Tax Vault"
+    }
+  },
+  "onboarding": {
+    "title": "Set up your account",
+    "subtitle": "Just a few details and you're ready to go.",
+    "step": "Step {current} of {total}",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Save and start",
+    "saving": "Saving…",
+    "saveFailed": "Saving failed. Please try again.",
+    "notSaved": "The server didn't save everything. Still empty: {fields}. Please try again later.",
+    "required": "Required",
+    "steps": {
+      "about": "About you",
+      "business": "Your business",
+      "review": "Review"
+    },
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Jan de Vries",
+    "phone": "Phone number",
+    "phoneHint": "Including country code, e.g. +31 6 1234 5678.",
+    "phoneInvalid": "Enter a valid phone number.",
+    "email": "Email address",
+    "businessName": "Business name",
+    "businessNamePlaceholder": "De Vries Construction",
+    "legalForm": "Legal form",
+    "legalForms": {
+      "eenmanszaak": "Sole proprietorship (eenmanszaak / zzp)",
+      "vof": "General partnership (vof)",
+      "bv": "Private limited company (bv)"
+    },
+    "legalFormHints": {
+      "eenmanszaak": "You run the business on your own, in your own name.",
+      "vof": "You run the business together with one or more partners.",
+      "bv": "Your business is a private limited company."
+    },
+    "legalFormLimited": "Tax Vault estimates currently only work for a sole proprietorship.",
+    "vatNumber": "VAT ID (optional)",
+    "vatNumberHint": "Shown in your letter from the Belastingdienst. You can add it later.",
+    "vatNumberInvalid": "This is not a valid VAT ID.",
+    "vatNumberInvalidNl": "Use NL + 9 digits + B + 2 digits, e.g. NL123456789B01.",
+    "country": "Country",
+    "notFilled": "Not filled in",
+    "edit": "Edit"
+  },
+  "verifyEmail": {
+    "bannerTitle": "Confirm your email address",
+    "bannerText": "We sent a confirmation link to {email}.",
+    "resend": "Send again",
+    "resending": "Sending…",
+    "resent": "Sent, check your spam folder too.",
+    "resendFailed": "Sending failed.",
+    "checking": "Confirming your email address…",
+    "successTitle": "Email address confirmed",
+    "successText": "Thanks! Your account is now fully active.",
+    "failedTitle": "Confirmation failed",
+    "failedText": "The link is invalid or has expired. Request a new link in the app.",
+    "missingToken": "This link is incomplete. Open the link from the email again.",
+    "toDashboard": "Go to the dashboard",
+    "toHome": "Go to the home page"
+  },
+  "support": {
+    "badge": "Help",
+    "title": "Help & support",
+    "subtitle": "Answers to frequently asked questions, or contact us.",
+    "searchPlaceholder": "Search a question…",
+    "noResults": "No questions found. Feel free to send us an email.",
+    "goTo": "Go to {page}",
+    "groups": {
+      "expenses": "Expenses & receipts",
+      "tax": "Tax Vault & reports",
+      "account": "Account"
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Can't find your question? Send us an email.",
+      "send": "Send email",
+      "copy": "Copy address",
+      "copied": "Copied",
+      "tip": "Describe what you did and what went wrong. A screenshot helps.",
+      "mailSubject": "Question about FreelanceFin",
+      "mailBody": "\n\n---\nAccount: {email}",
+      "notConfigured": "The support email address hasn't been set yet (NEXT_PUBLIC_SUPPORT_EMAIL)."
+    },
+    "faq": {
+      "whatsapp": {
+        "q": "How do I send receipts via WhatsApp?",
+        "a": "Settings → WhatsApp receipts shows the number to send your receipts to. Only receipts from numbers listed under 'Allowed senders' are processed. Add your own number there, and the number of everyone who sends receipts for your business."
+      },
+      "statuses": {
+        "q": "What do the statuses of an expense mean?",
+        "a": "Processing: the receipt is being read.\nTo review: check the details and approve or reject the expense.\nApproved: the expense counts, also in the Tax Vault.\nRejected: the expense doesn't count."
+      },
+      "manualExpense": {
+        "q": "Can I enter an expense myself?",
+        "a": "Yes, with 'Nieuwe uitgave' (new expense) on the Expenses page. Shops you use often can be added as buttons with a fixed category under Settings → Lists & quick selection."
+      },
+      "estimates": {
+        "q": "How accurate are the amounts in the Tax Vault?",
+        "a": "They are estimates based on your invoices, your approved expenses and that year's tax rules. It isn't tax advice: you file the real return with your accountant. The more complete your tax settings (Settings → Tax), the better the estimate."
+      },
+      "noIncomeTax": {
+        "q": "Why don't I see an income tax estimate?",
+        "a": "For now the estimate only works for an eenmanszaak (sole proprietorship). Do you have one and still see nothing? Check that your tax settings are complete under Settings → Tax."
+      },
+      "accountant": {
+        "q": "How do I give my data to my accountant?",
+        "a": "Choose 'Nieuwe export' (new export) in the Tax Vault. Pick the period and the files your accountant wants. You can download the export or have it emailed to your accountant directly."
+      },
+      "reports": {
+        "q": "Which reports can I download?",
+        "a": "On the Reports page: profit & loss, a VAT summary, invoices & open items and expenses by category. Click a report, choose the period and PDF or Excel, and confirm. The file goes to your downloads."
+      },
+      "verifyEmail": {
+        "q": "I didn't receive a confirmation email.",
+        "a": "Check your spam folder too. Until your email address is confirmed, a notice with a 'Send again' button is shown at the top of the app."
+      },
+      "changeLogin": {
+        "q": "How do I change my email address or password?",
+        "a": "Under Settings → Account & security. You confirm the change with your current password. After a new password you are logged out on your other devices."
+      },
+      "logoutAll": {
+        "q": "I lost my phone or logged in on a shared computer.",
+        "a": "Use 'Sign out everywhere' under Settings → Account & security. This logs you out on all devices. To be safe, change your password too."
+      },
+      "loggedOut": {
+        "q": "Why do I have to log in again?",
+        "a": "Your session expired, or you were logged out through 'Sign out everywhere' or after a password change. Log in again; your data is kept."
+      },
+      "languageTheme": {
+        "q": "How do I change the language or theme?",
+        "a": "Under Settings → Language & display. Choose Dutch or English and a light, dark or system theme. This only applies to you."
+      }
+    }
+  },
+  "reports": {
+    "badge": "Reports",
+    "title": "Reports",
+    "subtitle": "Download an overview of your numbers. The report is made from your current data.",
+    "download": "Download report",
+    "downloaded": "{filename} is in your downloads.",
+    "loadFailed": "Reports could not be loaded.",
+    "notAvailable": "Reports are not available yet. The server doesn't support them yet.",
+    "reportNotAvailable": "Not available yet",
+    "downloadFailed": "The report could not be created.",
+    "retry": "Try again",
+    "periodTypes": {
+      "month": "Month",
+      "quarter": "Quarter",
+      "year": "Full year",
+      "custom": "Custom period"
+    },
+    "modal": {
+      "description": "Choose the period and the file type.",
+      "period": "Period",
+      "month": "Month",
+      "quarter": "Quarter",
+      "quarterOption": "Quarter {quarter}",
+      "year": "Year",
+      "from": "From",
+      "to": "Up to and including",
+      "format": "File type",
+      "confirmTitle": "Do you want to download this report?",
+      "confirmText": "{report} for {period}, as {format}.",
+      "invalidRange": "Choose a start date before the end date.",
+      "cancel": "Cancel",
+      "confirm": "Yes, download",
+      "downloading": "Creating report…"
+    },
+    "types": {
+      "profit_loss": {
+        "title": "Profit & loss",
+        "description": "Your revenue minus your costs over a period.",
+        "includes": [
+          "Revenue from your invoices, excluding VAT",
+          "Costs per category, excluding VAT",
+          "Result: profit or loss for the period"
+        ]
+      },
+      "vat_summary": {
+        "title": "VAT summary",
+        "description": "VAT charged and paid, to check your VAT return.",
+        "includes": [
+          "VAT on your revenue, per rate",
+          "VAT on your costs (input VAT)",
+          "Balance: to pay or to get back"
+        ]
+      },
+      "invoices": {
+        "title": "Invoices & open items",
+        "description": "Your invoices in the period and what is still unpaid.",
+        "includes": [
+          "All invoices in the period, with status",
+          "Unpaid and overdue invoices on the end date",
+          "Revenue per client"
+        ]
+      },
+      "expenses": {
+        "title": "Expenses by category",
+        "description": "All your expenses in the period, grouped by category.",
+        "includes": [
+          "All expenses in the period",
+          "Totals per category, with VAT",
+          "Which expenses have a receipt"
+        ]
+      }
+    }
+  }
+}
