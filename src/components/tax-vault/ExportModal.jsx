@@ -10,6 +10,7 @@ import {
   ModalHeader,
 } from "@/components/ui/modal";
 import { taxVaultApi } from "@/lib/api/taxVault";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 const selectClassName =
@@ -30,6 +31,7 @@ export function ExportModal({
   defaultFormats = [],
   accountantEmail,
 }) {
+  const t = useT();
   const periodSelectId = useId();
   const noteId = useId();
   const [selected, setSelected] = useState(defaultFormats);
@@ -59,7 +61,7 @@ export function ExportModal({
       });
       onCreated?.(res?.export);
     } catch (err) {
-      setSubmitError(err?.message || "Export starten mislukt.");
+      setSubmitError(err?.message || t("taxVault.exportModal.failed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -68,8 +70,8 @@ export function ExportModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="xl">
       <ModalHeader
-        title="Exporteren voor boekhouder"
-        description="Kies de periode en de bestanden die je boekhouder wil ontvangen."
+        title={t("taxVault.exportModal.title")}
+        description={t("taxVault.exportModal.description")}
         icon={<FileDown className="size-5" />}
       />
       <ModalBody>
@@ -79,7 +81,7 @@ export function ExportModal({
               htmlFor={periodSelectId}
               className="text-[11px] font-medium text-muted-foreground"
             >
-              Periode
+              {t("taxVault.exportModal.period")}
             </label>
             <select
               id={periodSelectId}
@@ -87,7 +89,9 @@ export function ExportModal({
               onChange={(e) => setPeriodKey(e.target.value)}
               className={selectClassName}
             >
-              <option value="year">Heel {taxYear}</option>
+              <option value="year">
+                {t("taxVault.exportModal.fullYear", { year: taxYear })}
+              </option>
               {periods.map((p) => (
                 <option key={p.key} value={p.key}>
                   {p.label}
@@ -98,7 +102,7 @@ export function ExportModal({
 
           <div className="space-y-2">
             <p className="text-[11px] font-medium text-muted-foreground">
-              Bestanden
+              {t("taxVault.exportModal.files")}
             </p>
             {formatsError ? (
               <p className="text-xs text-destructive">{formatsError}</p>
@@ -158,8 +162,10 @@ export function ExportModal({
               <span>
                 <Mail className="mr-1 inline size-3.5" />
                 {accountantEmail
-                  ? `Direct mailen naar ${accountantEmail}`
-                  : "Mailen naar boekhouder (stel eerst een e-mailadres in bij Instellingen)"}
+                  ? t("taxVault.exportModal.emailTo", {
+                      email: accountantEmail,
+                    })
+                  : t("taxVault.exportModal.emailNoAddress")}
               </span>
             </label>
             <label className="flex items-center gap-2.5 text-xs cursor-pointer">
@@ -169,7 +175,7 @@ export function ExportModal({
                 onChange={(e) => setSaveAsDefault(e.target.checked)}
                 className="size-4 accent-primary"
               />
-              Onthoud deze bestanden als standaard voor mijn boekhouder
+              {t("taxVault.exportModal.rememberFormats")}
             </label>
           </div>
 
@@ -179,7 +185,7 @@ export function ExportModal({
                 htmlFor={noteId}
                 className="text-[11px] font-medium text-muted-foreground"
               >
-                Bericht aan boekhouder (optioneel)
+                {t("taxVault.exportModal.note")}
               </label>
               <textarea
                 id={noteId}
@@ -199,7 +205,7 @@ export function ExportModal({
           </span>
         )}
         <Button variant="outline" size="sm" onClick={onClose}>
-          Annuleer
+          {t("taxVault.exportModal.cancel")}
         </Button>
         <Button
           size="sm"
@@ -207,7 +213,9 @@ export function ExportModal({
           disabled={isSubmitting || selected.length === 0}
         >
           {isSubmitting ? <Loader2 className="animate-spin" /> : <FileDown />}
-          {sendToAccountant ? "Maken en versturen" : "Export maken"}
+          {sendToAccountant
+            ? t("taxVault.exportModal.createAndSend")
+            : t("taxVault.exportModal.create")}
         </Button>
       </ModalFooter>
     </Modal>

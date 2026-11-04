@@ -4,6 +4,8 @@ import { Landmark } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { formatEuro } from "@/lib/formatCurrency";
+import { localeFor } from "@/lib/i18n/dictionaries";
+import { usePreferences } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 const STEP_STYLES = {
@@ -15,8 +17,8 @@ const STEP_STYLES = {
   total: "font-bold text-foreground border-t-2 border-border",
 };
 
-function formatPercent(value) {
-  return `${(value * 100).toLocaleString("nl-NL", { maximumFractionDigits: 1 })}%`;
+function formatPercent(value, language) {
+  return `${(value * 100).toLocaleString(localeFor(language), { maximumFractionDigits: 1 })}%`;
 }
 
 /**
@@ -24,19 +26,19 @@ function formatPercent(value) {
  * Renders the calculation steps returned by the backend, so it works for any legal form.
  */
 export function IncomeTaxCard({ estimate, rulesByKey, onShowRule }) {
+  const { t, language } = usePreferences();
   const [scenarioKey, setScenarioKey] = useState("projected");
 
   if (!estimate || estimate.status !== "available") {
     return (
       <Card
         variant="outlined"
-        title="Inkomstenbelasting"
+        title={t("taxVault.incomeTax.title")}
         icon={<Landmark className="size-5" />}
         iconColor="blue"
       >
         <p className="text-xs text-muted-foreground">
-          Nog geen schatting beschikbaar. Controleer je fiscale instellingen of
-          de waarschuwingen hierboven.
+          {t("taxVault.incomeTax.unavailable")}
         </p>
       </Card>
     );
@@ -45,8 +47,8 @@ export function IncomeTaxCard({ estimate, rulesByKey, onShowRule }) {
   const scenario =
     estimate[scenarioKey] ?? estimate.projected ?? estimate.to_date;
   const scenarios = [
-    { key: "projected", label: "Prognose heel jaar" },
-    { key: "to_date", label: "Tot nu toe" },
+    { key: "projected", label: t("taxVault.incomeTax.projected") },
+    { key: "to_date", label: t("taxVault.incomeTax.toDate") },
   ].filter((s) => estimate[s.key]);
 
   return (
@@ -80,17 +82,20 @@ export function IncomeTaxCard({ estimate, rulesByKey, onShowRule }) {
     >
       {/* Headline numbers */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Metric label="Winst" value={formatEuro(scenario.profit)} />
         <Metric
-          label="Totaal belasting"
+          label={t("taxVault.incomeTax.profit")}
+          value={formatEuro(scenario.profit)}
+        />
+        <Metric
+          label={t("taxVault.incomeTax.totalTax")}
           value={formatEuro(scenario.total_tax)}
         />
         <Metric
-          label="Al betaald (voorlopige aanslag)"
+          label={t("taxVault.incomeTax.paid")}
           value={formatEuro(scenario.provisional_assessment_paid)}
         />
         <Metric
-          label="Nog te betalen"
+          label={t("taxVault.incomeTax.stillToPay")}
           value={formatEuro(scenario.still_to_pay)}
           highlight
         />
@@ -101,14 +106,17 @@ export function IncomeTaxCard({ estimate, rulesByKey, onShowRule }) {
           {scenario.components
             .map((c) => `${c.label} ${formatEuro(c.amount)}`)
             .join(" • ")}{" "}
-          • effectief {formatPercent(scenario.effective_rate)} van de winst
+          •{" "}
+          {t("taxVault.incomeTax.effectiveRate", {
+            rate: formatPercent(scenario.effective_rate, language),
+          })}
         </p>
       )}
 
       {/* Calculation steps */}
       <div className="mt-4 rounded-xl border border-border/60 bg-muted/20 px-4 py-2">
         <p className="py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          Zo is het berekend
+          {t("taxVault.incomeTax.howCalculated")}
         </p>
         <ul className="text-xs">
           {scenario.steps.map((step) => {
@@ -149,7 +157,9 @@ export function IncomeTaxCard({ estimate, rulesByKey, onShowRule }) {
 
       {scenarioKey === "projected" && estimate.projection_method && (
         <p className="mt-3 text-[11px] text-muted-foreground">
-          Prognose: {estimate.projection_method}
+          {t("taxVault.incomeTax.projectionMethod", {
+            method: estimate.projection_method,
+          })}
         </p>
       )}
     </Card>

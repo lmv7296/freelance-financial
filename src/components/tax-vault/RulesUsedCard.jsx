@@ -1,13 +1,14 @@
 import { BookOpen, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { formatDate } from "@/lib/dateUtils";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 function sourceLabel(url) {
   try {
     return new URL(url).hostname.replace(/^www\./, "");
   } catch {
-    return "Bron";
+    return null;
   }
 }
 
@@ -16,29 +17,38 @@ function sourceLabel(url) {
  * Lets the user and the accountant check where every number comes from.
  */
 export function RulesUsedCard({ rules = [], highlightedKey }) {
+  const t = useT();
   return (
     <Card
       id="tax-rules"
       variant="outlined"
-      title="Gebruikte regels en bronnen"
-      description="Bedragen en percentages uit de database, met de officiële bron"
+      title={t("taxVault.rules.title")}
+      description={t("taxVault.rules.description")}
       icon={<BookOpen className="size-5" />}
       iconColor="primary"
       contentClassName="px-0 pb-0"
     >
       {rules.length === 0 ? (
         <p className="px-5 pb-5 text-xs text-muted-foreground">
-          Geen regels ontvangen.
+          {t("taxVault.rules.empty")}
         </p>
       ) : (
         <div className="overflow-x-auto border-t border-border/50">
           <table className="w-full text-xs">
             <thead className="bg-muted/40 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               <tr>
-                <th className="px-5 py-2 text-left">Regel</th>
-                <th className="px-3 py-2 text-right">Waarde</th>
-                <th className="px-3 py-2 text-left">Gecontroleerd</th>
-                <th className="px-5 py-2 text-right">Bron</th>
+                <th className="px-5 py-2 text-left">
+                  {t("taxVault.rules.rule")}
+                </th>
+                <th className="px-3 py-2 text-right">
+                  {t("taxVault.rules.value")}
+                </th>
+                <th className="px-3 py-2 text-left">
+                  {t("taxVault.rules.verified")}
+                </th>
+                <th className="px-5 py-2 text-right">
+                  {t("taxVault.rules.source")}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/40">
@@ -65,7 +75,8 @@ export function RulesUsedCard({ rules = [], highlightedKey }) {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-primary hover:underline whitespace-nowrap"
                     >
-                      {sourceLabel(rule.source_url)}
+                      {sourceLabel(rule.source_url) ??
+                        t("taxVault.rules.source")}
                       <ExternalLink className="size-3" />
                     </a>
                   </td>
