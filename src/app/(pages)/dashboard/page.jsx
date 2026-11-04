@@ -19,8 +19,12 @@ import { useState } from "react";
 import { TimeFilterDropdown } from "@/components/TimeFilterDropdown";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/lib/auth/AuthContext";
+import { useT } from "@/lib/preferences/PreferencesContext";
 
 export default function DashboardPage() {
+  const t = useT();
+  const { user } = useAuth();
   const [revenuePeriod, setRevenuePeriod] = useState("30d");
   const [copiedId, setCopiedId] = useState(null);
 
@@ -28,32 +32,24 @@ export default function DashboardPage() {
     "30d": {
       value: "€14.850,00",
       trend: "+14.2%",
-      trendLabel: "t.o.v. vorige maand",
-      description: "Netto gefactureerd & ontvangen (afgelopen 30 dagen)",
       netto: "€11.137,50",
       taxVault: "€3.712,50",
     },
     "90d": {
       value: "€42.120,00",
       trend: "+21.5%",
-      trendLabel: "t.o.v. vorig kwartaal",
-      description: "Netto gefactureerd & ontvangen (afgelopen 90 dagen)",
       netto: "€31.590,00",
       taxVault: "€10.530,00",
     },
     "6m": {
       value: "€81.400,00",
       trend: "+18.8%",
-      trendLabel: "t.o.v. voorgaande 6 mnd",
-      description: "Netto gefactureerd & ontvangen (afgelopen 6 maanden)",
       netto: "€61.050,00",
       taxVault: "€20.350,00",
     },
     "12m": {
       value: "€156.200,00",
       trend: "+31.4%",
-      trendLabel: "t.o.v. voorgaand jaar",
-      description: "Netto gefactureerd & ontvangen (afgelopen 12 maanden)",
       netto: "€117.150,00",
       taxVault: "€39.050,00",
     },
@@ -73,31 +69,31 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wider uppercase border border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
-              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Live Administratie • Q4 2026
+            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wider uppercase border border-border bg-muted text-muted-foreground">
+              {t("dashboard.exampleData")}
             </span>
-            <span className="text-xs text-muted-foreground font-mono">
-              KvK 78291044
-            </span>
+            {user?.business_name && (
+              <span className="text-xs text-muted-foreground">
+                {user.business_name}
+              </span>
+            )}
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground mt-1">
-            Financieel Dashboard
+            {t("dashboard.title")}
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-            Realtime overzicht van installatieopdrachten, marktomzet,
-            BTW-reserve en openstaande betalingen.
+            {t("dashboard.subtitle")}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={() => alert("Exporteren van BTW-rapportage (Q4)...")}
+            onClick={() => window.location.assign("/reports")}
             className="rounded-full px-4 shadow-2xs hover:bg-muted/70 active:scale-[0.97] transition-all font-medium text-xs h-9 cursor-pointer"
           >
             <Download className="size-3.5 mr-1.5" />
-            BTW-Overzicht
+            {t("dashboard.reports")}
           </Button>
 
           <Button
@@ -105,7 +101,7 @@ export default function DashboardPage() {
             className="rounded-full px-4.5 shadow-sm hover:shadow-md active:scale-[0.97] transition-all font-semibold text-xs h-9 cursor-pointer"
           >
             <Plus className="size-4 mr-1.5" />
-            Nieuwe Factuur / Verzoek
+            {t("dashboard.newInvoice")}
           </Button>
         </div>
       </div>
@@ -115,7 +111,7 @@ export default function DashboardPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-border/60">
           <div className="space-y-1">
             <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              Direct Beschikbaar & Veilig Saldo
+              {t("dashboard.availableTitle")}
             </span>
             <div className="flex items-baseline gap-3 flex-wrap">
               <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-mono tabular-nums">
@@ -123,12 +119,13 @@ export default function DashboardPage() {
               </span>
               <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
                 <TrendingUp className="size-3.5" />
-                Vrij besteedbaar
+                {t("dashboard.availableBadge")}
               </span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Dit bedrag is 100% van jou na aftrek van {currentRevenue.taxVault}{" "}
-              voor de Belastingdienst.
+              {t("dashboard.availableText", {
+                amount: currentRevenue.taxVault,
+              })}
             </p>
           </div>
 
@@ -141,7 +138,7 @@ export default function DashboardPage() {
                 className="rounded-full gap-1.5 font-semibold text-xs h-8.5 active:scale-[0.97]"
               >
                 <QrCode className="size-3.5 text-primary" />
-                Tikkie / iDEAL QR
+                {t("dashboard.paymentRequest")}
               </Button>
             </Link>
             <Link href="/clients">
@@ -151,7 +148,7 @@ export default function DashboardPage() {
                 className="rounded-full gap-1.5 font-semibold text-xs h-8.5 active:scale-[0.97]"
               >
                 <Users className="size-3.5" />
-                Klanten Dossier
+                {t("dashboard.clients")}
               </Button>
             </Link>
           </div>
@@ -162,11 +159,11 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between text-xs font-mono">
             <span className="text-muted-foreground flex items-center gap-1.5">
               <span className="size-2 rounded-full bg-primary" />
-              Netto Arbeid & Winst (75%)
+              {t("dashboard.netShare", { percent: 75 })}
             </span>
             <span className="text-muted-foreground flex items-center gap-1.5">
               <span className="size-2 rounded-full bg-amber-500" />
-              BTW-Kluis & Belastingreserve (25%)
+              {t("dashboard.taxShare", { percent: 25 })}
             </span>
           </div>
           <div className="h-2 w-full rounded-full bg-muted overflow-hidden flex p-0.5 border border-border/50">
@@ -180,11 +177,13 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Metric Card 1: Revenue with Time Filter Dropdown */}
         <Card
-          title="Bruto Omzet"
-          description={currentRevenue.description}
+          title={t("dashboard.revenueTitle")}
+          description={t("dashboard.revenueDescription", {
+            period: t(`dashboard.periodName.${revenuePeriod}`),
+          })}
           value={currentRevenue.value}
           trend={currentRevenue.trend}
-          trendLabel={currentRevenue.trendLabel}
+          trendLabel={t(`dashboard.trend.${revenuePeriod}`)}
           icon={<Wallet className="size-5" />}
           iconColor="primary"
           headerAction={
@@ -198,10 +197,10 @@ export default function DashboardPage() {
 
         {/* Metric Card 2: Pending Payments */}
         <Card
-          title="Openstaand Saldo"
-          description="3 facturen & PIN-orders in afwachting"
+          title={t("dashboard.openTitle")}
+          description={t("dashboard.openDescription", { count: 3 })}
           value="€4.090,00"
-          trend="Vervaltijd 12-14 dgn"
+          trend={t("dashboard.openTrend")}
           trendDirection="neutral"
           icon={<FileText className="size-5" />}
           iconColor="amber"
@@ -210,11 +209,11 @@ export default function DashboardPage() {
 
         {/* Metric Card 3: Active Customers */}
         <Card
-          title="Actieve Klanten"
-          description="Particulieren, marktkramen & VvE-panden"
-          value="48 dossiers"
+          title={t("dashboard.clientsTitle")}
+          description={t("dashboard.clientsDescription")}
+          value={t("dashboard.clientsValue", { count: 48 })}
           trend="+5"
-          trendLabel="nieuw deze maand"
+          trendLabel={t("dashboard.clientsTrend")}
           icon={<Users className="size-5" />}
           iconColor="blue"
           variant="elevated"
@@ -222,25 +221,24 @@ export default function DashboardPage() {
 
         {/* Metric Card 4: Quick Action Tile */}
         <Card
-          title="Snelle Factuur / Verzoek"
-          description="Maak binnen 30 sec een betaalverzoek"
+          title={t("dashboard.quickTitle")}
+          description={t("dashboard.quickDescription")}
           interactive
           variant="elevated"
           onClick={() => window.location.assign("/invoices")}
-          footer="Direct synchroniseren met BTW"
+          footer={t("dashboard.quickFooter")}
           footerActions={
             <Button
               size="sm"
               variant="ghost"
               className="rounded-full text-xs font-semibold hover:bg-primary/10 active:scale-[0.97] transition-all"
             >
-              Start <ArrowUpRight className="size-3.5 ml-1" />
+              {t("dashboard.start")} <ArrowUpRight className="size-3.5 ml-1" />
             </Button>
           }
         >
           <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-            Genereer ter plaatse PIN-kwitanties, Tikkie iDEAL QR of zakelijke
-            BTW-facturen.
+            {t("dashboard.quickText")}
           </p>
         </Card>
       </div>
@@ -250,20 +248,19 @@ export default function DashboardPage() {
         {/* Card 5: Recent Invoices & Takings */}
         <div className="lg:col-span-2">
           <Card
-            title="Recente Facturen & Werkopdrachten"
-            description="Laatste installaties, marktomzet en overschrijvingen"
+            title={t("dashboard.recentTitle")}
+            description={t("dashboard.recentDescription")}
             headerAction={
               <Button
                 variant="ghost"
                 size="icon"
                 className="size-8 rounded-full text-muted-foreground hover:bg-muted"
-                title="Opties"
+                title={t("dashboard.options")}
               >
                 <MoreVertical className="size-4" />
               </Button>
             }
             variant="elevated"
-            footer="Automatisch gesynchroniseerd met je dossier"
             footerActions={
               <Link href="/invoices">
                 <Button
@@ -271,7 +268,7 @@ export default function DashboardPage() {
                   size="sm"
                   className="rounded-full text-xs font-medium active:scale-[0.97]"
                 >
-                  Alles Bekijken
+                  {t("dashboard.viewAll")}
                 </Button>
               </Link>
             }
@@ -353,7 +350,9 @@ export default function DashboardPage() {
                         <span
                           className={`size-1.5 rounded-full ${inv.status === "Paid" ? "bg-emerald-500" : "bg-amber-500 animate-pulse"}`}
                         />
-                        {inv.status === "Paid" ? "Voldaan" : "In afwachting"}
+                        {inv.status === "Paid"
+                          ? t("dashboard.paid")
+                          : t("dashboard.pending")}
                       </span>
                     </div>
 
@@ -362,7 +361,7 @@ export default function DashboardPage() {
                       type="button"
                       onClick={() => handleCopyTikkie(inv.id)}
                       className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:scale-90 transition-all cursor-pointer"
-                      title="Kopieer betaallink"
+                      title={t("dashboard.copyLink")}
                     >
                       {copiedId === inv.id ? (
                         <Check className="size-4 text-emerald-600" />
@@ -379,21 +378,23 @@ export default function DashboardPage() {
 
         {/* Card 6: Tax Vault (BTW-Kluis Q4 & Belastingdienst Reserve) */}
         <Card
-          title="BTW-Kluis & Belastingreserve"
-          description="Vergrendeld voor Q4 Belastingdienst aangifte"
+          title={t("dashboard.taxTitle")}
+          description={t("dashboard.taxDescription")}
           variant="elevated"
-          badge="Gereserveerd"
+          badge={t("dashboard.taxBadge")}
           badgeVariant="success"
           badgeDot
-          footer="Berekend o.b.v. gefactureerde 21% & 9% BTW"
+          footer={t("dashboard.taxFooter")}
           footerActions={
-            <Button
-              size="sm"
-              variant="outline"
-              className="rounded-full text-xs font-semibold shadow-2xs active:scale-[0.97]"
-            >
-              Aanpassen
-            </Button>
+            <Link href="/tax-vault">
+              <Button
+                size="sm"
+                variant="outline"
+                className="rounded-full text-xs font-semibold shadow-2xs active:scale-[0.97]"
+              >
+                {t("dashboard.taxAdjust")}
+              </Button>
+            </Link>
           }
         >
           <div className="space-y-4 py-2">
@@ -402,21 +403,20 @@ export default function DashboardPage() {
                 €3.712,50
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Automatische reservering voor omzetbelasting en
-                inkomstenbelasting.
+                {t("dashboard.taxText")}
               </p>
             </div>
 
             {/* Split Breakdown */}
             <div className="rounded-xl border border-border/60 bg-muted/30 p-3 space-y-2 text-xs font-mono">
               <div className="flex justify-between text-muted-foreground">
-                <span>BTW Hoog (21% Elektra/Uren):</span>
+                <span>{t("dashboard.vatHigh")}</span>
                 <span className="font-bold text-foreground tabular-nums">
                   €2.820,00
                 </span>
               </div>
               <div className="flex justify-between text-muted-foreground">
-                <span>BTW Laag (9% Isolatie/Food):</span>
+                <span>{t("dashboard.vatLow")}</span>
                 <span className="font-bold text-foreground tabular-nums">
                   €892,50
                 </span>
@@ -425,9 +425,11 @@ export default function DashboardPage() {
 
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Kwartaal buffer:</span>
+                <span className="text-muted-foreground">
+                  {t("dashboard.buffer")}
+                </span>
                 <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">
-                  75% gereed
+                  {t("dashboard.bufferValue", { percent: 75 })}
                 </span>
               </div>
               <div className="h-2 w-full rounded-full bg-muted/80 overflow-hidden p-0.5 border border-border/40">
@@ -437,9 +439,7 @@ export default function DashboardPage() {
 
             <div className="flex items-center gap-2 pt-1 text-xs text-muted-foreground">
               <ShieldCheck className="size-4 text-emerald-600 shrink-0" />
-              <span>
-                Geen verrassingen bij je kwartaalaangifte op 31 januari.
-              </span>
+              <span>{t("dashboard.deadline")}</span>
             </div>
           </div>
         </Card>

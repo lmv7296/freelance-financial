@@ -11,25 +11,23 @@ import { calculateDueDate, getTermDaysFromMethod } from "@/lib/dateUtils";
 
 /**
  * 3-step wizard workflow definition for creating invoices / payment requests.
+ * Titles, labels and placeholders are translation keys; FormModal translates them.
  */
 export const CREATE_INVOICE_STEPS = [
   {
     id: "klant",
-    title: "Klant & Type",
-    description:
-      "Kies tussen particulier of zakelijk en vul de klantgegevens in.",
+    title: "invoiceForm.steps.client.title",
+    description: "invoiceForm.steps.client.description",
   },
   {
     id: "opbouw",
-    title: "Opbouw Factuur",
-    description:
-      "Stel vakgebied, factuurnummer, gesplitste uren/materialen en betaalmethode in.",
+    title: "invoiceForm.steps.build.title",
+    description: "invoiceForm.steps.build.description",
   },
   {
     id: "preview",
-    title: "Klantvoorbeeld",
-    description:
-      "Bekijk de officiële factuur en de klantweergave voor de gekozen betaalwijze.",
+    title: "invoiceForm.steps.preview.title",
+    description: "invoiceForm.steps.preview.description",
     renderStep: (formValues) => (
       <ClientInvoicePreview formValues={formValues} />
     ),
@@ -46,7 +44,7 @@ export const CREATE_INVOICE_FIELDS = [
   // ==========================================
   {
     name: "clientType",
-    label: "Type Klant",
+    label: "invoiceForm.clientType",
     type: "switch",
     required: true,
     colSpan: 2,
@@ -55,11 +53,11 @@ export const CREATE_INVOICE_FIELDS = [
     options: [
       {
         value: "particulier",
-        label: "Particulier",
+        label: "invoiceForm.person",
       },
       {
         value: "bedrijf",
-        label: "Bedrijf / Zakelijk",
+        label: "invoiceForm.company",
       },
     ],
   },
@@ -67,7 +65,7 @@ export const CREATE_INVOICE_FIELDS = [
   // --- Particulier: Klantgegevens ---
   {
     name: "clientName",
-    label: "Naam Klant",
+    label: "invoiceForm.clientName",
     type: "custom",
     required: true,
     showIf: (values) => values.clientType === "particulier",
@@ -77,8 +75,8 @@ export const CREATE_INVOICE_FIELDS = [
       <ClientAutocomplete
         clientType="particulier"
         name="clientName"
-        label="Naam Klant"
-        placeholder="bijv. Jan & Sophie de Vries"
+        label="invoiceForm.clientName"
+        placeholder="invoiceForm.clientNamePlaceholder"
         required
         value={formValues.clientName || ""}
         onChange={(val) => handleChange("clientName", val)}
@@ -105,27 +103,27 @@ export const CREATE_INVOICE_FIELDS = [
   },
   {
     name: "clientPhone",
-    label: "Telefoonnummer (optioneel)",
+    label: "invoiceForm.clientPhone",
     type: "tel",
-    placeholder: "bijv. +31 6 12345678",
+    placeholder: "invoiceForm.phonePlaceholder",
     showIf: (values) => values.clientType === "particulier",
     colSpan: 1,
     step: 0,
   },
   {
     name: "clientEmail",
-    label: "E-mailadres Klant (voor factuurverzending)",
+    label: "invoiceForm.clientEmail",
     type: "email",
-    placeholder: "bijv. jan@devries.nl",
+    placeholder: "invoiceForm.clientEmailPlaceholder",
     showIf: (values) => values.clientType === "particulier",
     colSpan: 1,
     step: 0,
   },
   {
     name: "clientAddress",
-    label: "Woonadres / Locatie van werk",
+    label: "invoiceForm.clientAddress",
     type: "text",
-    placeholder: "bijv. Keizersgracht 421, 1016 EK Amsterdam",
+    placeholder: "invoiceForm.clientAddressPlaceholder",
     showIf: (values) => values.clientType === "particulier",
     colSpan: 1,
     step: 0,
@@ -134,7 +132,7 @@ export const CREATE_INVOICE_FIELDS = [
   // --- Bedrijf: Bedrijfsgegevens ---
   {
     name: "companyName",
-    label: "Bedrijfsnaam",
+    label: "invoiceForm.companyName",
     type: "custom",
     required: true,
     showIf: (values) => values.clientType === "bedrijf",
@@ -144,8 +142,8 @@ export const CREATE_INVOICE_FIELDS = [
       <ClientAutocomplete
         clientType="bedrijf"
         name="companyName"
-        label="Bedrijfsnaam"
-        placeholder="bijv. Bakkerij Van Dam of Koraal Vastgoed"
+        label="invoiceForm.companyName"
+        placeholder="invoiceForm.companyNamePlaceholder"
         required
         value={formValues.companyName || ""}
         onChange={(val) => handleChange("companyName", val)}
@@ -177,51 +175,51 @@ export const CREATE_INVOICE_FIELDS = [
   },
   {
     name: "contactPerson",
-    label: "Contactpersoon & Functie",
-    placeholder: "bijv. Pieter Koraal (Vastgoedbeheerder)",
+    label: "invoiceForm.contactPerson",
+    placeholder: "invoiceForm.contactPersonPlaceholder",
     showIf: (values) => values.clientType === "bedrijf",
     colSpan: 1,
     step: 0,
   },
   {
     name: "vatNumber",
-    label: "BTW-identificatienummer Klant (optioneel)",
-    placeholder: "bijv. NL819203948B01",
+    label: "invoiceForm.vatNumber",
+    placeholder: "invoiceForm.vatNumberPlaceholder",
     showIf: (values) => values.clientType === "bedrijf",
     colSpan: 1,
     step: 0,
   },
   {
     name: "kvkNumber",
-    label: "KvK-nummer Klant (optioneel)",
-    placeholder: "bijv. 78291044",
+    label: "invoiceForm.kvkNumber",
+    placeholder: "invoiceForm.kvkNumberPlaceholder",
     showIf: (values) => values.clientType === "bedrijf",
     colSpan: 1,
     step: 0,
   },
   {
     name: "companyEmail",
-    label: "Zakelijk E-mailadres Facturatie",
+    label: "invoiceForm.companyEmail",
     type: "email",
-    placeholder: "bijv. facturen@koraalvastgoed.nl",
+    placeholder: "invoiceForm.companyEmailPlaceholder",
     showIf: (values) => values.clientType === "bedrijf",
     colSpan: 1,
     step: 0,
   },
   {
     name: "companyPhone",
-    label: "Zakelijk Telefoonnummer",
+    label: "invoiceForm.companyPhone",
     type: "tel",
-    placeholder: "bijv. +31 20 891 0022",
+    placeholder: "invoiceForm.companyPhonePlaceholder",
     showIf: (values) => values.clientType === "bedrijf",
     colSpan: 1,
     step: 0,
   },
   {
     name: "companyAddress",
-    label: "Vestigingsadres & Postcode",
+    label: "invoiceForm.companyAddress",
     type: "text",
-    placeholder: "bijv. Singel 240, 1016 AB Amsterdam",
+    placeholder: "invoiceForm.companyAddressPlaceholder",
     showIf: (values) => values.clientType === "bedrijf",
     colSpan: 2,
     step: 0,
@@ -232,7 +230,7 @@ export const CREATE_INVOICE_FIELDS = [
   // ==========================================
   {
     name: "tradeType",
-    label: "Vakgebied / Type Werk",
+    label: "invoiceForm.tradeType",
     type: "select",
     required: true,
     colSpan: 1,
@@ -242,13 +240,13 @@ export const CREATE_INVOICE_FIELDS = [
   },
   {
     name: "invoiceNumber",
-    label: "Factuurnummer / Kenmerk",
+    label: "invoiceForm.invoiceNumber",
     type: "text",
     required: true,
     colSpan: 1,
     step: 1,
     defaultValue: "INV-2047",
-    placeholder: "bijv. INV-2047",
+    placeholder: "invoiceForm.invoiceNumberPlaceholder",
   },
   {
     name: "items",
@@ -262,7 +260,7 @@ export const CREATE_INVOICE_FIELDS = [
   },
   {
     name: "vatRate",
-    label: "BTW-tarief",
+    label: "invoiceForm.vatRate",
     type: "select",
     defaultValue: "21",
     colSpan: 1,
@@ -271,7 +269,7 @@ export const CREATE_INVOICE_FIELDS = [
   },
   {
     name: "method",
-    label: "Gewenste Betaalwijze",
+    label: "invoiceForm.method",
     type: "select",
     defaultValue: "Tikkie / iDEAL QR",
     colSpan: 1,
@@ -288,37 +286,34 @@ export const CREATE_INVOICE_FIELDS = [
   },
   {
     name: "due",
-    label: "Betaaltermijn / Vervaldatum",
+    label: "invoiceForm.due",
     type: "date",
     defaultValue: () => calculateDueDate(14),
     required: true,
     colSpan: 1,
     step: 1,
     presets: [
-      { label: "14 dagen (Norm)", value: () => calculateDueDate(14) },
-      { label: "30 dagen (Zakelijk)", value: () => calculateDueDate(30) },
-      { label: "7 dagen (Spoed)", value: () => calculateDueDate(7) },
-      { label: "Direct (Vandaag)", value: () => calculateDueDate(0) },
+      { label: "invoiceForm.presets.14", value: () => calculateDueDate(14) },
+      { label: "invoiceForm.presets.30", value: () => calculateDueDate(30) },
+      { label: "invoiceForm.presets.7", value: () => calculateDueDate(7) },
+      { label: "invoiceForm.presets.0", value: () => calculateDueDate(0) },
     ],
     helperText: (values) =>
       values.method === "Factuur (Net 30)"
-        ? "Automatisch ingesteld op 30 dagen voor zakelijke facturen"
-        : "Automatisch ingesteld op 14 dagen (standaard Nederlandse norm)",
+        ? "invoiceForm.dueHint30"
+        : "invoiceForm.dueHint14",
   },
   {
     name: "status",
-    label: "Status bij aanmaken",
+    label: "invoiceForm.status",
     type: "select",
     defaultValue: "Pending",
     colSpan: 1,
     step: 1,
     options: [
-      {
-        label: "Pending (Openstaand - gereed om te sturen)",
-        value: "Pending",
-      },
-      { label: "Paid (Reeds direct voldaan op locatie)", value: "Paid" },
-      { label: "Draft (Concept - nog niet definitief)", value: "Draft" },
+      { label: "invoiceForm.statusPending", value: "Pending" },
+      { label: "invoiceForm.statusPaid", value: "Paid" },
+      { label: "invoiceForm.statusDraft", value: "Draft" },
     ],
   },
 ];

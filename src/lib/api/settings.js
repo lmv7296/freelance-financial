@@ -1,3 +1,4 @@
+import { currentLanguage, translate } from "@/lib/i18n/dictionaries";
 import { tokenStorage } from "./auth";
 import {
   ApiClientError,
@@ -93,9 +94,9 @@ export const settingsApi = {
           body,
         },
       );
-    } catch (err) {
+    } catch {
       throw new ApiClientError(
-        err?.message || "Netwerkfout bij verbinden met de server",
+        translate(currentLanguage(), "errors.network"),
         0,
       );
     }
@@ -103,7 +104,11 @@ export const settingsApi = {
     if (!response.ok) {
       if (response.status === 401) notifyUnauthorized();
       throw new ApiClientError(
-        data?.error || data?.message || `Upload mislukt (${response.status})`,
+        data?.error ||
+          data?.message ||
+          translate(currentLanguage(), "errors.uploadFailed", {
+            status: response.status,
+          }),
         response.status,
         data,
       );

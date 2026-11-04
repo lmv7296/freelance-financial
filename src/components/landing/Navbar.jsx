@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 export function LandingNavbar() {
+  const t = useT();
   const { isAuthenticated, user, openLogin, openRegister } = useAuth();
 
   return (
@@ -18,7 +20,7 @@ export function LandingNavbar() {
               FreelanceFin
             </span>
             <span className="text-[10px] font-medium text-muted-foreground">
-              Vakman & ZZP
+              {t("landing.tagline")}
             </span>
           </div>
         </Link>
@@ -29,20 +31,20 @@ export function LandingNavbar() {
             href="#features"
             className="hover:text-foreground transition-colors"
           >
-            Wat kun je doen?
+            {t("landing.nav.features")}
           </a>
           <a
             href="#how-it-works"
             className="hover:text-foreground transition-colors"
           >
-            Hoe het werkt
+            {t("landing.nav.howItWorks")}
           </a>
           {isAuthenticated && (
             <Link
               href="/dashboard"
               className="hover:text-foreground transition-colors"
             >
-              Dashboard
+              {t("landing.nav.dashboard")}
             </Link>
           )}
         </nav>
@@ -61,7 +63,7 @@ export function LandingNavbar() {
                   "rounded-full px-4 text-xs font-semibold shadow-xs",
                 )}
               >
-                Dashboard
+                {t("landing.nav.dashboard")}
               </Link>
             </div>
           ) : (
@@ -72,14 +74,14 @@ export function LandingNavbar() {
                 onClick={openLogin}
                 className="rounded-full text-xs font-semibold cursor-pointer text-muted-foreground hover:text-foreground"
               >
-                <span>Inloggen</span>
+                <span>{t("landing.nav.login")}</span>
               </Button>
               <Button
                 size="sm"
                 onClick={openRegister}
                 className="rounded-full text-xs font-semibold px-4 shadow-xs cursor-pointer"
               >
-                <span>Account maken</span>
+                <span>{t("landing.nav.register")}</span>
               </Button>
             </>
           )}

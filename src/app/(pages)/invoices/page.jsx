@@ -25,16 +25,17 @@ import {
 } from "@/data/invoices";
 import { getRelativeDueDateLabel } from "@/lib/dateUtils";
 import { calculateLineItemsTotals, formatEuro } from "@/lib/formatCurrency";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import {
   CREATE_INVOICE_FIELDS,
   CREATE_INVOICE_STEPS,
 } from "@/schemas/invoiceFormSchema";
 
 export default function InvoicesPage() {
+  const t = useT();
   const [invoices, setInvoices] = useState(INITIAL_INVOICES);
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [copiedId, setCopiedId] = useState(null);
 
   // Modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -58,16 +59,18 @@ export default function InvoicesPage() {
   const pendingCount = invoices.filter((i) => i.status === "Pending").length;
   const overdueCount = invoices.filter((i) => i.status === "Overdue").length;
 
-  const handleCopyLink = (id) => {
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+  // Payment links, reminders and exports don't exist yet; say so instead of pretending
+  const comingSoon = () => alert(t("common.comingSoon"));
+  const tradeLabel = (value) => {
+    const label = t(`invoices.tradeTypes.${value}`);
+    return label.startsWith("invoices.") ? value : label;
   };
 
   const handleCreateInvoice = (formData) => {
     const isBedrijf = formData.clientType === "bedrijf";
     const clientName = isBedrijf
-      ? formData.companyName?.trim() || "Zakelijke Opdrachtgever"
-      : formData.clientName?.trim() || "Particuliere Klant";
+      ? formData.companyName?.trim() || t("invoices.page.defaultCompany")
+      : formData.clientName?.trim() || t("invoices.page.defaultPerson");
 
     const items =
       Array.isArray(formData.items) && formData.items.length > 0
@@ -79,9 +82,9 @@ export default function InvoicesPage() {
 
     const mainProjectDesc =
       items
-        .map((it) => it.description?.trim())
+        .map((it) => t(it.description)?.trim())
         .filter(Boolean)
-        .join(" • ") || "Geleverde werkzaamheden & materialen";
+        .join(" • ") || t("invoices.page.defaultDescription");
 
     const newInvoice = {
       id:
@@ -118,28 +121,28 @@ export default function InvoicesPage() {
         return (
           <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold border bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/25">
             <span className="size-1.5 rounded-full bg-emerald-500" />
-            Paid
+            {t("invoices.status.Paid")}
           </span>
         );
       case "Pending":
         return (
           <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold border bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/25">
             <span className="size-1.5 rounded-full bg-amber-500 animate-pulse" />
-            Pending
+            {t("invoices.status.Pending")}
           </span>
         );
       case "Overdue":
         return (
           <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold border bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/25">
             <span className="size-1.5 rounded-full bg-rose-500 animate-pulse" />
-            Overdue
+            {t("invoices.status.Overdue")}
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold border bg-muted text-muted-foreground border-border/60">
             <span className="size-1.5 rounded-full bg-muted-foreground" />
-            Draft
+            {t("invoices.status.Draft")}
           </span>
         );
     }
@@ -153,36 +156,35 @@ export default function InvoicesPage() {
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wider uppercase border border-indigo-500/25 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300">
               <FileText className="size-3" />
-              Facturatie & Betaalverzoeken
+              {t("invoices.page.badge")}
             </span>
             <span className="text-xs text-muted-foreground font-mono">
-              iDEAL • Tikkie • PIN • Factuur
+              {t("invoices.page.methods")}
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground mt-1">
-            Facturen & Betalingen
+            {t("invoices.page.title")}
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-            Volg uitgegeven opdrachten, marktomzet, PIN-afhandelingen en
-            digitale betaalverzoeken.
+            {t("invoices.page.subtitle")}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={() => alert("Exporteren van CSV-rapportage...")}
+            onClick={comingSoon}
             className="rounded-full px-4 shadow-2xs hover:bg-muted/70 active:scale-[0.97] transition-all font-medium text-xs h-9 cursor-pointer"
           >
             <Download className="size-3.5 mr-1.5" />
-            Exporteer CSV
+            {t("invoices.page.exportCsv")}
           </Button>
           <Button
             onClick={() => setIsCreateModalOpen(true)}
             className="rounded-full px-4.5 shadow-sm hover:shadow-md active:scale-[0.97] transition-all font-semibold text-xs h-9 cursor-pointer"
           >
             <Plus className="size-4 mr-1.5" />
-            Nieuwe Factuur / Betaalverzoek
+            {t("invoices.page.new")}
           </Button>
         </div>
       </div>
@@ -190,21 +192,23 @@ export default function InvoicesPage() {
       {/* 2. Key Metrics Row (Asymmetric Bento with Gradient Icon Pods) */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card
-          title="Totaal Gefactureerd"
-          description="Cumulatief YTD excl. BTW"
+          title={t("invoices.page.totalTitle")}
+          description={t("invoices.page.totalDescription")}
           value="€28.790,00"
           trend="+16.4%"
-          trendLabel="t.o.v. vorig kwartaal"
+          trendLabel={t("invoices.page.trendQuarter")}
           icon={<FileText className="size-5" />}
           iconColor="primary"
           variant="elevated"
         />
 
         <Card
-          title="Openstaand Saldo"
-          description={`${pendingCount} facturen in afwachting`}
+          title={t("invoices.page.openTitle")}
+          description={t("invoices.page.openDescription", {
+            count: pendingCount,
+          })}
           value="€4.090,00"
-          trend="Vervaltijd 12-14 dagen"
+          trend={t("invoices.page.openTrend")}
           trendDirection="neutral"
           icon={<Clock className="size-5" />}
           iconColor="amber"
@@ -212,10 +216,12 @@ export default function InvoicesPage() {
         />
 
         <Card
-          title="Vervallen Saldo"
-          description={`${overdueCount} dossier vereist herinnering`}
+          title={t("invoices.page.overdueTitle")}
+          description={t("invoices.page.overdueDescription", {
+            count: overdueCount,
+          })}
           value="€620,00"
-          trend="Herinnering vereist"
+          trend={t("invoices.page.overdueTrend")}
           trendDirection="down"
           icon={<Mail className="size-5" />}
           iconColor="rose"
@@ -223,11 +229,11 @@ export default function InvoicesPage() {
         />
 
         <Card
-          title="Voldaan deze Maand"
-          description="Ontvangen via PIN, Tikkie & bank"
+          title={t("invoices.page.paidTitle")}
+          description={t("invoices.page.paidDescription")}
           value="€14.850,00"
           trend="+11.2%"
-          trendLabel="t.o.v. vorige cyclus"
+          trendLabel={t("invoices.page.trendPrevious")}
           icon={<Check className="size-5" />}
           iconColor="emerald"
           variant="elevated"
@@ -256,7 +262,7 @@ export default function InvoicesPage() {
                     : "bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/50"
                 }`}
               >
-                <span>{filter === "All" ? "Alle Facturen" : filter}</span>
+                <span>{t(`invoices.status.${filter}`)}</span>
                 <span
                   className={`rounded-full px-1.5 py-0.2 text-[10px] font-mono ${
                     isActive
@@ -275,7 +281,7 @@ export default function InvoicesPage() {
         <div className="relative w-full sm:w-72">
           <Search className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Zoek factuur, klant of vak..."
+            placeholder={t("invoices.page.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9.5 h-9 text-xs rounded-full border-border/70 dark:border-white/[0.08]"
@@ -292,12 +298,22 @@ export default function InvoicesPage() {
           <table className="w-full text-left text-sm font-sans border-collapse">
             <thead>
               <tr className="border-b border-border/70 bg-muted/40 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                <th className="py-3 px-5">Factuur & Betaalwijze</th>
-                <th className="py-3 px-5">Opdrachtgever & Omschrijving</th>
-                <th className="py-3 px-5">Vervaldatum</th>
-                <th className="py-3 px-5 text-right">Bedrag (incl. BTW)</th>
-                <th className="py-3 px-5 text-center">Status</th>
-                <th className="py-3 px-5 text-right">Acties</th>
+                <th className="py-3 px-5">
+                  {t("invoices.page.columns.invoice")}
+                </th>
+                <th className="py-3 px-5">
+                  {t("invoices.page.columns.client")}
+                </th>
+                <th className="py-3 px-5">{t("invoices.page.columns.due")}</th>
+                <th className="py-3 px-5 text-right">
+                  {t("invoices.page.columns.amount")}
+                </th>
+                <th className="py-3 px-5 text-center">
+                  {t("invoices.page.columns.status")}
+                </th>
+                <th className="py-3 px-5 text-right">
+                  {t("invoices.page.columns.actions")}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/40 text-xs">
@@ -329,7 +345,7 @@ export default function InvoicesPage() {
                           {inv.client}
                         </p>
                         <span className="text-[10px] px-1.5 py-0.2 rounded bg-muted text-muted-foreground font-medium shrink-0">
-                          {inv.tradeType}
+                          {tradeLabel(inv.tradeType)}
                         </span>
                       </div>
                       <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
@@ -367,15 +383,11 @@ export default function InvoicesPage() {
                         {/* Copy Link Button */}
                         <button
                           type="button"
-                          onClick={() => handleCopyLink(inv.id)}
+                          onClick={comingSoon}
                           className="size-7.5 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:scale-90 transition-all cursor-pointer"
-                          title="Kopieer Tikkie / betaallink"
+                          title={t("invoices.page.copyLink")}
                         >
-                          {copiedId === inv.id ? (
-                            <Check className="size-4 text-emerald-600" />
-                          ) : (
-                            <Copy className="size-3.5" />
-                          )}
+                          <Copy className="size-3.5" />
                         </button>
 
                         {/* Remind */}
@@ -383,13 +395,9 @@ export default function InvoicesPage() {
                         inv.status === "Pending" ? (
                           <button
                             type="button"
-                            onClick={() =>
-                              alert(
-                                `Betaalherinnering verstuurd naar ${inv.client}`,
-                              )
-                            }
+                            onClick={comingSoon}
                             className="size-7.5 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:scale-90 transition-all cursor-pointer"
-                            title="Stuur herinnering"
+                            title={t("invoices.page.remind")}
                           >
                             <Mail className="size-3.5" />
                           </button>
@@ -400,7 +408,7 @@ export default function InvoicesPage() {
                           type="button"
                           onClick={() => setSelectedInvoiceForInfo(inv)}
                           className="size-7.5 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:scale-90 transition-all cursor-pointer"
-                          title="Bekijk factuurgegevens"
+                          title={t("invoices.page.view")}
                         >
                           <ExternalLink className="size-3.5" />
                         </button>
@@ -415,10 +423,10 @@ export default function InvoicesPage() {
                     className="py-12 text-center text-muted-foreground"
                   >
                     <p className="text-sm font-medium">
-                      Geen facturen gevonden die voldoen aan je filter
+                      {t("invoices.page.noMatchTitle")}
                     </p>
                     <p className="text-xs mt-1">
-                      Probeer een andere zoekterm of filtertab.
+                      {t("invoices.page.noMatchText")}
                     </p>
                   </td>
                 </tr>
@@ -433,14 +441,14 @@ export default function InvoicesPage() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateInvoice}
-        title="Nieuwe Factuur / Betaalverzoek"
-        description="Maak in 3 overzichtelijke stappen een factuur aan met live voorbeeld zoals de klant het ontvangt."
+        title={t("invoices.page.createTitle")}
+        description={t("invoices.page.createDescription")}
         icon={<FilePlus2 className="size-5" />}
         steps={CREATE_INVOICE_STEPS}
         fields={CREATE_INVOICE_FIELDS}
-        submitLabel="Factuur Aanmaken & Versturen"
+        submitLabel={t("invoices.page.createSubmit")}
         maxWidth="xl"
-        footerNote="Facturen en betaalverzoeken worden direct gesynchroniseerd in je overzicht en BTW-administratie."
+        footerNote={t("invoices.page.createFooter")}
       />
 
       {/* 6. Reusable InfoModal: View Invoice Information (Entirely Driven by Props) */}
@@ -448,36 +456,38 @@ export default function InvoicesPage() {
         <InfoModal
           isOpen={Boolean(selectedInvoiceForInfo)}
           onClose={() => setSelectedInvoiceForInfo(null)}
-          title={`Invoice ${selectedInvoiceForInfo.id}`}
-          description={`${selectedInvoiceForInfo.client} • ${selectedInvoiceForInfo.tradeType}`}
-          badge={selectedInvoiceForInfo.status}
+          title={t("invoices.info.title", { id: selectedInvoiceForInfo.id })}
+          description={`${selectedInvoiceForInfo.client} • ${tradeLabel(selectedInvoiceForInfo.tradeType)}`}
+          badge={t(`invoices.status.${selectedInvoiceForInfo.status}`)}
           icon={<FileText className="size-5" />}
           maxWidth="lg"
           banner={
             selectedInvoiceForInfo.status === "Overdue"
               ? {
                   type: "destructive",
-                  title: "Payment Overdue",
-                  message: `This bill was due on ${selectedInvoiceForInfo.due}. A polite reminder can be sent.`,
+                  title: t("invoices.info.overdueTitle"),
+                  message: t("invoices.info.overdueText", {
+                    date: selectedInvoiceForInfo.due,
+                  }),
                 }
               : undefined
           }
           items={[
             {
-              label: "Invoice ID",
+              label: t("invoices.info.id"),
               value: selectedInvoiceForInfo.id,
               copyable: true,
             },
             {
-              label: "Customer / Account",
+              label: t("invoices.info.client"),
               value: selectedInvoiceForInfo.client,
             },
             {
-              label: "Trade / Specialty",
-              value: selectedInvoiceForInfo.tradeType,
+              label: t("invoices.info.trade"),
+              value: tradeLabel(selectedInvoiceForInfo.tradeType),
             },
             {
-              label: "Total Amount",
+              label: t("invoices.info.total"),
               value: selectedInvoiceForInfo.amount,
               isMoney: true,
               highlight:
@@ -488,49 +498,42 @@ export default function InvoicesPage() {
                     : "warning",
             },
             {
-              label: "Payment Rail",
+              label: t("invoices.info.method"),
               value: selectedInvoiceForInfo.method,
             },
             {
-              label: "Issued Date",
+              label: t("invoices.info.issued"),
               value: selectedInvoiceForInfo.issued,
             },
             {
-              label: "Due Date",
+              label: t("invoices.info.due"),
               value: selectedInvoiceForInfo.due,
             },
             {
-              label: "Status / Timing",
+              label: t("invoices.info.timing"),
               value: selectedInvoiceForInfo.dueDateRelative,
             },
             {
-              label: "Job / Order Description",
+              label: t("invoices.info.description"),
               value: selectedInvoiceForInfo.project,
               colSpan: 2,
             },
           ]}
           footerActions={[
             {
-              label: "Close",
+              label: t("invoices.info.close"),
               variant: "outline",
               onClick: () => setSelectedInvoiceForInfo(null),
             },
             {
-              label: "Copy Tikkie Link",
+              label: t("invoices.info.copyLink"),
               variant: "secondary",
-              onClick: () => {
-                navigator.clipboard?.writeText(
-                  `https://pay.tikkie.me/trade/${selectedInvoiceForInfo.id}`,
-                );
-                alert("Tikkie payment link copied to clipboard!");
-              },
+              onClick: comingSoon,
             },
             {
-              label: "Download PDF",
+              label: t("invoices.info.downloadPdf"),
               variant: "default",
-              onClick: () => {
-                alert(`Downloading PDF for ${selectedInvoiceForInfo.id}...`);
-              },
+              onClick: comingSoon,
             },
           ]}
         />

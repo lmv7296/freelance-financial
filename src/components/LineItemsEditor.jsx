@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DEFAULT_LINE_ITEMS } from "@/data/invoices";
 import { calculateLineItemsTotals, formatEuro } from "@/lib/formatCurrency";
+import { useT } from "@/lib/preferences/PreferencesContext";
 
 /**
  * LineItemsEditor: A reusable building block for itemized invoice and work order lines.
@@ -15,6 +16,7 @@ import { calculateLineItemsTotals, formatEuro } from "@/lib/formatCurrency";
  * @param {Function} props.handleChange - Change handler function (field, value).
  */
 export function LineItemsEditor({ formValues, handleChange }) {
+  const t = useT();
   const items =
     Array.isArray(formValues.items) && formValues.items.length > 0
       ? formValues.items
@@ -54,11 +56,11 @@ export function LineItemsEditor({ formValues, handleChange }) {
     <div className="space-y-3 col-span-1 sm:col-span-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-          <span>Werkzaamheden & Factuurregels (Splits uren & materialen)</span>
+          <span>{t("lineItems.title")}</span>
           <span className="text-destructive">*</span>
         </div>
         <span className="text-[11px] text-muted-foreground font-mono">
-          {items.length} {items.length === 1 ? "regel" : "regels"}
+          {t("lineItems.lineCount", { count: items.length })}
         </span>
       </div>
 
@@ -82,11 +84,11 @@ export function LineItemsEditor({ formValues, handleChange }) {
               {/* Omschrijving */}
               <div className="flex-1 min-w-0">
                 <Input
-                  value={it.description}
+                  value={t(it.description)}
                   onChange={(e) =>
                     handleUpdateItem(idx, "description", e.target.value)
                   }
-                  placeholder="Omschrijving werkzaamheid of materiaal..."
+                  placeholder={t("lineItems.descriptionPlaceholder")}
                   className="h-8.5 text-xs rounded-lg"
                 />
               </div>
@@ -102,9 +104,9 @@ export function LineItemsEditor({ formValues, handleChange }) {
                     onChange={(e) =>
                       handleUpdateItem(idx, "quantity", e.target.value)
                     }
-                    placeholder="Aantal"
+                    placeholder={t("lineItems.quantity")}
                     className="h-8.5 text-xs font-mono text-center rounded-lg"
-                    title="Aantal / uren"
+                    title={t("lineItems.quantityTitle")}
                   />
                 </div>
 
@@ -121,9 +123,9 @@ export function LineItemsEditor({ formValues, handleChange }) {
                     onChange={(e) =>
                       handleUpdateItem(idx, "unitPrice", e.target.value)
                     }
-                    placeholder="Prijs"
+                    placeholder={t("lineItems.price")}
                     className="h-8.5 text-xs font-mono pl-6 rounded-lg"
-                    title="Prijs per eenheid"
+                    title={t("lineItems.priceTitle")}
                   />
                 </div>
 
@@ -140,8 +142,8 @@ export function LineItemsEditor({ formValues, handleChange }) {
                   onClick={() => handleRemoveItem(idx)}
                   disabled={items.length <= 1}
                   className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
-                  title="Regel verwijderen"
-                  aria-label="Regel verwijderen"
+                  title={t("lineItems.remove")}
+                  aria-label={t("lineItems.remove")}
                 >
                   <Trash2 className="size-3.5" />
                 </button>
@@ -160,7 +162,7 @@ export function LineItemsEditor({ formValues, handleChange }) {
             className="w-full sm:w-auto rounded-lg text-xs font-semibold h-8 px-3 border-dashed border-border/90 hover:border-primary/50 hover:bg-primary/5 text-primary flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer"
           >
             <Plus className="size-3.5" />
-            Werkzaamheid / Regel Toevoegen
+            {t("lineItems.add")}
           </Button>
         </div>
       </div>
@@ -168,19 +170,19 @@ export function LineItemsEditor({ formValues, handleChange }) {
       {/* Live Totalen Samenvatting */}
       <div className="flex flex-col items-end gap-1 p-3 rounded-xl border border-border/60 bg-muted/30 font-mono text-xs">
         <div className="flex justify-between w-64 text-muted-foreground">
-          <span>Subtotaal ({items.length} regels):</span>
+          <span>{t("lineItems.subtotal", { count: items.length })}</span>
           <span className="tabular-nums font-semibold">
             {formatEuro(subtotal)}
           </span>
         </div>
         <div className="flex justify-between w-64 text-muted-foreground">
-          <span>BTW ({vatRate}%):</span>
+          <span>{t("lineItems.vat", { rate: vatRate })}</span>
           <span className="tabular-nums font-semibold">
             {formatEuro(vatAmount)}
           </span>
         </div>
         <div className="flex justify-between w-64 text-sm font-bold text-foreground border-t border-border/80 pt-1.5 mt-0.5">
-          <span>Totaal incl. BTW:</span>
+          <span>{t("lineItems.total")}</span>
           <span className="tabular-nums text-base text-primary">
             {formatEuro(total)}
           </span>

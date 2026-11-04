@@ -11,6 +11,7 @@ import {
   ModalHeader,
 } from "@/components/ui/modal";
 import { taxVaultApi } from "@/lib/api/taxVault";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 const selectClassName =
@@ -36,6 +37,7 @@ function toNumberOrNull(value) {
  * Fiscal settings the backend needs to pick the right rules (legal form, urencriterium, KOR, ...)
  */
 export function TaxProfileModal({ isOpen, onClose, onSaved }) {
+  const t = useT();
   const [draft, setDraft] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [saveError, setSaveError] = useState(null);
@@ -71,7 +73,8 @@ export function TaxProfileModal({ isOpen, onClose, onSaved }) {
         });
       })
       .catch((err) => {
-        if (!cancelled) setLoadError(err?.message || "Laden mislukt.");
+        if (!cancelled)
+          setLoadError(err?.message || "taxVault.profile.loadFailed");
       });
     return () => {
       cancelled = true;
@@ -104,7 +107,7 @@ export function TaxProfileModal({ isOpen, onClose, onSaved }) {
       });
       onSaved?.(res?.profile);
     } catch (err) {
-      setSaveError(err?.message || "Opslaan mislukt.");
+      setSaveError(err?.message || t("taxVault.profile.saveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -113,21 +116,21 @@ export function TaxProfileModal({ isOpen, onClose, onSaved }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="xl">
       <ModalHeader
-        title="Fiscale instellingen"
-        description="Hiermee kiest de berekening de juiste regels. Twijfel je? Vraag het je boekhouder."
+        title={t("taxVault.profile.title")}
+        description={t("taxVault.profile.description")}
         icon={<Settings2 className="size-5" />}
       />
       <ModalBody>
         {loadError ? (
-          <p className="text-xs text-destructive">{loadError}</p>
+          <p className="text-xs text-destructive">{t(loadError)}</p>
         ) : !draft ? (
           <div className="flex justify-center py-10">
             <Loader2 className="size-5 animate-spin text-muted-foreground" />
           </div>
         ) : (
           <fieldset disabled={isSaving} className="space-y-5">
-            <Group title="Onderneming">
-              <Field label="Rechtsvorm">
+            <Group title={t("taxVault.profile.groupBusiness")}>
+              <Field label={t("taxVault.profile.legalForm")}>
                 {(id) => (
                   <select
                     id={id}
@@ -135,14 +138,19 @@ export function TaxProfileModal({ isOpen, onClose, onSaved }) {
                     onChange={(e) => setField("legal_form", e.target.value)}
                     className={selectClassName}
                   >
-                    <option value="eenmanszaak">Eenmanszaak / zzp</option>
+                    <option value="eenmanszaak">
+                      {t("taxVault.profile.eenmanszaak")}
+                    </option>
+                    <option value="vof" disabled>
+                      {t("taxVault.profile.vof")}
+                    </option>
                     <option value="bv" disabled>
-                      BV (binnenkort)
+                      {t("taxVault.profile.bv")}
                     </option>
                   </select>
                 )}
               </Field>
-              <Field label="Btw-aangifte per">
+              <Field label={t("taxVault.profile.vatFrequency")}>
                 {(id) => (
                   <select
                     id={id}
@@ -153,22 +161,24 @@ export function TaxProfileModal({ isOpen, onClose, onSaved }) {
                     disabled={draft.uses_kor}
                     className={selectClassName}
                   >
-                    <option value="quarter">Kwartaal</option>
-                    <option value="month">Maand</option>
-                    <option value="year">Jaar</option>
+                    <option value="quarter">
+                      {t("taxVault.profile.quarter")}
+                    </option>
+                    <option value="month">{t("taxVault.profile.month")}</option>
+                    <option value="year">{t("taxVault.profile.year")}</option>
                   </select>
                 )}
               </Field>
               <Toggle
-                label="Ik gebruik de kleineondernemersregeling (KOR)"
-                hint="Geen btw rekenen en geen btw-aangifte. Alleen mogelijk bij een lage jaaromzet."
+                label={t("taxVault.profile.kor")}
+                hint={t("taxVault.profile.korHint")}
                 checked={draft.uses_kor}
                 onChange={(v) => setField("uses_kor", v)}
               />
             </Group>
 
-            <Group title="Ondernemersaftrek">
-              <Field label="Urencriterium (minstens 1.225 uur per jaar aan je bedrijf)">
+            <Group title={t("taxVault.profile.groupDeductions")}>
+              <Field label={t("taxVault.profile.hoursCriterion")}>
                 {(id) => (
                   <select
                     id={id}
@@ -178,27 +188,29 @@ export function TaxProfileModal({ isOpen, onClose, onSaved }) {
                     }
                     className={selectClassName}
                   >
-                    <option value="unknown">Weet ik nog niet</option>
-                    <option value="true">Ja, ik haal het</option>
-                    <option value="false">Nee</option>
+                    <option value="unknown">
+                      {t("taxVault.profile.unknown")}
+                    </option>
+                    <option value="true">{t("taxVault.profile.yes")}</option>
+                    <option value="false">{t("taxVault.profile.no")}</option>
                   </select>
                 )}
               </Field>
               <Toggle
-                label="Ik ben starter"
-                hint="Startersaftrek kan gelden in de eerste jaren van je onderneming."
+                label={t("taxVault.profile.starter")}
+                hint={t("taxVault.profile.starterHint")}
                 checked={draft.is_starter}
                 onChange={(v) => setField("is_starter", v)}
               />
               <Toggle
-                label="Ik had aan het begin van het jaar de AOW-leeftijd bereikt"
+                label={t("taxVault.profile.aow")}
                 checked={draft.reached_aow_age}
                 onChange={(v) => setField("reached_aow_age", v)}
               />
             </Group>
 
-            <Group title="Overig inkomen en betalingen">
-              <Field label="Ander inkomen per jaar (bijv. loon uit dienstverband)">
+            <Group title={t("taxVault.profile.groupOther")}>
+              <Field label={t("taxVault.profile.otherIncome")}>
                 {(id) => (
                   <MoneyInput
                     id={id}
@@ -207,7 +219,7 @@ export function TaxProfileModal({ isOpen, onClose, onSaved }) {
                   />
                 )}
               </Field>
-              <Field label="Voorlopige aanslag die je per maand betaalt">
+              <Field label={t("taxVault.profile.provisional")}>
                 {(id) => (
                   <MoneyInput
                     id={id}
@@ -220,8 +232,8 @@ export function TaxProfileModal({ isOpen, onClose, onSaved }) {
               </Field>
             </Group>
 
-            <Group title="Boekhouder">
-              <Field label="Naam">
+            <Group title={t("taxVault.profile.groupAccountant")}>
+              <Field label={t("taxVault.profile.accountantName")}>
                 {(id) => (
                   <Input
                     id={id}
@@ -232,7 +244,7 @@ export function TaxProfileModal({ isOpen, onClose, onSaved }) {
                   />
                 )}
               </Field>
-              <Field label="E-mailadres">
+              <Field label={t("taxVault.profile.accountantEmail")}>
                 {(id) => (
                   <Input
                     id={id}
@@ -253,11 +265,11 @@ export function TaxProfileModal({ isOpen, onClose, onSaved }) {
           <span className="mr-auto text-xs text-destructive">{saveError}</span>
         )}
         <Button variant="outline" size="sm" onClick={onClose}>
-          Annuleer
+          {t("taxVault.profile.cancel")}
         </Button>
         <Button size="sm" onClick={handleSave} disabled={!draft || isSaving}>
           {isSaving && <Loader2 className="animate-spin" />}
-          Opslaan
+          {t("taxVault.profile.save")}
         </Button>
       </ModalFooter>
     </Modal>
