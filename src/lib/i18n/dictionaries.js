@@ -48,7 +48,7 @@ export function translate(language, key, vars) {
   if (typeof value !== "string") return key;
   if (!vars) return value;
   return value.replace(/\{(\w+)\}/g, (match, name) =>
-    name in vars ? String(vars[name]) : match,
+    name in vars ? String(vars[name] ?? "") : match,
   );
 }
 
