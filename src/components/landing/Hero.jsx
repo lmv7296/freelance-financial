@@ -2,13 +2,9 @@
 
 import {
   ArrowRight,
-  CheckCircle,
-  CreditCard,
   FileCheck2,
-  Plus,
+  MessageCircle,
   QrCode,
-  Sparkles,
-  TrendingUp,
   Wallet,
 } from "lucide-react";
 import Link from "next/link";
@@ -30,30 +26,22 @@ export function LandingHero() {
 
   return (
     <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-32">
-      {/* Background radial glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 -z-10 w-[1000px] h-[550px] bg-gradient-to-b from-primary/15 via-primary/5 to-transparent blur-3xl pointer-events-none rounded-full" />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto space-y-6">
-          {/* Trust pill */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/25 bg-primary/10 text-primary text-xs font-semibold shadow-2xs backdrop-blur-sm">
-            <Sparkles className="size-3.5" />
-            <span>Financieel beheer voor de Nederlandse Vakman & ZZP'er</span>
-          </div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Voor vakmensen en zzp'ers in Nederland
+          </p>
 
           {/* Main Title */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground leading-[1.12]">
-            Financiële rust tussen{" "}
-            <span className="bg-gradient-to-r from-primary via-emerald-600 to-primary bg-clip-text text-transparent">
-              klussen door.
-            </span>
+            Financiële rust tussen klussen door.
           </h1>
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-            Stop met administratie op zondagavond. Maak professionele facturen
-            in 60 seconden vanuit je bus, laat klanten direct per iDEAL betalen
-            en reserveer automatisch 21% BTW voor de Belastingdienst.
+            Maak je factuur direct na de klus, laat klanten betalen via iDEAL,
+            stuur je bonnetjes via WhatsApp en zie hoeveel btw en belasting je
+            opzij moet zetten.
           </p>
 
           {/* Actions */}
@@ -87,7 +75,7 @@ export function LandingHero() {
                   onClick={openRegister}
                   className="w-full sm:w-auto rounded-full px-8 font-bold shadow-md hover:shadow-lg active:scale-98 transition-all cursor-pointer h-12"
                 >
-                  <span>Direct gratis starten</span>
+                  <span>Account aanmaken</span>
                   <ArrowRight className="size-4 ml-2" />
                 </Button>
                 <Button
@@ -111,140 +99,126 @@ export function LandingHero() {
             )}
           </div>
 
-          {/* Micro badges below CTA */}
-          <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <CheckCircle className="size-3.5 text-emerald-500" />
-              Geen ingewikkelde boekhoudtermen
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle className="size-3.5 text-emerald-500" />
-              iDEAL & QR direct op de bouwplaats
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle className="size-3.5 text-emerald-500" />
-              Automatische BTW-Kluis
-            </span>
-          </div>
+          <p className="pt-4 text-xs text-muted-foreground">
+            Bonnetjes via WhatsApp · iDEAL & QR-code op locatie ·
+            Belastingregels van dit jaar, met bronnen
+          </p>
         </div>
 
-        {/* Live UI Interactive Showcase Mockup */}
+        {/* Preview of the real screens, with example numbers */}
         <div className="mt-14 max-w-4xl mx-auto">
-          <div className="relative rounded-3xl border border-border/80 bg-card/95 shadow-2xl backdrop-blur-xl p-4 sm:p-7 overflow-hidden">
-            {/* Top Bar of the Mockup */}
+          <div className="relative rounded-2xl border border-border/80 bg-card shadow-sm p-4 sm:p-7 overflow-hidden">
             <div className="flex items-center justify-between pb-5 border-b border-border/60">
               <div className="flex items-center gap-3">
-                <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold shadow-xs">
-                  <CreditCard className="size-4.5" />
-                </div>
                 <div>
                   <h3 className="text-sm font-bold text-foreground">
-                    FreelanceFin Werkplek
+                    Zo ziet het eruit
                   </h3>
                   <p className="text-[11px] text-muted-foreground">
-                    Dennis van Dam • Elektrotechniek & Installatie
+                    Belastingkluis, bonnetjes en facturen in één app
                   </p>
                 </div>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Live Demo Sync
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-muted text-muted-foreground border border-border/70">
+                Voorbeeld
               </span>
             </div>
 
-            {/* Mockup Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5">
-              {/* Card 1: BTW-Kluis */}
+              {/* Belastingkluis: VAT for the quarter */}
               <div className="rounded-2xl border border-border/70 bg-muted/40 p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                    <Wallet className="size-3.5 text-primary" />
-                    BTW-Kluis Q4
-                  </span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                    75% gedekt
-                  </span>
-                </div>
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Wallet className="size-3.5 text-primary" />
+                  Belastingkluis · Btw Q4
+                </span>
                 <div className="space-y-1">
                   <p className="text-2xl font-extrabold tracking-tight text-foreground">
-                    €3.712,00
+                    € 1.452,00
                   </p>
                   <p className="text-[11px] text-muted-foreground">
-                    van €4.950 gereserveerd voor Belastingdienst
+                    te betalen · uiterlijk 31 jan. 2027
                   </p>
                 </div>
-                <div className="h-2 w-full rounded-full bg-muted overflow-hidden border border-border/40">
-                  <div className="h-full bg-emerald-500 rounded-full w-3/4" />
+                <dl className="space-y-1 border-t border-border/40 pt-2 text-[10px] text-muted-foreground">
+                  <div className="flex justify-between">
+                    <dt>Btw over omzet (1a)</dt>
+                    <dd className="font-mono">€ 1.764,00</dd>
+                  </div>
+                  <div className="flex justify-between">
+                    <dt>Voorbelasting (5b)</dt>
+                    <dd className="font-mono">− € 312,00</dd>
+                  </div>
+                </dl>
+              </div>
+
+              {/* Receipt that came in via WhatsApp */}
+              <div className="rounded-2xl border border-border/70 bg-muted/40 p-4 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <MessageCircle className="size-3.5 text-emerald-500" />
+                    Bonnetje via WhatsApp
+                  </span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">
+                    Te controleren
+                  </span>
                 </div>
-                <p className="text-[10px] text-muted-foreground">
-                  Gereserveerd van 14 voldane facturen.
+                <div className="space-y-0.5">
+                  <p className="text-xs font-semibold text-foreground">
+                    Bouwmarkt
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Materialen · kabel en wandcontactdozen
+                  </p>
+                </div>
+                <div className="flex items-baseline justify-between pt-1">
+                  <span className="text-lg font-bold text-foreground">
+                    € 96,80
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono">
+                    incl. € 16,80 btw
+                  </span>
+                </div>
+                <p className="text-[10px] text-muted-foreground pt-1 border-t border-border/40">
+                  Winkel, datum, bedrag en btw automatisch uitgelezen.
                 </p>
               </div>
 
-              {/* Card 2: Recente Factuur */}
+              {/* Invoice paid via iDEAL */}
               <div className="rounded-2xl border border-border/70 bg-muted/40 p-4 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                     <FileCheck2 className="size-3.5 text-emerald-500" />
-                    Laatste Factuur
+                    Factuur 2026-042
                   </span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
                     Betaald
                   </span>
                 </div>
                 <div className="space-y-0.5">
                   <p className="text-xs font-semibold text-foreground">
-                    Fam. Van Leeuwen
+                    Fam. de Vries
                   </p>
                   <p className="text-[11px] text-muted-foreground">
-                    Groepenkast vernieuwen & laadpaal
+                    Groepenkast vervangen
                   </p>
                 </div>
                 <div className="flex items-baseline justify-between pt-1">
                   <span className="text-lg font-bold text-foreground">
-                    €1.485,25
+                    € 1.452,00
                   </span>
                   <span className="text-[10px] text-muted-foreground font-mono">
-                    Factuur #2026-042
+                    incl. 21% btw
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-emerald-600 dark:text-emerald-400 pt-1 border-t border-border/40">
                   <QrCode className="size-3" />
-                  <span>Betaald via mobiele QR op locatie</span>
+                  <span>Betaald via iDEAL-QR op locatie</span>
                 </div>
-              </div>
-
-              {/* Card 3: Maandomzet & Snel Factureren */}
-              <div className="rounded-2xl border border-border/70 bg-muted/40 p-4 flex flex-col justify-between space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                    <TrendingUp className="size-3.5 text-primary" />
-                    Oktober Omzet
-                  </span>
-                  <span className="text-[10px] font-mono font-bold text-emerald-600">
-                    +18%
-                  </span>
-                </div>
-                <div>
-                  <p className="text-2xl font-extrabold tracking-tight text-foreground">
-                    €17.680,00
-                  </p>
-                  <p className="text-[11px] text-muted-foreground">
-                    Excl. BTW over 18 opdrachten
-                  </p>
-                </div>
-                <Link
-                  href="/invoices"
-                  className={cn(
-                    buttonVariants({ size: "sm" }),
-                    "w-full rounded-xl text-xs font-semibold justify-center gap-1.5",
-                  )}
-                >
-                  <Plus className="size-3.5" />
-                  <span>Nieuwe factuur opstellen</span>
-                </Link>
               </div>
             </div>
+            <p className="pt-4 text-center text-[10px] text-muted-foreground">
+              Voorbeeldgegevens. In de app zie je je eigen cijfers.
+            </p>
           </div>
         </div>
       </div>

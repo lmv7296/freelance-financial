@@ -4,7 +4,7 @@
  * Placeholders: t("settings.invoices.termDays", { count: 14 }) fills {count}.
  *
  * Translated so far: sidebar, sidebar tax widget, the Settings page, onboarding,
- * email verification and Reports.
+ * email verification, Reports and Help & support.
  * Other pages are still Dutch-only and will be moved over step by step.
  */
 
@@ -330,6 +330,81 @@ const nl = {
       "Deze link is onvolledig. Open de link opnieuw vanuit de e-mail.",
     toDashboard: "Naar het dashboard",
     toHome: "Naar de startpagina",
+  },
+  support: {
+    badge: "Help",
+    title: "Help & support",
+    subtitle: "Antwoorden op veelgestelde vragen, of neem contact met ons op.",
+    searchPlaceholder: "Zoek een vraag…",
+    noResults: "Geen vragen gevonden. Stuur ons gerust een e-mail.",
+    goTo: "Naar {page}",
+    groups: {
+      expenses: "Uitgaven & bonnetjes",
+      tax: "Belastingkluis & rapporten",
+      account: "Account",
+    },
+    contact: {
+      title: "Contact",
+      description: "Staat je vraag er niet bij? Stuur ons een e-mail.",
+      send: "E-mail sturen",
+      copy: "Kopieer adres",
+      copied: "Gekopieerd",
+      tip: "Vermeld wat je deed en wat er misging. Een schermafbeelding helpt.",
+      mailSubject: "Vraag over FreelanceFin",
+      mailBody: "\n\n---\nAccount: {email}",
+      notConfigured:
+        "Het support-e-mailadres is nog niet ingesteld (NEXT_PUBLIC_SUPPORT_EMAIL).",
+    },
+    faq: {
+      whatsapp: {
+        q: "Hoe stuur ik bonnetjes via WhatsApp?",
+        a: "Bij Instellingen → WhatsApp-bonnetjes staat het nummer waar je je bonnetjes naartoe stuurt. Alleen bonnetjes van nummers die bij 'Toegestane afzenders' staan worden verwerkt. Voeg daar je eigen nummer toe, en dat van iedereen die bonnetjes voor je bedrijf stuurt.",
+      },
+      statuses: {
+        q: "Wat betekenen de statussen van een uitgave?",
+        a: "Wordt verwerkt: het bonnetje wordt uitgelezen.\nTe controleren: kijk de gegevens na en keur de uitgave goed of af.\nGoedgekeurd: de uitgave telt mee, ook in de Belastingkluis.\nAfgekeurd: de uitgave telt niet mee.",
+      },
+      manualExpense: {
+        q: "Kan ik een uitgave ook zelf invoeren?",
+        a: "Ja, met 'Nieuwe uitgave' op de pagina Uitgaven. Winkels die je vaak gebruikt kun je bij Instellingen → Lijsten & snelle selectie als knop toevoegen, met een vaste categorie.",
+      },
+      estimates: {
+        q: "Hoe nauwkeurig zijn de bedragen in de Belastingkluis?",
+        a: "Het zijn schattingen op basis van je facturen, je goedgekeurde uitgaven en de belastingregels van dat jaar. Het is geen fiscaal advies: de echte aangifte doe je met je boekhouder. Hoe completer je fiscale instellingen (Instellingen → Belasting), hoe beter de schatting.",
+      },
+      noIncomeTax: {
+        q: "Waarom zie ik geen schatting voor de inkomstenbelasting?",
+        a: "De schatting werkt voorlopig alleen voor een eenmanszaak. Heb je een eenmanszaak en zie je toch niets? Controleer dan of je fiscale instellingen compleet zijn bij Instellingen → Belasting.",
+      },
+      accountant: {
+        q: "Hoe geef ik mijn gegevens aan mijn boekhouder?",
+        a: "Kies in de Belastingkluis 'Nieuwe export'. Kies de periode en de bestanden die je boekhouder wil hebben. Je kunt de export downloaden of direct naar je boekhouder laten mailen.",
+      },
+      reports: {
+        q: "Welke rapporten kan ik downloaden?",
+        a: "Op de pagina Rapporten: winst & verlies, een btw-overzicht, facturen & openstaande posten en uitgaven per categorie. Klik op een rapport, kies de periode en PDF of Excel, en bevestig. Het bestand komt in je downloads.",
+      },
+      verifyEmail: {
+        q: "Ik heb geen bevestigingsmail ontvangen.",
+        a: "Kijk ook in je spam. Zolang je e-mailadres niet bevestigd is, staat er bovenaan de app een melding met de knop 'Opnieuw versturen'.",
+      },
+      changeLogin: {
+        q: "Hoe wijzig ik mijn e-mailadres of wachtwoord?",
+        a: "Bij Instellingen → Account & beveiliging. Je bevestigt de wijziging met je huidige wachtwoord. Na een nieuw wachtwoord word je op je andere apparaten uitgelogd.",
+      },
+      logoutAll: {
+        q: "Ik ben mijn telefoon kwijt of heb ingelogd op een gedeelde computer.",
+        a: "Gebruik 'Overal uitloggen' bij Instellingen → Account & beveiliging. Daarmee word je op alle apparaten uitgelogd. Wijzig voor de zekerheid ook je wachtwoord.",
+      },
+      loggedOut: {
+        q: "Waarom moet ik opnieuw inloggen?",
+        a: "Je sessie is verlopen, of je bent uitgelogd via 'Overal uitloggen' of na een wachtwoordwijziging. Log opnieuw in; je gegevens blijven gewoon bewaard.",
+      },
+      languageTheme: {
+        q: "Hoe verander ik de taal of het thema?",
+        a: "Bij Instellingen → Taal & weergave. Je kiest Nederlands of Engels en een licht, donker of systeemthema. Dit geldt alleen voor jou.",
+      },
+    },
   },
   reports: {
     badge: "Rapporten",
@@ -721,6 +796,81 @@ const en = {
       "This link is incomplete. Open the link from the email again.",
     toDashboard: "Go to the dashboard",
     toHome: "Go to the home page",
+  },
+  support: {
+    badge: "Help",
+    title: "Help & support",
+    subtitle: "Answers to frequently asked questions, or contact us.",
+    searchPlaceholder: "Search a question…",
+    noResults: "No questions found. Feel free to send us an email.",
+    goTo: "Go to {page}",
+    groups: {
+      expenses: "Expenses & receipts",
+      tax: "Tax Vault & reports",
+      account: "Account",
+    },
+    contact: {
+      title: "Contact",
+      description: "Can't find your question? Send us an email.",
+      send: "Send email",
+      copy: "Copy address",
+      copied: "Copied",
+      tip: "Describe what you did and what went wrong. A screenshot helps.",
+      mailSubject: "Question about FreelanceFin",
+      mailBody: "\n\n---\nAccount: {email}",
+      notConfigured:
+        "The support email address hasn't been set yet (NEXT_PUBLIC_SUPPORT_EMAIL).",
+    },
+    faq: {
+      whatsapp: {
+        q: "How do I send receipts via WhatsApp?",
+        a: "Settings → WhatsApp receipts shows the number to send your receipts to. Only receipts from numbers listed under 'Allowed senders' are processed. Add your own number there, and the number of everyone who sends receipts for your business.",
+      },
+      statuses: {
+        q: "What do the statuses of an expense mean?",
+        a: "Processing: the receipt is being read.\nTo review: check the details and approve or reject the expense.\nApproved: the expense counts, also in the Tax Vault.\nRejected: the expense doesn't count.",
+      },
+      manualExpense: {
+        q: "Can I enter an expense myself?",
+        a: "Yes, with 'Nieuwe uitgave' (new expense) on the Expenses page. Shops you use often can be added as buttons with a fixed category under Settings → Lists & quick selection.",
+      },
+      estimates: {
+        q: "How accurate are the amounts in the Tax Vault?",
+        a: "They are estimates based on your invoices, your approved expenses and that year's tax rules. It isn't tax advice: you file the real return with your accountant. The more complete your tax settings (Settings → Tax), the better the estimate.",
+      },
+      noIncomeTax: {
+        q: "Why don't I see an income tax estimate?",
+        a: "For now the estimate only works for an eenmanszaak (sole proprietorship). Do you have one and still see nothing? Check that your tax settings are complete under Settings → Tax.",
+      },
+      accountant: {
+        q: "How do I give my data to my accountant?",
+        a: "Choose 'Nieuwe export' (new export) in the Tax Vault. Pick the period and the files your accountant wants. You can download the export or have it emailed to your accountant directly.",
+      },
+      reports: {
+        q: "Which reports can I download?",
+        a: "On the Reports page: profit & loss, a VAT summary, invoices & open items and expenses by category. Click a report, choose the period and PDF or Excel, and confirm. The file goes to your downloads.",
+      },
+      verifyEmail: {
+        q: "I didn't receive a confirmation email.",
+        a: "Check your spam folder too. Until your email address is confirmed, a notice with a 'Send again' button is shown at the top of the app.",
+      },
+      changeLogin: {
+        q: "How do I change my email address or password?",
+        a: "Under Settings → Account & security. You confirm the change with your current password. After a new password you are logged out on your other devices.",
+      },
+      logoutAll: {
+        q: "I lost my phone or logged in on a shared computer.",
+        a: "Use 'Sign out everywhere' under Settings → Account & security. This logs you out on all devices. To be safe, change your password too.",
+      },
+      loggedOut: {
+        q: "Why do I have to log in again?",
+        a: "Your session expired, or you were logged out through 'Sign out everywhere' or after a password change. Log in again; your data is kept.",
+      },
+      languageTheme: {
+        q: "How do I change the language or theme?",
+        a: "Under Settings → Language & display. Choose Dutch or English and a light, dark or system theme. This only applies to you.",
+      },
+    },
   },
   reports: {
     badge: "Reports",
