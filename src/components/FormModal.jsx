@@ -184,8 +184,9 @@ export function FormModal({
         typeof f.required === "function"
           ? f.required(formValues)
           : Boolean(f.required);
-      const labelText =
-        typeof f.label === "function" ? f.label(formValues) : f.label;
+      const labelText = t(
+        typeof f.label === "function" ? f.label(formValues) : f.label,
+      );
 
       if (isReq) {
         if (val === undefined || val === null || val === "") {
@@ -223,8 +224,9 @@ export function FormModal({
         typeof f.required === "function"
           ? f.required(formValues)
           : Boolean(f.required);
-      const labelText =
-        typeof f.label === "function" ? f.label(formValues) : f.label;
+      const labelText = t(
+        typeof f.label === "function" ? f.label(formValues) : f.label,
+      );
 
       if (isReq) {
         if (val === undefined || val === null || val === "") {
@@ -292,16 +294,19 @@ export function FormModal({
 
     const errorMsg = errors[f.name];
     const value = formValues[f.name] ?? "";
-    const labelText =
-      typeof f.label === "function" ? f.label(formValues) : f.label;
-    const placeholderText =
+    const labelText = t(
+      typeof f.label === "function" ? f.label(formValues) : f.label,
+    );
+    const placeholderText = t(
       typeof f.placeholder === "function"
         ? f.placeholder(formValues)
-        : f.placeholder;
-    const helperText =
+        : f.placeholder,
+    );
+    const helperText = t(
       typeof f.helperText === "function"
         ? f.helperText(formValues)
-        : f.helperText;
+        : f.helperText,
+    );
     const isRequired =
       typeof f.required === "function"
         ? f.required(formValues)
@@ -376,7 +381,7 @@ export function FormModal({
             <div className="w-full p-1 bg-muted/70 dark:bg-muted/40 rounded-xl border border-border/60 flex items-center gap-1 shadow-inner/5">
               {f.options?.map((opt) => {
                 const optVal = typeof opt === "object" ? opt.value : opt;
-                const optLabel = typeof opt === "object" ? opt.label : opt;
+                const optLabel = t(typeof opt === "object" ? opt.label : opt);
                 const isSelected = value === optVal;
 
                 let IconComp = typeof opt === "object" ? opt.icon : null;
@@ -446,9 +451,9 @@ export function FormModal({
             >
               {f.options?.map((opt) => {
                 const optVal = typeof opt === "object" ? opt.value : opt;
-                const optLabel = typeof opt === "object" ? opt.label : opt;
+                const optLabel = t(typeof opt === "object" ? opt.label : opt);
                 const optDesc =
-                  typeof opt === "object" ? opt.description : null;
+                  typeof opt === "object" ? t(opt.description) : null;
                 const isSelected = value === optVal;
 
                 return (
@@ -537,7 +542,7 @@ export function FormModal({
               )}
               {f.options?.map((opt) => {
                 const optVal = typeof opt === "object" ? opt.value : opt;
-                const optLabel = typeof opt === "object" ? opt.label : opt;
+                const optLabel = t(typeof opt === "object" ? opt.label : opt);
                 return (
                   <option key={optVal} value={optVal}>
                     {optLabel}
@@ -621,7 +626,7 @@ export function FormModal({
                       : "border-border/70 bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  {preset.label}
+                  {t(preset.label)}
                 </button>
               );
             })}
@@ -643,7 +648,11 @@ export function FormModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidth={maxWidth}>
       <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
-        <ModalHeader title={title} description={description} icon={icon} />
+        <ModalHeader
+          title={t(title)}
+          description={t(description)}
+          icon={icon}
+        />
 
         <ModalBody className="space-y-4">
           {/* Stepper Progress Bar (when multi-step is active) */}
@@ -697,7 +706,7 @@ export function FormModal({
                       >
                         {isCompleted ? "✓" : idx + 1}
                       </span>
-                      <span className="hidden sm:inline">{st.title}</span>
+                      <span className="hidden sm:inline">{t(st.title)}</span>
                     </button>
                   );
                 })}
@@ -705,7 +714,7 @@ export function FormModal({
 
               {steps[currentStepIndex]?.description && (
                 <p className="text-[11.5px] text-muted-foreground pt-1 px-1">
-                  {steps[currentStepIndex].description}
+                  {t(steps[currentStepIndex].description)}
                 </p>
               )}
             </div>

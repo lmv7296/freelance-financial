@@ -1,7 +1,8 @@
 /**
  * UI translations. Every language has its own file in ./locales (see README.md there).
  * Keys are nested by area; look them up with t("settings.lists.title").
- * Missing keys fall back to Dutch, then to the key itself.
+ * Missing keys fall back to Dutch, then to the key itself, so plain text passed to
+ * t() (e.g. a value from the backend) comes back unchanged.
  * Placeholders: t("settings.invoices.termDays", { count: 14 }) fills {count}.
  */
 import en from "./locales/en.json";
@@ -40,6 +41,7 @@ function lookup(dictionary, key) {
  * @param {Record<string, string | number>} [vars]
  */
 export function translate(language, key, vars) {
+  if (typeof key !== "string" || key === "") return key;
   const value =
     lookup(DICTIONARIES[language], key) ??
     lookup(DICTIONARIES[DEFAULT_LANGUAGE], key);
