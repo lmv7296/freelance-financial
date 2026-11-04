@@ -1,94 +1,70 @@
-import {
-  Clock,
-  FileText,
-  PiggyBank,
-  QrCode,
-  ShieldCheck,
-  Smartphone,
-  TrendingUp,
-  Users,
-  Zap,
-} from "lucide-react";
+/**
+ * Landing page content. Only describe what the app does: no invented numbers,
+ * statistics, reviews or certifications. Example figures (Hero) are labelled as such.
+ */
 
 export const APP_FEATURES = [
   {
-    icon: FileText,
-    badge: "Snel & Professioneel",
-    title: "Factureren in 60 seconden",
+    badge: "Facturen",
+    title: "Factureren direct na de klus",
     description:
-      "Stel direct na afloop van de klus je factuur op. Splits arbeidsuren en verbruikte materialen met automatische BTW-berekening.",
-    highlight: "WhatsApp & E-mail export",
+      "Maak je factuur op je telefoon zodra de klus klaar is. Zet arbeidsuren en materialen op aparte regels, met automatische btw-berekening.",
+    highlight: "Versturen via WhatsApp of e-mail",
   },
   {
-    icon: PiggyBank,
-    badge: "Geen verrassingen",
-    title: "Automatische BTW-Kluis",
+    badge: "Betalen",
+    title: "iDEAL-betaalverzoek & QR-code",
     description:
-      "Bij iedere inkomende betaling wordt de 21% BTW direct apart berekend en gereserveerd voor je kwartaalaangifte bij de Belastingdienst.",
-    highlight: "Altijd exact gedekt voor Q1-Q4",
+      "Stuur je klant een betaallink, of laat de QR-code ter plekke scannen. Je ziet in de app welke facturen betaald zijn en welke nog openstaan.",
+    highlight: "Betaallink of QR-code op locatie",
   },
   {
-    icon: QrCode,
-    badge: "Sneller betaald",
-    title: "iDEAL & QR Betaalverzoek",
+    badge: "Bonnetjes",
+    title: "Bonnetjes via WhatsApp",
     description:
-      "Laat je klant ter plekke de QR-code scannen op je telefoon of stuur een directe betaallink. Gemiddeld binnen 4 uur voldaan.",
-    highlight: "3x sneller betaald dan via overboeking",
+      "Maak een foto van je bonnetje en stuur hem via WhatsApp. De app leest winkel, datum, bedrag en btw uit en zet de uitgave klaar om te controleren.",
+    highlight: "Ook voor je medewerkers",
   },
   {
-    icon: Users,
-    badge: "Centraal overzicht",
-    title: "Klanten & Klushistorie",
+    badge: "Belastingkluis",
+    title: "Weten wat je opzij moet zetten",
     description:
-      "Nooit meer zoeken naar oude offertes of adressen. Complete klantendossiers met KvK-vermelding, klushistorie en betaalstatus.",
-    highlight: "Snelle autocomplete bij nieuwe facturen",
+      "Zie hoeveel btw je per kwartaal moet betalen en een schatting van je inkomstenbelasting, berekend met de belastingregels van dit jaar. Met de bronnen erbij.",
+    highlight: "Met deadlines van de Belastingdienst",
   },
   {
-    icon: TrendingUp,
-    badge: "Real-time inzicht",
-    title: "Cashflow & Openstaande Posten",
+    badge: "Boekhouder",
+    title: "Rapporten & export voor je boekhouder",
     description:
-      "Zie in één oogopslag welke facturen betaald zijn, wie een herinnering nodig heeft en wat je nettowinst van deze maand is.",
-    highlight: "Slimme automatische betaalstatussen",
+      "Download winst & verlies, een btw-overzicht, je facturen en je uitgaven als PDF of Excel. Of stuur een export direct naar je boekhouder.",
+    highlight: "Per maand, kwartaal of jaar",
   },
   {
-    icon: ShieldCheck,
-    badge: "Veilig & Betrouwbaar",
-    title: "Beveiligd Vakmanschap",
+    badge: "Klanten",
+    title: "Klanten op één plek",
     description:
-      "Jouw financiële data is beveiligd met moderne sessie-encryptie, HttpOnly cookies en automatische cloud-backups.",
-    highlight: "Volledig AVG / GDPR compliant",
+      "Je klantgegevens staan klaar. Bij een nieuwe factuur typ je een paar letters en de klant is ingevuld.",
+    highlight: "Snel invullen bij nieuwe facturen",
   },
 ];
 
 export const WORKFLOW_STEPS = [
   {
     step: "01",
-    title: "Klus gereed",
+    title: "Klus klaar? Factuur erachteraan",
     description:
-      "Pak je smartphone erbij in de bus of werkplaats. Selecteer je klant en voeg arbeidsuren en materialen toe.",
-    icon: Smartphone,
+      "Kies je klant, voeg uren en materialen toe en stuur de factuur met een iDEAL-betaallink.",
   },
   {
     step: "02",
-    title: "Verstuur betaallink",
+    title: "Bonnetje? Foto via WhatsApp",
     description:
-      "De klant ontvangt direct een professionele factuur met iDEAL QR-code via WhatsApp of e-mail.",
-    icon: Zap,
+      "Stuur een foto van je bonnetje naar je FreelanceFin-nummer. De uitgave staat daarna in de app, klaar om te controleren.",
   },
   {
     step: "03",
-    title: "BTW veiliggesteld",
+    title: "Zie wat je opzij moet zetten",
     description:
-      "Het geld staat op je rekening en de BTW zit direct vergrendeld in je virtuele kluis voor de fiscus.",
-    icon: Clock,
+      "De Belastingkluis rekent met je facturen en goedgekeurde uitgaven uit hoeveel btw en belasting eraan komt, en wanneer.",
   },
 ];
-
-export const TESTIMONIAL = {
-  quote:
-    "Vroeger stelde ik facturen altijd uit tot zondagavond en schrok ik elk kwartaal van de BTW-aangifte. Met FreelanceFin stuur ik de factuur direct vanuit mijn bus voordat ik wegrijd. Klanten betalen vrijwel direct en mijn BTW-potje staat altijd klaar.",
-  author: "Dennis van Dam",
-  role: "Zelfstandig Elektricien & Installateur (Dennis Elektra)",
-  kvk: "KvK 78291044",
-};
