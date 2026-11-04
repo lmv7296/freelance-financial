@@ -10,6 +10,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@/components/ui/modal";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 /**
@@ -40,7 +41,7 @@ import { cn } from "@/lib/utils";
  *     validate?: (value: any, formValues: Record<string, any>) => string | null,
  *   }>
  * - initialValues?: Record<string, any>
- * - submitLabel?: string (default "Save Changes")
+ * - submitLabel?: string (default: common.save)
  * - submitVariant?: "default" | "destructive" | "secondary"
  * - cancelLabel?: string (default "Cancel")
  * - isSubmitting?: boolean (optional external control)
@@ -56,20 +57,21 @@ export function FormModal({
   isOpen,
   onClose,
   onSubmit,
-  title = "Form",
+  title,
   description,
   icon,
   steps = EMPTY_STEPS,
   fields = EMPTY_FIELDS,
   initialValues = EMPTY_INITIAL_VALUES,
-  submitLabel = "Save Changes",
+  submitLabel,
   submitVariant = "default",
-  cancelLabel = "Cancel",
+  cancelLabel,
   isSubmitting: externalSubmitting,
   footerNote,
   maxWidth = "lg",
   children,
 }) {
+  const t = useT();
   const [formValues, setFormValues] = useState({});
   const [errors, setErrors] = useState({});
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -187,7 +189,9 @@ export function FormModal({
 
       if (isReq) {
         if (val === undefined || val === null || val === "") {
-          newErrors[f.name] = `${labelText || f.name} is verplicht`;
+          newErrors[f.name] = t("common.fieldRequired", {
+            field: labelText || f.name,
+          });
           hasError = true;
           continue;
         }
@@ -224,7 +228,9 @@ export function FormModal({
 
       if (isReq) {
         if (val === undefined || val === null || val === "") {
-          newErrors[f.name] = `${labelText || f.name} is verplicht`;
+          newErrors[f.name] = t("common.fieldRequired", {
+            field: labelText || f.name,
+          });
           continue;
         }
       }
@@ -327,7 +333,10 @@ export function FormModal({
               <span>
                 {labelText}
                 {isRequired && (
-                  <span className="text-destructive ml-1" title="Verplicht">
+                  <span
+                    className="text-destructive ml-1"
+                    title={t("common.required")}
+                  >
                     *
                   </span>
                 )}
@@ -349,7 +358,10 @@ export function FormModal({
                 <span>
                   {labelText}
                   {isRequired && (
-                    <span className="text-destructive ml-1" title="Verplicht">
+                    <span
+                      className="text-destructive ml-1"
+                      title={t("common.required")}
+                    >
                       *
                     </span>
                   )}
@@ -414,7 +426,10 @@ export function FormModal({
                 <span>
                   {labelText}
                   {isRequired && (
-                    <span className="text-destructive ml-1" title="Verplicht">
+                    <span
+                      className="text-destructive ml-1"
+                      title={t("common.required")}
+                    >
                       *
                     </span>
                   )}
@@ -732,7 +747,7 @@ export function FormModal({
               disabled={isSubmitting}
               className="rounded-full text-xs px-4 active:scale-95 transition-all cursor-pointer"
             >
-              Vorige
+              {t("common.previous")}
             </Button>
           ) : (
             <Button
@@ -743,7 +758,7 @@ export function FormModal({
               disabled={isSubmitting}
               className="rounded-full text-xs px-4 active:scale-95 transition-all cursor-pointer"
             >
-              {cancelLabel}
+              {cancelLabel ?? t("common.cancel")}
             </Button>
           )}
 
@@ -757,7 +772,7 @@ export function FormModal({
               disabled={isSubmitting}
               className="rounded-full text-xs font-semibold px-5 shadow-xs hover:shadow-md active:scale-95 transition-all cursor-pointer"
             >
-              Volgende
+              {t("common.next")}
             </Button>
           ) : (
             <Button
@@ -770,10 +785,10 @@ export function FormModal({
               {isSubmitting ? (
                 <>
                   <Loader2 className="size-3.5 mr-1.5 animate-spin" />
-                  Opslaan...
+                  {t("common.saving")}
                 </>
               ) : (
-                submitLabel
+                (submitLabel ?? t("common.save"))
               )}
             </Button>
           )}

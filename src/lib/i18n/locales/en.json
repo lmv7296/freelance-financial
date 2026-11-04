@@ -450,5 +450,59 @@
         ]
       }
     }
+  },
+  "errors": {
+    "network": "No connection to the server. Check your internet connection and try again.",
+    "requestFailed": "Something went wrong (error {status}). Please try again.",
+    "uploadFailed": "Upload failed (error {status})."
+  },
+  "auth": {
+    "loginTitle": "Log in to FreelanceFin",
+    "loginSubtitle": "Log in with your email address and password.",
+    "loginPageTitle": "Welcome back",
+    "registerTitle": "Create an account",
+    "registerSubtitle": "Your invoices, receipts and VAT in one place.",
+    "email": "Email address",
+    "emailPlaceholder": "name@example.com",
+    "password": "Password",
+    "confirmPassword": "Repeat password",
+    "newPasswordPlaceholder": "At least {min} characters",
+    "passwordCount": "{count}/{min}+ characters",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "login": "Log in",
+    "register": "Create account",
+    "loggingIn": "Logging in…",
+    "registering": "Creating account…",
+    "haveAccount": "Already have an account?",
+    "noAccount": "No account yet?",
+    "sessionExpiredTitle": "Your session has expired",
+    "sessionExpiredText": "Log in again to continue.",
+    "rateLimitTitle": "Too many attempts",
+    "rateLimitText": "Wait {seconds} seconds and try again.",
+    "loginFailed": "Login failed",
+    "loginFailedText": "Check your email address and password.",
+    "registerFailed": "Could not create your account",
+    "registerFailedText": "Please try again.",
+    "validation": {
+      "emailRequired": "Enter your email address.",
+      "emailTooLong": "An email address can have at most {emailMax} characters.",
+      "emailInvalid": "Enter a valid email address.",
+      "passwordRequired": "Enter your password.",
+      "passwordTooShort": "Your password must have at least {min} characters.",
+      "passwordTooLong": "Your password can have at most {max} characters.",
+      "passwordMismatch": "The passwords don't match."
+    }
+  },
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "previous": "Previous",
+    "next": "Next",
+    "required": "Required",
+    "fieldRequired": "{field} is required.",
+    "checkingAccess": "One moment…",
+    "saving": "Saving…"
   }
 }

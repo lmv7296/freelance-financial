@@ -8,6 +8,16 @@ export const AUTH_RULES = {
 };
 
 /**
+ * Placeholders for the validation messages. The validators return translation keys
+ * (auth.validation.*); show them with t(error, AUTH_MESSAGE_VARS).
+ */
+export const AUTH_MESSAGE_VARS = {
+  min: AUTH_RULES.PASSWORD_MIN_LENGTH,
+  max: AUTH_RULES.PASSWORD_MAX_LENGTH,
+  emailMax: AUTH_RULES.EMAIL_MAX_LENGTH,
+};
+
+/**
  * Validates login payload
  * @param {{ email?: string; password?: string }} payload
  * @returns {{ isValid: boolean; errors: { email?: string; password?: string } }}
@@ -18,15 +28,15 @@ export function validateLogin(payload = {}) {
   const password = payload.password || "";
 
   if (!email) {
-    errors.email = "E-mailadres is verplicht";
+    errors.email = "auth.validation.emailRequired";
   } else if (email.length > AUTH_RULES.EMAIL_MAX_LENGTH) {
-    errors.email = `E-mailadres mag maximaal ${AUTH_RULES.EMAIL_MAX_LENGTH} tekens bevatten`;
+    errors.email = "auth.validation.emailTooLong";
   } else if (!EMAIL_REGEX.test(email)) {
-    errors.email = "Voer een geldig e-mailadres in";
+    errors.email = "auth.validation.emailInvalid";
   }
 
   if (!password) {
-    errors.password = "Wachtwoord is verplicht";
+    errors.password = "auth.validation.passwordRequired";
   }
 
   return {
@@ -47,23 +57,23 @@ export function validateRegister(payload = {}) {
   const confirmPassword = payload.confirmPassword;
 
   if (!email) {
-    errors.email = "E-mailadres is verplicht";
+    errors.email = "auth.validation.emailRequired";
   } else if (email.length > AUTH_RULES.EMAIL_MAX_LENGTH) {
-    errors.email = `E-mailadres mag maximaal ${AUTH_RULES.EMAIL_MAX_LENGTH} tekens bevatten`;
+    errors.email = "auth.validation.emailTooLong";
   } else if (!EMAIL_REGEX.test(email)) {
-    errors.email = "Voer een geldig e-mailadres in";
+    errors.email = "auth.validation.emailInvalid";
   }
 
   if (!password) {
-    errors.password = "Wachtwoord is verplicht";
+    errors.password = "auth.validation.passwordRequired";
   } else if (password.length < AUTH_RULES.PASSWORD_MIN_LENGTH) {
-    errors.password = `Wachtwoord moet minimaal ${AUTH_RULES.PASSWORD_MIN_LENGTH} tekens lang zijn`;
+    errors.password = "auth.validation.passwordTooShort";
   } else if (password.length > AUTH_RULES.PASSWORD_MAX_LENGTH) {
-    errors.password = `Wachtwoord mag maximaal ${AUTH_RULES.PASSWORD_MAX_LENGTH} tekens bevatten`;
+    errors.password = "auth.validation.passwordTooLong";
   }
 
   if (confirmPassword !== undefined && confirmPassword !== password) {
-    errors.confirmPassword = "Wachtwoorden komen niet overeen";
+    errors.confirmPassword = "auth.validation.passwordMismatch";
   }
 
   return {

@@ -39,8 +39,6 @@ const NAV_ITEMS = [
         labelKey: "nav.invoices",
         href: "/invoices",
         icon: FileText,
-        badge: "3 pending",
-        badgeVariant: "warning",
       },
       {
         labelKey: "nav.clients",
@@ -61,8 +59,6 @@ const NAV_ITEMS = [
         labelKey: "nav.taxVault",
         href: "/tax-vault",
         icon: Wallet,
-        badge: "Q4 prep",
-        badgeVariant: "neutral",
       },
       {
         labelKey: "nav.reports",

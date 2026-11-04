@@ -42,3 +42,13 @@ export function translate(language, key, vars) {
     name in vars ? String(vars[name]) : match,
   );
 }
+
+/**
+ * The language the app is shown in, for code outside React (API helpers).
+ * PreferencesProvider keeps <html lang> in sync with the user's choice.
+ */
+export function currentLanguage() {
+  if (typeof document === "undefined") return DEFAULT_LANGUAGE;
+  const lang = document.documentElement.lang;
+  return lang in DICTIONARIES ? lang : DEFAULT_LANGUAGE;
+}

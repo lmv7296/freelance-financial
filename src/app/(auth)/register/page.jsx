@@ -16,9 +16,15 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { AUTH_RULES, validateRegister } from "@/schemas/authSchema";
+import { useT } from "@/lib/preferences/PreferencesContext";
+import {
+  AUTH_MESSAGE_VARS,
+  AUTH_RULES,
+  validateRegister,
+} from "@/schemas/authSchema";
 
 export default function RegisterPage() {
+  const t = useT();
   const router = useRouter();
   const { register, isAuthenticated, rateLimitCountdown } = useAuth();
 
@@ -54,9 +60,7 @@ export default function RegisterPage() {
       await register({ email, password });
       router.push("/dashboard");
     } catch (err) {
-      setServerError(
-        err?.message || "Registreren mislukt. Probeer het opnieuw.",
-      );
+      setServerError(err?.message || t("auth.registerFailedText"));
     } finally {
       setIsSubmitting(false);
     }
@@ -69,10 +73,10 @@ export default function RegisterPage() {
           <ShieldCheck className="size-5" />
         </div>
         <h1 className="text-xl font-bold tracking-tight text-foreground">
-          Nieuw account aanmaken
+          {t("auth.registerTitle")}
         </h1>
         <p className="text-xs text-muted-foreground">
-          Krijg direct controle over je administratie, offertes en facturen
+          {t("auth.registerSubtitle")}
         </p>
       </div>
 
@@ -80,11 +84,9 @@ export default function RegisterPage() {
         <div className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-medium animate-in fade-in">
           <Clock className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
           <div>
-            <p className="font-semibold">Te veel verzoeken</p>
+            <p className="font-semibold">{t("auth.rateLimitTitle")}</p>
             <p className="opacity-90">
-              Wacht nog{" "}
-              <span className="font-mono font-bold">{rateLimitCountdown}s</span>{" "}
-              voor een nieuwe poging.
+              {t("auth.rateLimitText", { seconds: rateLimitCountdown })}
             </p>
           </div>
         </div>
@@ -94,7 +96,7 @@ export default function RegisterPage() {
         <div className="flex items-start gap-2.5 p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs font-medium animate-in fade-in">
           <AlertCircle className="size-4 shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="font-semibold">Fout bij registratie</p>
+            <p className="font-semibold">{t("auth.registerFailed")}</p>
             <p className="opacity-90">{serverError}</p>
           </div>
         </div>
@@ -107,10 +109,10 @@ export default function RegisterPage() {
             htmlFor="page-register-email"
             className="text-xs font-semibold text-foreground flex items-center justify-between"
           >
-            <span>E-mailadres</span>
+            <span>{t("auth.email")}</span>
             {fieldErrors.email && (
               <span className="text-[11px] text-destructive font-normal">
-                {fieldErrors.email}
+                {t(fieldErrors.email, AUTH_MESSAGE_VARS)}
               </span>
             )}
           </label>
@@ -119,7 +121,7 @@ export default function RegisterPage() {
             <Input
               id="page-register-email"
               type="email"
-              placeholder="naam@voorbeeld.nl"
+              placeholder={t("auth.emailPlaceholder")}
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -142,11 +144,13 @@ export default function RegisterPage() {
               htmlFor="page-register-password"
               className="text-xs font-semibold text-foreground"
             >
-              Wachtwoord
+              {t("auth.password")}
             </label>
             <span className="text-[10px] text-muted-foreground">
-              {password.length}/{AUTH_RULES.PASSWORD_MIN_LENGTH}+ tekens (max.{" "}
-              {AUTH_RULES.PASSWORD_MAX_LENGTH})
+              {t("auth.passwordCount", {
+                count: password.length,
+                min: AUTH_RULES.PASSWORD_MIN_LENGTH,
+              })}
             </span>
           </div>
           <div className="relative">
@@ -154,7 +158,7 @@ export default function RegisterPage() {
             <Input
               id="page-register-password"
               type={showPassword ? "text" : "password"}
-              placeholder="Minimaal 8 tekens"
+              placeholder={t("auth.newPasswordPlaceholder", AUTH_MESSAGE_VARS)}
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
@@ -171,7 +175,9 @@ export default function RegisterPage() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-              title={showPassword ? "Verberg wachtwoord" : "Toon wachtwoord"}
+              title={
+                showPassword ? t("auth.hidePassword") : t("auth.showPassword")
+              }
             >
               {showPassword ? (
                 <EyeOff className="size-4" />
@@ -182,7 +188,7 @@ export default function RegisterPage() {
           </div>
           {fieldErrors.password && (
             <p className="text-[11px] text-destructive">
-              {fieldErrors.password}
+              {t(fieldErrors.password, AUTH_MESSAGE_VARS)}
             </p>
           )}
         </div>
@@ -193,10 +199,10 @@ export default function RegisterPage() {
             htmlFor="page-register-confirm-password"
             className="text-xs font-semibold text-foreground flex items-center justify-between"
           >
-            <span>Bevestig wachtwoord</span>
+            <span>{t("auth.confirmPassword")}</span>
             {fieldErrors.confirmPassword && (
               <span className="text-[11px] text-destructive font-normal">
-                {fieldErrors.confirmPassword}
+                {t(fieldErrors.confirmPassword, AUTH_MESSAGE_VARS)}
               </span>
             )}
           </label>
@@ -205,7 +211,7 @@ export default function RegisterPage() {
             <Input
               id="page-register-confirm-password"
               type={showPassword ? "text" : "password"}
-              placeholder="Herhaal wachtwoord"
+              placeholder="••••••••"
               value={confirmPassword}
               onChange={(e) => {
                 setConfirmPassword(e.target.value);
@@ -232,11 +238,11 @@ export default function RegisterPage() {
           {isSubmitting ? (
             <span className="flex items-center gap-2">
               <span className="size-4 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
-              <span>Account aanmaken...</span>
+              <span>{t("auth.registering")}</span>
             </span>
           ) : (
             <>
-              <span>Registreren</span>
+              <span>{t("auth.register")}</span>
               <ArrowRight className="size-4" />
             </>
           )}
@@ -244,12 +250,12 @@ export default function RegisterPage() {
       </form>
 
       <div className="pt-4 border-t border-border/50 text-center text-xs text-muted-foreground">
-        Heb je al een account?{" "}
+        {t("auth.haveAccount")}{" "}
         <Link
           href="/login"
           className="font-semibold text-primary hover:underline"
         >
-          Inloggen
+          {t("auth.login")}
         </Link>
       </div>
     </div>

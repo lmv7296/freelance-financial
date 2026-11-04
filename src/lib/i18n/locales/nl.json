@@ -450,5 +450,59 @@
         ]
       }
     }
+  },
+  "errors": {
+    "network": "Geen verbinding met de server. Controleer je internet en probeer het opnieuw.",
+    "requestFailed": "Er ging iets mis (foutcode {status}). Probeer het opnieuw.",
+    "uploadFailed": "Uploaden mislukt (foutcode {status})."
+  },
+  "auth": {
+    "loginTitle": "Inloggen bij FreelanceFin",
+    "loginSubtitle": "Log in met je e-mailadres en wachtwoord.",
+    "loginPageTitle": "Welkom terug",
+    "registerTitle": "Account aanmaken",
+    "registerSubtitle": "Voor je facturen, bonnetjes en btw op één plek.",
+    "email": "E-mailadres",
+    "emailPlaceholder": "naam@voorbeeld.nl",
+    "password": "Wachtwoord",
+    "confirmPassword": "Herhaal wachtwoord",
+    "newPasswordPlaceholder": "Minimaal {min} tekens",
+    "passwordCount": "{count}/{min}+ tekens",
+    "showPassword": "Toon wachtwoord",
+    "hidePassword": "Verberg wachtwoord",
+    "login": "Inloggen",
+    "register": "Account aanmaken",
+    "loggingIn": "Inloggen…",
+    "registering": "Account aanmaken…",
+    "haveAccount": "Heb je al een account?",
+    "noAccount": "Nog geen account?",
+    "sessionExpiredTitle": "Je sessie is verlopen",
+    "sessionExpiredText": "Log opnieuw in om verder te gaan.",
+    "rateLimitTitle": "Te veel pogingen",
+    "rateLimitText": "Wacht nog {seconds} seconden en probeer het dan opnieuw.",
+    "loginFailed": "Inloggen mislukt",
+    "loginFailedText": "Controleer je e-mailadres en wachtwoord.",
+    "registerFailed": "Account aanmaken mislukt",
+    "registerFailedText": "Probeer het opnieuw.",
+    "validation": {
+      "emailRequired": "Vul je e-mailadres in.",
+      "emailTooLong": "Een e-mailadres mag maximaal {emailMax} tekens hebben.",
+      "emailInvalid": "Vul een geldig e-mailadres in.",
+      "passwordRequired": "Vul je wachtwoord in.",
+      "passwordTooShort": "Je wachtwoord moet minimaal {min} tekens hebben.",
+      "passwordTooLong": "Je wachtwoord mag maximaal {max} tekens hebben.",
+      "passwordMismatch": "De wachtwoorden zijn niet gelijk."
+    }
+  },
+  "common": {
+    "close": "Sluiten",
+    "cancel": "Annuleer",
+    "save": "Opslaan",
+    "previous": "Vorige",
+    "next": "Volgende",
+    "required": "Verplicht",
+    "fieldRequired": "{field} is verplicht.",
+    "checkingAccess": "Even geduld…",
+    "saving": "Opslaan…"
   }
 }

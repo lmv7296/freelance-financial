@@ -9,6 +9,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@/components/ui/modal";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 /**
@@ -42,8 +43,9 @@ export function InfoModal({
   sections,
   children,
   footerActions,
-  closeLabel = "Close",
+  closeLabel,
 }) {
+  const t = useT();
   const [copiedKey, setCopiedKey] = useState(null);
 
   const handleCopy = (text, key) => {
@@ -207,7 +209,7 @@ export function InfoModal({
         onClick={onClose}
         className="rounded-full text-xs px-5 active:scale-95 transition-all"
       >
-        {closeLabel}
+        {closeLabel ?? t("common.close")}
       </Button>
     );
   };

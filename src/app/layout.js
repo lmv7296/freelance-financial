@@ -19,9 +19,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "FreelanceFin — Financieel Beheer voor Vakmensen",
+  title: "FreelanceFin — Financieel beheer voor vakmensen",
   description:
-    "Eenvoudig factureren, offertes opstellen en BTW-kluizen beheren.",
+    "Facturen, bonnetjes en btw op één plek, voor vakmensen en zzp'ers.",
 };
 
 export default function RootLayout({ children }) {
