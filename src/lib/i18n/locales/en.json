@@ -338,7 +338,7 @@
       },
       "manualExpense": {
         "q": "Can I enter an expense myself?",
-        "a": "Yes, with 'Nieuwe uitgave' (new expense) on the Expenses page. Shops you use often can be added as buttons with a fixed category under Settings → Lists & quick selection."
+        "a": "Yes, with 'New expense' on the Expenses page. Shops you use often can be added as buttons with a fixed category under Settings → Lists & quick selection."
       },
       "estimates": {
         "q": "How accurate are the amounts in the Tax Vault?",
@@ -350,7 +350,7 @@
       },
       "accountant": {
         "q": "How do I give my data to my accountant?",
-        "a": "Choose 'Nieuwe export' (new export) in the Tax Vault. Pick the period and the files your accountant wants. You can download the export or have it emailed to your accountant directly."
+        "a": "Choose 'New export' in the Tax Vault. Pick the period and the files your accountant wants. You can download the export or have it emailed to your accountant directly."
       },
       "reports": {
         "q": "Which reports can I download?",
@@ -922,8 +922,8 @@
       "saveFailed": "Saving failed.",
       "groupBusiness": "Business",
       "legalForm": "Legal form",
-      "eenmanszaak": "Sole proprietorship (eenmanszaak)",
-      "vof": "Partnership (vof, coming soon)",
+      "eenmanszaak": "Sole proprietorship (eenmanszaak / zzp)",
+      "vof": "General partnership (vof, coming soon)",
       "bv": "Private limited company (bv, coming soon)",
       "vatFrequency": "VAT return per",
       "quarter": "Quarter",
@@ -1179,7 +1179,8 @@
     "newClient": "New client:",
     "unknown": "Unknown",
     "notInClients": "(not in your clients yet)",
-    "addNew": "Use as a new client"
+    "addNew": "Use as a new client",
+    "linked": "Linked client:"
   },
   "invoicePreview": {
     "title": "Preview for your client",
@@ -1349,5 +1350,9 @@
       "postalCity": "Postcode and town",
       "postalCityPlaceholder": "E.g. 1016 HE Amsterdam"
     }
+  },
+  "authLayout": {
+    "tagline": "Invoices, receipts and VAT for tradespeople and freelancers",
+    "back": "← Back to the home page"
   }
 }

@@ -296,7 +296,9 @@ export function ClientAutocomplete({
         <div className="flex items-center justify-between px-2.5 py-1 rounded-lg border border-primary/25 bg-primary/5 text-[11px] text-foreground animate-in fade-in-50 duration-200">
           <div className="flex items-center gap-1.5 truncate">
             <Check className="size-3 text-primary shrink-0" />
-            <span className="text-muted-foreground">Klant gekoppeld:</span>
+            <span className="text-muted-foreground">
+              {t("clientSearch.linked")}
+            </span>
             <span className="font-semibold text-primary truncate">
               {selectedMatch.name}
             </span>

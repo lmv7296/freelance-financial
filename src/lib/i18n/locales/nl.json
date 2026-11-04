@@ -1179,7 +1179,8 @@
     "newClient": "Nieuwe klant:",
     "unknown": "Onbekend",
     "notInClients": "(nog niet bij je klanten)",
-    "addNew": "Als nieuwe klant gebruiken"
+    "addNew": "Als nieuwe klant gebruiken",
+    "linked": "Gekoppelde klant:"
   },
   "invoicePreview": {
     "title": "Voorbeeld voor je klant",
@@ -1349,5 +1350,9 @@
       "postalCity": "Postcode en plaats",
       "postalCityPlaceholder": "Bijv. 1016 HE Amsterdam"
     }
+  },
+  "authLayout": {
+    "tagline": "Facturen, bonnetjes en btw voor vakmensen en zzp'ers",
+    "back": "← Terug naar de startpagina"
   }
 }
