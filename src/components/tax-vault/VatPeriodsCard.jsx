@@ -3,7 +3,7 @@
 import { ChevronDown, Percent } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { formatDutchDate } from "@/lib/dateUtils";
+import { formatDate } from "@/lib/dateUtils";
 import { formatEuro } from "@/lib/formatCurrency";
 import { cn } from "@/lib/utils";
 
@@ -87,7 +87,7 @@ export function VatPeriodsCard({ vat }) {
                       )}
                     </div>
                     <p className="text-[11px] text-muted-foreground">
-                      Uiterlijk {formatDutchDate(period.deadline)} aangeven en
+                      Uiterlijk {formatDate(period.deadline)} aangeven en
                       betalen
                     </p>
                   </div>

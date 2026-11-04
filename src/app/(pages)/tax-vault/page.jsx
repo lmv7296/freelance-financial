@@ -24,7 +24,7 @@ import { VatPeriodsCard } from "@/components/tax-vault/VatPeriodsCard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { taxVaultApi } from "@/lib/api/taxVault";
-import { formatDutchDate } from "@/lib/dateUtils";
+import { formatDate } from "@/lib/dateUtils";
 import { formatEuro } from "@/lib/formatCurrency";
 import { cn } from "@/lib/utils";
 
@@ -225,7 +225,7 @@ export default function TaxVaultPage() {
               {overview.tax_year} (bronnen onderaan). Het is geen fiscaal
               advies: de echte aangifte doe je met je boekhouder.
               {overview.generated_at &&
-                ` Berekend op ${formatDutchDate(overview.generated_at)}.`}
+                ` Berekend op ${formatDate(overview.generated_at)}.`}
             </Notice>
             {!overview.profile_complete && (
               <Notice tone="warning" icon={Settings2}>
@@ -261,7 +261,7 @@ export default function TaxVaultPage() {
               }
               description={
                 nextVatPeriod
-                  ? `Uiterlijk ${formatDutchDate(nextVatPeriod.deadline)}`
+                  ? `Uiterlijk ${formatDate(nextVatPeriod.deadline)}`
                   : overview.vat.enabled
                     ? "Geen open periode"
                     : "Niet van toepassing (KOR)"
@@ -297,7 +297,7 @@ export default function TaxVaultPage() {
             <Card
               title="Volgende deadline"
               description={nextDeadline?.label ?? "Geen openstaande deadlines"}
-              value={nextDeadline ? formatDutchDate(nextDeadline.date) : "—"}
+              value={nextDeadline ? formatDate(nextDeadline.date) : "—"}
               icon={<CalendarClock className="size-5" />}
               iconColor="amber"
             />

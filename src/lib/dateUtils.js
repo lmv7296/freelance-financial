@@ -1,3 +1,5 @@
+import { currentLanguage, localeFor, translate } from "@/lib/i18n/dictionaries";
+
 /**
  * Date and payment term utilities for invoices and financial management.
  * Implements Dutch statutory and commercial payment terms (14-day standard norm, 30-day B2B).
@@ -57,18 +59,19 @@ export function parseLocalDate(dateStr) {
 }
 
 /**
- * Formats a YYYY-MM-DD or date string to Dutch readable date (e.g. "8 nov. 2026").
+ * Formats a YYYY-MM-DD or date string as a short date in the user's language
+ * (e.g. "8 nov. 2026" in Dutch, "8 Nov 2026" in English).
  *
  * @param {string|Date} dateVal - Input date
- * @returns {string} - Human readable Dutch date
+ * @returns {string}
  */
-export function formatDutchDate(dateVal) {
+export function formatDate(dateVal) {
   if (!dateVal) return "";
   try {
     const d = typeof dateVal === "string" ? parseLocalDate(dateVal) : dateVal;
     if (Number.isNaN(d.getTime())) return String(dateVal);
 
-    return new Intl.DateTimeFormat("nl-NL", {
+    return new Intl.DateTimeFormat(localeFor(currentLanguage()), {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -79,33 +82,34 @@ export function formatDutchDate(dateVal) {
 }
 
 /**
- * Calculates relative days remaining from today until the due date.
+ * Relative due date label in the user's language, e.g. "Vervalt over 3 dagen".
  *
  * @param {string} dueDateStr - "YYYY-MM-DD"
  * @param {string} [status="Pending"] - Invoice status
- * @returns {string} - e.g. "Binnen 14 dagen", "Binnen 30 dagen", "Vandaag vervallen", etc.
+ * @returns {string}
  */
 export function getRelativeDueDateLabel(dueDateStr, status = "Pending") {
-  if (status === "Paid") return "Direct voldaan";
-  if (status === "Draft") return "Concept factuur";
-  if (!dueDateStr) return "Binnen 14 dagen";
+  const t = (key, vars) => translate(currentLanguage(), `dueDate.${key}`, vars);
+  if (status === "Paid") return t("paid");
+  if (status === "Draft") return t("draft");
+  if (!dueDateStr) return t("default");
 
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const due = new Date(dueDateStr);
+    const due = parseLocalDate(dueDateStr);
     due.setHours(0, 0, 0, 0);
 
     const diffMs = due.getTime() - today.getTime();
     const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) return "Vervalt vandaag";
-    if (diffDays === 1) return "Vervalt morgen";
-    if (diffDays > 1) return `Binnen ${diffDays} dagen`;
-    if (diffDays === -1) return "1 dag vervallen";
-    return `${Math.abs(diffDays)} dagen vervallen`;
+    if (diffDays === 0) return t("today");
+    if (diffDays === 1) return t("tomorrow");
+    if (diffDays > 1) return t("inDays", { count: diffDays });
+    if (diffDays === -1) return t("oneDayLate");
+    return t("daysLate", { count: Math.abs(diffDays) });
   } catch {
-    return "Binnen 14 dagen";
+    return t("default");
   }
 }

@@ -2,7 +2,7 @@ import { Download, FileArchive, Loader2, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { resolveApiUrl } from "@/lib/api/client";
-import { formatDutchDate } from "@/lib/dateUtils";
+import { formatDate } from "@/lib/dateUtils";
 
 /**
  * History of exports made for the accountant
@@ -48,7 +48,7 @@ export function ExportsCard({
                   {item.period_label}
                 </p>
                 <p className="text-[10px] text-muted-foreground">
-                  {formatDutchDate(item.created_at)} •{" "}
+                  {formatDate(item.created_at)} •{" "}
                   {item.formats.map((f) => formatLabels[f] || f).join(", ")}
                 </p>
                 {item.sent_to && (

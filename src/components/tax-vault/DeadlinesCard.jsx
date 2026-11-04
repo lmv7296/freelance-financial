@@ -1,6 +1,6 @@
 import { CalendarClock, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { formatDutchDate, parseLocalDate } from "@/lib/dateUtils";
+import { formatDate, parseLocalDate } from "@/lib/dateUtils";
 import { formatEuro } from "@/lib/formatCurrency";
 import { cn } from "@/lib/utils";
 
@@ -67,7 +67,7 @@ export function DeadlinesCard({ deadlines = [] }) {
                 <div className="min-w-0 flex-1">
                   <p className="text-xs font-semibold">{deadline.label}</p>
                   <p className="text-[10px] opacity-80">
-                    {formatDutchDate(deadline.date)}
+                    {formatDate(deadline.date)}
                     {deadline.status !== "done" && ` • ${relativeLabel(days)}`}
                     {deadline.amount !== null &&
                       ` • ca. ${formatEuro(deadline.amount)}`}

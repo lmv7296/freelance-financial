@@ -1,6 +1,6 @@
 import { BookOpen, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { formatDutchDate } from "@/lib/dateUtils";
+import { formatDate } from "@/lib/dateUtils";
 import { cn } from "@/lib/utils";
 
 function sourceLabel(url) {
@@ -56,7 +56,7 @@ export function RulesUsedCard({ rules = [], highlightedKey }) {
                     {rule.display_value}
                   </td>
                   <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">
-                    {formatDutchDate(rule.verified_at)}
+                    {formatDate(rule.verified_at)}
                   </td>
                   <td className="px-5 py-2 text-right">
                     <a

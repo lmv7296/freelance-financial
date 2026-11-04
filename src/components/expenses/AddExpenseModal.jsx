@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/modal";
 import { useAppConfig } from "@/lib/api/config";
 import { expenseLinkApi, expensesApi } from "@/lib/api/expenses";
+import { formatEuro } from "@/lib/formatCurrency";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 function toNumberOrNull(value) {
@@ -61,6 +63,7 @@ export function AddExpenseModal({
   onAdded,
   categoryOptions = [],
 }) {
+  const t = useT();
   const fileInputRef = useRef(null);
 
   // Cached DB reference data
@@ -253,14 +256,14 @@ export function AddExpenseModal({
   const validate = () => {
     const newErrors = {};
     if (!merchantName.trim()) {
-      newErrors.merchantName = "Vul een winkel of leverancier in";
+      newErrors.merchantName = t("expenses.add.errors.merchant");
     }
     const parsedTotal = toNumberOrNull(totalAmount);
     if (parsedTotal === null || parsedTotal <= 0) {
-      newErrors.totalAmount = "Vul een geldig totaalbedrag in";
+      newErrors.totalAmount = t("expenses.add.errors.total");
     }
     if (!receiptDate) {
-      newErrors.receiptDate = "Kies een datum";
+      newErrors.receiptDate = t("expenses.add.errors.date");
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -332,7 +335,7 @@ export function AddExpenseModal({
           id: `exp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
           status: payload.status,
           source: payload.source,
-          sender_name: "Handmatig ingevoerd",
+          sender_name: t("expenses.add.manualSender"),
           sender_phone: null,
           merchant_name: payload.merchant_name,
           merchant_address: payload.merchant_address,
@@ -364,10 +367,7 @@ export function AddExpenseModal({
       }
       onClose();
     } catch (err) {
-      setApiError(
-        err?.message ||
-          "Er is een fout opgetreden bij het toevoegen van de uitgave.",
-      );
+      setApiError(err?.message || t("expenses.add.errors.saveFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -380,9 +380,9 @@ export function AddExpenseModal({
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="xl">
       <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
         <ModalHeader
-          title="Nieuwe Uitgave Toevoegen"
-          description="Voer handmatig een zakelijke aankoop of aankoopbon in voor je BTW-reservering en administratie."
-          badge="Handmatig / Bon"
+          title={t("expenses.add.title")}
+          description={t("expenses.add.description")}
+          badge={t("expenses.add.badge")}
           icon={<Receipt className="size-5" />}
         />
 
@@ -401,17 +401,17 @@ export function AddExpenseModal({
                 htmlFor="merchant_name"
                 className="text-xs font-semibold text-foreground"
               >
-                Leverancier of Winkel{" "}
+                {t("expenses.add.merchant")}{" "}
                 <span className="text-destructive">*</span>
               </label>
               <span className="text-[11px] text-muted-foreground font-normal">
-                Snelle selectie:
+                {t("expenses.add.quickSelect")}
               </span>
             </div>
 
             <Input
               id="merchant_name"
-              placeholder="Bijv. Bouwmaat Amsterdam, Hornbach, Shell..."
+              placeholder={t("expenses.add.merchantPlaceholder")}
               value={merchantName}
               onChange={(e) => {
                 setMerchantName(e.target.value);
@@ -461,7 +461,8 @@ export function AddExpenseModal({
                 className="text-xs font-semibold text-foreground flex items-center gap-1.5"
               >
                 <Calendar className="size-3.5 text-muted-foreground" />
-                Aankoopdatum <span className="text-destructive">*</span>
+                {t("expenses.add.receiptDate")}{" "}
+                <span className="text-destructive">*</span>
               </label>
               <Input
                 id="receipt_date"
@@ -483,7 +484,7 @@ export function AddExpenseModal({
                 className="text-xs font-semibold text-foreground flex items-center gap-1.5"
               >
                 <Tag className="size-3.5 text-muted-foreground" />
-                Categorie
+                {t("expenses.add.category")}
               </label>
               <select
                 id="category"
@@ -504,17 +505,17 @@ export function AddExpenseModal({
           <div className="rounded-2xl border border-border/80 bg-muted/30 p-4 space-y-3.5">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">
-                Bedragen & BTW
+                {t("expenses.add.amountsTitle")}
               </h4>
               <span className="text-[11px] font-mono text-muted-foreground">
-                Automatische splitsing
+                {t("expenses.add.autoSplit")}
               </span>
             </div>
 
             {/* BTW Tarief selector */}
             <div className="space-y-1.5">
               <span className="block text-[11px] font-medium text-muted-foreground">
-                BTW-tarief
+                {t("expenses.add.vatRate")}
               </span>
               <div className="grid grid-cols-3 gap-2">
                 {vatRates.map((item) => {
@@ -532,7 +533,9 @@ export function AddExpenseModal({
                       )}
                     >
                       {isSelected && <Check className="size-3" />}
-                      <span>{item.rate}% BTW</span>
+                      <span>
+                        {t("expenses.add.vatRateOption", { rate: item.rate })}
+                      </span>
                     </button>
                   );
                 })}
@@ -546,7 +549,8 @@ export function AddExpenseModal({
                   htmlFor="total_amount"
                   className="text-xs font-bold text-foreground"
                 >
-                  Totaal incl. BTW <span className="text-destructive">*</span>
+                  {t("expenses.add.totalInclVat")}{" "}
+                  <span className="text-destructive">*</span>
                 </label>
                 <div className="relative">
                   <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-foreground">
@@ -576,10 +580,10 @@ export function AddExpenseModal({
                   htmlFor="vat_amount"
                   className="text-xs font-semibold text-muted-foreground flex items-center justify-between"
                 >
-                  <span>BTW bedrag</span>
+                  <span>{t("expenses.add.vatAmount")}</span>
                   {isManualVat && (
                     <span className="text-[10px] text-amber-600 dark:text-amber-400">
-                      Handmatig
+                      {t("expenses.add.manual")}
                     </span>
                   )}
                 </label>
@@ -602,7 +606,7 @@ export function AddExpenseModal({
                   htmlFor="subtotal_amount"
                   className="text-xs font-semibold text-muted-foreground"
                 >
-                  Excl. BTW
+                  {t("expenses.add.exclVat")}
                 </label>
                 <div className="relative">
                   <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs font-mono text-muted-foreground">
@@ -624,9 +628,9 @@ export function AddExpenseModal({
               <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1.5 pt-0.5">
                 <Check className="size-3.5" />
                 <span>
-                  Bij kwartaalaangifte vraag je{" "}
-                  <strong>€{vatAmount || "0,00"}</strong> BTW terug als
-                  voorbelasting.
+                  {t("expenses.add.inputVatHint", {
+                    amount: formatEuro(toNumberOrNull(vatAmount) ?? 0),
+                  })}
                 </span>
               </p>
             )}
@@ -640,7 +644,7 @@ export function AddExpenseModal({
                 className="text-xs font-semibold text-foreground flex items-center gap-1.5"
               >
                 <CreditCard className="size-3.5 text-muted-foreground" />
-                Betaalmethode
+                {t("expenses.add.paymentMethod")}
               </label>
               <select
                 id="payment_method"
@@ -666,7 +670,7 @@ export function AddExpenseModal({
                 htmlFor="expense_status"
                 className="text-xs font-semibold text-foreground flex items-center gap-1.5"
               >
-                Status
+                {t("expenses.add.status")}
               </label>
               <select
                 id="expense_status"
@@ -675,10 +679,10 @@ export function AddExpenseModal({
                 className={selectClassName}
               >
                 <option value="approved">
-                  Goedgekeurd (direct in administratie)
+                  {t("expenses.add.statusApproved")}
                 </option>
                 <option value="needs_review">
-                  Te controleren (later nakijken)
+                  {t("expenses.add.statusReview")}
                 </option>
               </select>
             </div>
@@ -687,14 +691,14 @@ export function AddExpenseModal({
           {/* 5. Bonnetje Bijvoegen / Upload (Optioneel) */}
           <div className="space-y-1.5">
             <div className="text-xs font-semibold text-foreground flex items-center justify-between">
-              <span>Bonnetje of Factuur (Optioneel)</span>
+              <span>{t("expenses.add.attachment")}</span>
               {receiptFile && (
                 <button
                   type="button"
                   onClick={handleRemoveFile}
                   className="text-[11px] text-destructive hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  <X className="size-3" /> Verwijderen
+                  <X className="size-3" /> {t("expenses.add.removeFile")}
                 </button>
               )}
             </div>
@@ -713,7 +717,7 @@ export function AddExpenseModal({
                   // biome-ignore lint/performance/noImgElement: Data URL preview of locally uploaded user receipt
                   <img
                     src={receiptPreview}
-                    alt="Preview"
+                    alt={t("expenses.add.previewAlt")}
                     className="size-12 rounded-lg object-cover border border-border"
                   />
                 ) : (
@@ -727,7 +731,7 @@ export function AddExpenseModal({
                   </p>
                   <p className="text-[11px] text-muted-foreground">
                     {(receiptFile.size / 1024).toFixed(0)} KB •{" "}
-                    {receiptFile.type || "Document"}
+                    {receiptFile.type || t("expenses.add.document")}
                   </p>
                 </div>
               </div>
@@ -739,10 +743,10 @@ export function AddExpenseModal({
               >
                 <UploadCloud className="size-6 text-muted-foreground" />
                 <p className="text-xs font-medium text-foreground">
-                  Klik om een foto of PDF van het bonnetje te uploaden
+                  {t("expenses.add.uploadPrompt")}
                 </p>
                 <p className="text-[11px] text-muted-foreground">
-                  PNG, JPG, WEBP of PDF (max 10MB)
+                  {t("expenses.add.uploadTypes")}
                 </p>
               </button>
             )}
@@ -756,7 +760,7 @@ export function AddExpenseModal({
                 className="text-xs font-semibold text-foreground flex items-center gap-1.5"
               >
                 <Building2 className="size-3.5 text-muted-foreground" />
-                Klant koppelen (optioneel)
+                {t("expenses.add.linkClient")}
               </label>
               <select
                 id="client_id"
@@ -764,7 +768,7 @@ export function AddExpenseModal({
                 onChange={(e) => setClientId(e.target.value)}
                 className={selectClassName}
               >
-                <option value="">— Geen klant gekoppeld —</option>
+                <option value="">{t("expenses.add.noClient")}</option>
                 {clients.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
@@ -779,7 +783,7 @@ export function AddExpenseModal({
                 className="text-xs font-semibold text-foreground flex items-center gap-1.5"
               >
                 <FileText className="size-3.5 text-muted-foreground" />
-                Factuur koppelen (optioneel)
+                {t("expenses.add.linkInvoice")}
               </label>
               <select
                 id="invoice_id"
@@ -790,10 +794,10 @@ export function AddExpenseModal({
               >
                 <option value="">
                   {!clientId
-                    ? "— Kies eerst een klant —"
+                    ? t("expenses.add.chooseClientFirst")
                     : invoices.length === 0
-                      ? "— Geen facturen gevonden —"
-                      : "— Geen factuur gekoppeld —"}
+                      ? t("expenses.add.noInvoicesFound")
+                      : t("expenses.add.noInvoice")}
                 </option>
                 {invoices.map((inv) => (
                   <option key={inv.id} value={inv.id}>
@@ -810,14 +814,14 @@ export function AddExpenseModal({
               htmlFor="notes"
               className="text-xs font-semibold text-foreground"
             >
-              Notities of omschrijving van de aankoop
+              {t("expenses.add.notes")}
             </label>
             <textarea
               id="notes"
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Bijv. Materialen en PVC buizen voor renovatie badkamer..."
+              placeholder={t("expenses.add.notesPlaceholder")}
               className="w-full rounded-xl border border-border/80 bg-background/80 px-3.5 py-2 text-sm font-sans text-foreground shadow-2xs transition-all duration-150 placeholder:text-muted-foreground/70 resize-y focus-visible:border-primary/50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/20"
             />
           </div>
@@ -832,7 +836,7 @@ export function AddExpenseModal({
             disabled={isSubmitting}
             className="rounded-full text-xs px-4 active:scale-95 transition-all cursor-pointer"
           >
-            Annuleren
+            {t("expenses.add.cancel")}
           </Button>
 
           <Button
@@ -844,12 +848,12 @@ export function AddExpenseModal({
             {isSubmitting ? (
               <>
                 <Loader2 className="size-3.5 mr-1.5 animate-spin" />
-                Opslaan...
+                {t("expenses.add.saving")}
               </>
             ) : (
               <>
                 <Plus className="size-3.5 mr-1.5" />
-                Uitgave opslaan
+                {t("expenses.add.save")}
               </>
             )}
           </Button>

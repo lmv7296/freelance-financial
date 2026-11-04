@@ -24,8 +24,9 @@ import {
   ModalHeader,
 } from "@/components/ui/modal";
 import { expenseLinkApi, expensesApi } from "@/lib/api/expenses";
-import { formatDutchDate } from "@/lib/dateUtils";
+import { formatDate } from "@/lib/dateUtils";
 import { formatCurrency } from "@/lib/formatCurrency";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 // Below this extraction confidence we ask the user to double-check the data
@@ -148,6 +149,7 @@ export function ExpenseDetailModal({
   onDeleted,
   categoryOptions = [],
 }) {
+  const t = useT();
   const [draft, setDraft] = useState(() => toDraft(expense));
   const [pendingAction, setPendingAction] = useState(null);
   const [error, setError] = useState(null);
@@ -174,7 +176,7 @@ export function ExpenseDetailModal({
         if (!cancelled) setClients(res?.clients ?? []);
       })
       .catch(() => {
-        if (!cancelled) setLinkError("Klanten konden niet geladen worden.");
+        if (!cancelled) setLinkError("expenses.detail.clientsFailed");
       });
     return () => {
       cancelled = true;
@@ -229,7 +231,7 @@ export function ExpenseDetailModal({
       const res = await expensesApi.update(expense.id, payload);
       onUpdated?.(res?.expense ?? { ...expense, ...payload });
     } catch (err) {
-      setError(err?.message || "Opslaan mislukt.");
+      setError(err?.message || t("expenses.detail.saveFailed"));
     } finally {
       setPendingAction(null);
     }
@@ -242,7 +244,7 @@ export function ExpenseDetailModal({
       await expensesApi.remove(expense.id);
       onDeleted?.(expense.id);
     } catch (err) {
-      setError(err?.message || "Verwijderen mislukt.");
+      setError(err?.message || t("expenses.detail.deleteFailed"));
       setPendingAction(null);
     }
   };
@@ -264,13 +266,16 @@ export function ExpenseDetailModal({
 
   const senderLabel =
     [expense.sender_name, expense.sender_phone].filter(Boolean).join(" • ") ||
-    "Onbekende afzender";
+    t("expenses.detail.unknownSender");
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="full">
       <ModalHeader
-        title={expense.merchant_name || "Onbekende winkel"}
-        description={`${senderLabel} • ontvangen ${formatDutchDate(expense.created_at)}`}
+        title={expense.merchant_name || t("expenses.detail.unknownShop")}
+        description={t("expenses.detail.subtitle", {
+          sender: senderLabel,
+          date: formatDate(expense.created_at),
+        })}
         icon={<Receipt className="size-5" />}
         badge={<ExpenseStatusChip status={expense.status} />}
       />
@@ -281,7 +286,9 @@ export function ExpenseDetailModal({
           <ReceiptViewer
             url={expense.receipt_url}
             contentType={expense.receipt_content_type}
-            alt={`Bonnetje ${expense.merchant_name || ""}`}
+            alt={t("expenses.detail.receiptAlt", {
+              shop: expense.merchant_name || "",
+            })}
             className="lg:sticky lg:top-0 lg:max-h-[70vh] min-h-[320px]"
           />
 
@@ -292,26 +299,27 @@ export function ExpenseDetailModal({
           >
             {isProcessing && (
               <Banner tone="info" icon={Loader2} spin>
-                Dit bonnetje wordt nog uitgelezen. De gegevens verschijnen
-                automatisch zodra het klaar is.
+                {t("expenses.detail.processing")}
               </Banner>
             )}
             {isLowConfidence && !isProcessing && (
               <Banner tone="warning" icon={AlertTriangle}>
-                Het uitlezen was niet helemaal zeker (
-                {Math.round(expense.extraction_confidence * 100)}%). Controleer
-                de gegevens met het bonnetje.
+                {t("expenses.detail.lowConfidence", {
+                  percent: Math.round(expense.extraction_confidence * 100),
+                })}
               </Banner>
             )}
             {expense.status === "rejected" && expense.rejection_reason && (
               <Banner tone="destructive" icon={X}>
-                Afgekeurd: {expense.rejection_reason}
+                {t("expenses.detail.rejectedReason", {
+                  reason: expense.rejection_reason,
+                })}
               </Banner>
             )}
 
-            <SectionTitle>Gegevens</SectionTitle>
+            <SectionTitle>{t("expenses.detail.sectionDetails")}</SectionTitle>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Field label="Winkel">
+              <Field label={t("expenses.detail.shop")}>
                 {(id) => (
                   <Input
                     id={id}
@@ -320,7 +328,7 @@ export function ExpenseDetailModal({
                   />
                 )}
               </Field>
-              <Field label="Datum bon">
+              <Field label={t("expenses.detail.receiptDate")}>
                 {(id) => (
                   <Input
                     id={id}
@@ -330,7 +338,10 @@ export function ExpenseDetailModal({
                   />
                 )}
               </Field>
-              <Field label="Adres winkel" className="sm:col-span-2">
+              <Field
+                label={t("expenses.detail.shopAddress")}
+                className="sm:col-span-2"
+              >
                 {(id) => (
                   <Input
                     id={id}
@@ -341,7 +352,7 @@ export function ExpenseDetailModal({
                   />
                 )}
               </Field>
-              <Field label="Betaalwijze">
+              <Field label={t("expenses.detail.paymentMethod")}>
                 {(id) => (
                   <Input
                     id={id}
@@ -350,7 +361,7 @@ export function ExpenseDetailModal({
                   />
                 )}
               </Field>
-              <Field label="Categorie">
+              <Field label={t("expenses.detail.category")}>
                 {(id) => (
                   <>
                     <Input
@@ -369,9 +380,9 @@ export function ExpenseDetailModal({
               </Field>
             </div>
 
-            <SectionTitle>Bedragen</SectionTitle>
+            <SectionTitle>{t("expenses.detail.sectionAmounts")}</SectionTitle>
             <div className="grid grid-cols-3 gap-3">
-              <Field label="Excl. BTW">
+              <Field label={t("expenses.detail.exclVat")}>
                 {(id) => (
                   <MoneyInput
                     id={id}
@@ -380,7 +391,7 @@ export function ExpenseDetailModal({
                   />
                 )}
               </Field>
-              <Field label="BTW">
+              <Field label={t("expenses.detail.vat")}>
                 {(id) => (
                   <MoneyInput
                     id={id}
@@ -389,7 +400,7 @@ export function ExpenseDetailModal({
                   />
                 )}
               </Field>
-              <Field label="Totaal">
+              <Field label={t("expenses.detail.total")}>
                 {(id) => (
                   <MoneyInput
                     id={id}
@@ -404,7 +415,7 @@ export function ExpenseDetailModal({
             <SectionTitle
               action={
                 <AddRowButton
-                  label="BTW-tarief"
+                  label={t("expenses.detail.addVatRate")}
                   onClick={() =>
                     addRow("vat_lines", {
                       rate: "",
@@ -415,16 +426,22 @@ export function ExpenseDetailModal({
                 />
               }
             >
-              BTW-specificatie
+              {t("expenses.detail.sectionVat")}
             </SectionTitle>
             {draft.vat_lines.length > 0 ? (
               <div className="rounded-xl border border-border/60 overflow-hidden">
                 <table className="w-full text-xs">
                   <thead className="bg-muted/40 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     <tr>
-                      <th className="px-2 py-2 text-left">Tarief %</th>
-                      <th className="px-2 py-2 text-left">Grondslag</th>
-                      <th className="px-2 py-2 text-left">BTW</th>
+                      <th className="px-2 py-2 text-left">
+                        {t("expenses.detail.vatRatePercent")}
+                      </th>
+                      <th className="px-2 py-2 text-left">
+                        {t("expenses.detail.vatBase")}
+                      </th>
+                      <th className="px-2 py-2 text-left">
+                        {t("expenses.detail.vat")}
+                      </th>
                       <th className="w-8" />
                     </tr>
                   </thead>
@@ -434,7 +451,7 @@ export function ExpenseDetailModal({
                       <tr key={index}>
                         <td className="p-1.5">
                           <CellInput
-                            aria-label="BTW-tarief"
+                            aria-label={t("expenses.detail.vatRate")}
                             value={line.rate}
                             onChange={(v) =>
                               setRow("vat_lines", index, "rate", v)
@@ -443,7 +460,7 @@ export function ExpenseDetailModal({
                         </td>
                         <td className="p-1.5">
                           <CellInput
-                            aria-label="Grondslag"
+                            aria-label={t("expenses.detail.vatBase")}
                             value={line.base_amount}
                             onChange={(v) =>
                               setRow("vat_lines", index, "base_amount", v)
@@ -452,7 +469,7 @@ export function ExpenseDetailModal({
                         </td>
                         <td className="p-1.5">
                           <CellInput
-                            aria-label="BTW-bedrag"
+                            aria-label={t("expenses.detail.vatAmount")}
                             value={line.vat_amount}
                             onChange={(v) =>
                               setRow("vat_lines", index, "vat_amount", v)
@@ -470,13 +487,13 @@ export function ExpenseDetailModal({
                 </table>
               </div>
             ) : (
-              <EmptyHint>Geen BTW-specificatie gevonden op de bon.</EmptyHint>
+              <EmptyHint>{t("expenses.detail.noVatLines")}</EmptyHint>
             )}
 
             <SectionTitle
               action={
                 <AddRowButton
-                  label="Regel"
+                  label={t("expenses.detail.addLine")}
                   onClick={() =>
                     addRow("line_items", {
                       description: "",
@@ -489,18 +506,28 @@ export function ExpenseDetailModal({
                 />
               }
             >
-              Artikelen
+              {t("expenses.detail.sectionItems")}
             </SectionTitle>
             {draft.line_items.length > 0 ? (
               <div className="rounded-xl border border-border/60 overflow-x-auto">
                 <table className="w-full min-w-[460px] text-xs">
                   <thead className="bg-muted/40 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     <tr>
-                      <th className="px-2 py-2 text-left">Omschrijving</th>
-                      <th className="px-2 py-2 text-left w-14">Aantal</th>
-                      <th className="px-2 py-2 text-left w-20">Prijs</th>
-                      <th className="px-2 py-2 text-left w-20">Totaal</th>
-                      <th className="px-2 py-2 text-left w-14">BTW %</th>
+                      <th className="px-2 py-2 text-left">
+                        {t("expenses.detail.description")}
+                      </th>
+                      <th className="px-2 py-2 text-left w-14">
+                        {t("expenses.detail.quantity")}
+                      </th>
+                      <th className="px-2 py-2 text-left w-20">
+                        {t("expenses.detail.price")}
+                      </th>
+                      <th className="px-2 py-2 text-left w-20">
+                        {t("expenses.detail.total")}
+                      </th>
+                      <th className="px-2 py-2 text-left w-14">
+                        {t("expenses.detail.vatPercent")}
+                      </th>
                       <th className="w-8" />
                     </tr>
                   </thead>
@@ -510,7 +537,7 @@ export function ExpenseDetailModal({
                       <tr key={index}>
                         <td className="p-1.5">
                           <CellInput
-                            aria-label="Omschrijving"
+                            aria-label={t("expenses.detail.description")}
                             value={item.description}
                             onChange={(v) =>
                               setRow("line_items", index, "description", v)
@@ -520,7 +547,7 @@ export function ExpenseDetailModal({
                         </td>
                         <td className="p-1.5">
                           <CellInput
-                            aria-label="Aantal"
+                            aria-label={t("expenses.detail.quantity")}
                             value={item.quantity}
                             onChange={(v) =>
                               setRow("line_items", index, "quantity", v)
@@ -529,7 +556,7 @@ export function ExpenseDetailModal({
                         </td>
                         <td className="p-1.5">
                           <CellInput
-                            aria-label="Prijs per stuk"
+                            aria-label={t("expenses.detail.unitPrice")}
                             value={item.unit_price}
                             onChange={(v) =>
                               setRow("line_items", index, "unit_price", v)
@@ -538,7 +565,7 @@ export function ExpenseDetailModal({
                         </td>
                         <td className="p-1.5">
                           <CellInput
-                            aria-label="Regeltotaal"
+                            aria-label={t("expenses.detail.lineTotal")}
                             value={item.total_price}
                             onChange={(v) =>
                               setRow("line_items", index, "total_price", v)
@@ -547,7 +574,7 @@ export function ExpenseDetailModal({
                         </td>
                         <td className="p-1.5">
                           <CellInput
-                            aria-label="BTW-tarief"
+                            aria-label={t("expenses.detail.vatRate")}
                             value={item.vat_rate}
                             onChange={(v) =>
                               setRow("line_items", index, "vat_rate", v)
@@ -565,19 +592,21 @@ export function ExpenseDetailModal({
                 </table>
               </div>
             ) : (
-              <EmptyHint>Geen losse artikelen herkend.</EmptyHint>
+              <EmptyHint>{t("expenses.detail.noItems")}</EmptyHint>
             )}
             {hasLineItemMismatch && (
               <p className="flex items-center gap-1.5 text-[11px] font-medium text-amber-700 dark:text-amber-300">
                 <AlertTriangle className="size-3.5" />
-                Som van de artikelen ({formatCurrency(lineItemsSum, currency)})
-                wijkt af van het totaal ({formatCurrency(total, currency)}).
+                {t("expenses.detail.itemsMismatch", {
+                  sum: formatCurrency(lineItemsSum, currency),
+                  total: formatCurrency(total, currency),
+                })}
               </p>
             )}
 
-            <SectionTitle>Koppelen</SectionTitle>
+            <SectionTitle>{t("expenses.detail.sectionLink")}</SectionTitle>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Field label="Klant">
+              <Field label={t("expenses.detail.client")}>
                 {(id) => (
                   <select
                     id={id}
@@ -591,7 +620,7 @@ export function ExpenseDetailModal({
                     }
                     className={selectClassName}
                   >
-                    <option value="">Geen klant</option>
+                    <option value="">{t("expenses.detail.noClient")}</option>
                     {/* Keep the current link visible even if the client list failed to load */}
                     {draft.client_id &&
                       !clients.some((c) => c.id === draft.client_id) && (
@@ -607,7 +636,7 @@ export function ExpenseDetailModal({
                   </select>
                 )}
               </Field>
-              <Field label="Factuur">
+              <Field label={t("expenses.detail.invoice")}>
                 {(id) => (
                   <select
                     id={id}
@@ -616,7 +645,7 @@ export function ExpenseDetailModal({
                     disabled={!draft.client_id}
                     className={selectClassName}
                   >
-                    <option value="">Geen factuur</option>
+                    <option value="">{t("expenses.detail.noInvoice")}</option>
                     {draft.invoice_id &&
                       !invoices.some((i) => i.id === draft.invoice_id) && (
                         <option value={draft.invoice_id}>
@@ -633,10 +662,12 @@ export function ExpenseDetailModal({
               </Field>
             </div>
             {linkError && (
-              <p className="text-[11px] text-muted-foreground">{linkError}</p>
+              <p className="text-[11px] text-muted-foreground">
+                {t(linkError)}
+              </p>
             )}
 
-            <Field label="Notitie">
+            <Field label={t("expenses.detail.note")}>
               {(id) => (
                 <textarea
                   id={id}
@@ -644,16 +675,18 @@ export function ExpenseDetailModal({
                   value={draft.notes}
                   onChange={(e) => setField("notes", e.target.value)}
                   className="flex w-full rounded-xl border border-border/80 bg-background/80 px-3.5 py-2 text-sm text-foreground shadow-2xs placeholder:text-muted-foreground/70 focus-visible:border-primary/50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/20 resize-y"
-                  placeholder="Bijv. voor welk project of welke klus"
+                  placeholder={t("expenses.detail.notePlaceholder")}
                 />
               )}
             </Field>
 
             <p className="flex items-center gap-1.5 pt-1 text-[11px] text-muted-foreground">
               <MessageCircle className="size-3.5" />
-              Binnengekomen via{" "}
-              {expense.source === "whatsapp" ? "WhatsApp" : expense.source} van{" "}
-              {senderLabel}
+              {t("expenses.detail.receivedVia", {
+                source:
+                  expense.source === "whatsapp" ? "WhatsApp" : expense.source,
+                sender: senderLabel,
+              })}
             </p>
           </fieldset>
         </div>
@@ -665,7 +698,7 @@ export function ExpenseDetailModal({
           {isConfirmingDelete ? (
             <>
               <span className="text-xs font-medium text-destructive">
-                Definitief verwijderen?
+                {t("expenses.detail.confirmDelete")}
               </span>
               <Button
                 variant="destructive"
@@ -678,7 +711,7 @@ export function ExpenseDetailModal({
                 ) : (
                   <Trash2 />
                 )}
-                Ja, verwijder
+                {t("expenses.detail.confirmDeleteYes")}
               </Button>
               <Button
                 variant="ghost"
@@ -686,7 +719,7 @@ export function ExpenseDetailModal({
                 onClick={() => setIsConfirmingDelete(false)}
                 disabled={isBusy}
               >
-                Annuleer
+                {t("expenses.detail.cancel")}
               </Button>
             </>
           ) : (
@@ -698,7 +731,7 @@ export function ExpenseDetailModal({
               className="text-muted-foreground hover:text-destructive"
             >
               <Trash2 />
-              Verwijderen
+              {t("expenses.detail.delete")}
             </Button>
           )}
         </div>
@@ -717,7 +750,7 @@ export function ExpenseDetailModal({
                 autoFocus
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="Reden (bijv. privé-aankoop)"
+                placeholder={t("expenses.detail.rejectReasonPlaceholder")}
                 className="h-8 w-56 text-xs"
               />
               <Button
@@ -734,7 +767,7 @@ export function ExpenseDetailModal({
                 {pendingAction === "reject" && (
                   <Loader2 className="animate-spin" />
                 )}
-                Afkeuren
+                {t("expenses.detail.reject")}
               </Button>
               <Button
                 variant="ghost"
@@ -742,7 +775,7 @@ export function ExpenseDetailModal({
                 disabled={isBusy}
                 onClick={() => setIsRejecting(false)}
               >
-                Annuleer
+                {t("expenses.detail.cancel")}
               </Button>
             </>
           ) : (
@@ -759,7 +792,7 @@ export function ExpenseDetailModal({
                   ) : (
                     <Save />
                   )}
-                  Wijzigingen opslaan
+                  {t("expenses.detail.saveChanges")}
                 </Button>
               )}
 
@@ -772,7 +805,7 @@ export function ExpenseDetailModal({
                     onClick={() => setIsRejecting(true)}
                   >
                     <X />
-                    Afkeuren
+                    {t("expenses.detail.reject")}
                   </Button>
                   <Button
                     size="sm"
@@ -789,7 +822,9 @@ export function ExpenseDetailModal({
                     ) : (
                       <Check />
                     )}
-                    {isDirty ? "Opslaan & goedkeuren" : "Goedkeuren"}
+                    {isDirty
+                      ? t("expenses.detail.saveAndApprove")
+                      : t("expenses.detail.approve")}
                   </Button>
                 </>
               )}
@@ -812,7 +847,7 @@ export function ExpenseDetailModal({
                   ) : (
                     <RotateCcw />
                   )}
-                  Opnieuw beoordelen
+                  {t("expenses.detail.reopen")}
                 </Button>
               )}
             </>
@@ -892,12 +927,13 @@ function AddRowButton({ label, onClick }) {
 }
 
 function RemoveRowButton({ onClick }) {
+  const t = useT();
   return (
     <button
       type="button"
       onClick={onClick}
       className="size-7 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive active:scale-90 transition-all cursor-pointer"
-      title="Regel verwijderen"
+      title={t("expenses.detail.removeLine")}
     >
       <X className="size-3.5" />
     </button>
