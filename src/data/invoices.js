@@ -1,3 +1,5 @@
+import { configApi, DEFAULT_CONFIG } from "@/lib/api/config";
+
 /**
  * Invoice dataset, filters, default line items and constants.
  * Reusable across Invoices, Dashboard, Analytics and Export pages.
@@ -130,25 +132,16 @@ export const TRADE_TYPES = [
   { label: "Vastgoedbeheer / Commercieel", value: "Commercial" },
 ];
 
-export const PAYMENT_METHODS = [
-  {
-    label: "Tikkie / iDEAL QR (Direct digitaal betaalverzoek)",
-    value: "Tikkie / iDEAL QR",
-  },
-  {
-    label: "Factuur (Net 14 dagen overschrijving)",
-    value: "Factuur (Net 14)",
-  },
-  {
-    label: "Factuur (Net 30 dagen zakelijk)",
-    value: "Factuur (Net 30)",
-  },
-  { label: "PIN op Locatie (Tap to Pay)", value: "PIN / Tap Terminal" },
-  { label: "Contant (Cash) & PIN", value: "Contant (Cash) & PIN" },
-];
+export const getPaymentMethods = () => {
+  const cfg = configApi.getConfig();
+  return cfg.payment_methods || DEFAULT_CONFIG.payment_methods;
+};
 
-export const VAT_RATES = [
-  { label: "21% BTW (Standaard tarief)", value: "21" },
-  { label: "9% BTW (Laag tarief - isolatie/schilder)", value: "9" },
-  { label: "0% BTW (Vrijgesteld / BTW-verlegd)", value: "0" },
-];
+export const getVatRates = () => {
+  const cfg = configApi.getConfig();
+  return cfg.vat_rates || DEFAULT_CONFIG.vat_rates;
+};
+
+export const PAYMENT_METHODS = configApi.getConfig().payment_methods;
+
+export const VAT_RATES = configApi.getConfig().vat_rates;

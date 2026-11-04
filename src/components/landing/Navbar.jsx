@@ -2,8 +2,9 @@
 
 import { CreditCard, LogIn, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { cn } from "@/lib/utils";
 
 export function LandingNavbar() {
   const { isAuthenticated, user, openLogin, openRegister } = useAuth();
@@ -60,13 +61,15 @@ export function LandingNavbar() {
               <span className="hidden sm:inline-block text-xs font-medium text-muted-foreground truncate max-w-[160px]">
                 {user?.email}
               </span>
-              <Button
-                size="sm"
-                asChild
-                className="rounded-full px-4 text-xs font-semibold shadow-xs"
+              <Link
+                href="/dashboard"
+                className={cn(
+                  buttonVariants({ size: "sm" }),
+                  "rounded-full px-4 text-xs font-semibold shadow-xs",
+                )}
               >
-                <Link href="/dashboard">Dashboard</Link>
-              </Button>
+                Dashboard
+              </Link>
             </div>
           ) : (
             <>

@@ -6,6 +6,7 @@ import {
   FileText,
   Loader2,
   MessageCircle,
+  Plus,
   Receipt,
   RefreshCw,
   Search,
@@ -13,6 +14,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { AddExpenseModal } from "@/components/expenses/AddExpenseModal";
 import { ExpenseDetailModal } from "@/components/expenses/ExpenseDetailModal";
 import {
   EXPENSE_STATUS_META,
@@ -21,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { resolveApiUrl } from "@/lib/api/client";
 import { expensesApi } from "@/lib/api/expenses";
 import { formatDutchDate, parseLocalDate } from "@/lib/dateUtils";
 import { formatCurrency, formatEuro } from "@/lib/formatCurrency";
@@ -63,6 +66,7 @@ export default function ExpensesPage() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const loadExpenses = useCallback(async ({ silent = false } = {}) => {
     if (silent) {
@@ -148,6 +152,11 @@ export default function ExpensesPage() {
 
   const selectedExpense = expenses.find((e) => e.id === selectedId) ?? null;
 
+  const handleCreated = (newExpense) => {
+    setExpenses((prev) => [newExpense, ...prev]);
+    setLoadError(null);
+  };
+
   const handleUpdated = (updated) => {
     setExpenses((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
   };
@@ -181,17 +190,27 @@ export default function ExpensesPage() {
           </p>
         </div>
 
-        <Button
-          variant="outline"
-          onClick={() => loadExpenses({ silent: true })}
-          disabled={isLoading || isRefreshing}
-          className="rounded-full px-4 shadow-2xs text-xs h-9 self-start sm:self-auto"
-        >
-          <RefreshCw
-            className={`size-3.5 ${isRefreshing ? "animate-spin" : ""}`}
-          />
-          Vernieuwen
-        </Button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <Button
+            onClick={() => setIsAddModalOpen(true)}
+            className="rounded-full px-4 shadow-xs text-xs font-semibold h-9 gap-1.5 cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            <Plus className="size-3.5" />
+            Nieuwe uitgave
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={() => loadExpenses({ silent: true })}
+            disabled={isLoading || isRefreshing}
+            className="rounded-full px-4 shadow-2xs text-xs h-9"
+          >
+            <RefreshCw
+              className={`size-3.5 ${isRefreshing ? "animate-spin" : ""}`}
+            />
+            Vernieuwen
+          </Button>
+        </div>
       </div>
 
       {/* 2. Key metrics, all computed from backend data */}
@@ -282,7 +301,11 @@ export default function ExpensesPage() {
         className="overflow-hidden border border-border/70 dark:border-white/[0.08] shadow-xs bg-card/90"
       >
         {loadError ? (
-          <ErrorState error={loadError} onRetry={() => loadExpenses()} />
+          <ErrorState
+            error={loadError}
+            onRetry={() => loadExpenses()}
+            onAddExpense={() => setIsAddModalOpen(true)}
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
@@ -311,7 +334,10 @@ export default function ExpensesPage() {
                 ) : (
                   <tr>
                     <td colSpan={7}>
-                      <EmptyState hasAnyExpenses={expenses.length > 0} />
+                      <EmptyState
+                        hasAnyExpenses={expenses.length > 0}
+                        onAddExpense={() => setIsAddModalOpen(true)}
+                      />
                     </td>
                   </tr>
                 )}
@@ -333,6 +359,14 @@ export default function ExpensesPage() {
           categoryOptions={categoryOptions}
         />
       )}
+
+      {/* 6. Add Expense modal */}
+      <AddExpenseModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdded={handleCreated}
+        categoryOptions={categoryOptions}
+      />
     </div>
   );
 }
@@ -360,7 +394,7 @@ function ExpenseRow({ expense, onOpen }) {
             {isImage(expense) && expense.receipt_url ? (
               // biome-ignore lint/performance/noImgElement: receipt is served by the backend, not optimizable by next/image
               <img
-                src={expense.receipt_url}
+                src={resolveApiUrl(expense.receipt_url)}
                 alt=""
                 loading="lazy"
                 className="size-full object-cover"
@@ -462,7 +496,7 @@ function SkeletonRows() {
   ));
 }
 
-function EmptyState({ hasAnyExpenses }) {
+function EmptyState({ hasAnyExpenses, onAddExpense }) {
   return (
     <div className="py-14 px-6 text-center text-muted-foreground flex flex-col items-center gap-2">
       <div className="flex size-12 items-center justify-center rounded-2xl bg-muted">
@@ -481,16 +515,26 @@ function EmptyState({ hasAnyExpenses }) {
             Nog geen bonnetjes binnengekomen
           </p>
           <p className="text-xs max-w-sm">
-            Stuur een foto van een bonnetje naar het WhatsApp-nummer. Het
-            verschijnt hier automatisch zodra het is uitgelezen.
+            Stuur een foto van een bonnetje naar het WhatsApp-nummer of voeg
+            direct handmatig een zakelijke aankoop toe.
           </p>
+          {onAddExpense && (
+            <Button
+              size="sm"
+              onClick={onAddExpense}
+              className="mt-2 rounded-full text-xs font-semibold px-4 cursor-pointer gap-1.5"
+            >
+              <Plus className="size-3.5" />
+              Nieuwe uitgave toevoegen
+            </Button>
+          )}
         </>
       )}
     </div>
   );
 }
 
-function ErrorState({ error, onRetry }) {
+function ErrorState({ error, onRetry, onAddExpense }) {
   const isUnavailable = error?.status === 0 || error?.status === 404;
   return (
     <div className="py-14 px-6 text-center flex flex-col items-center gap-2">
@@ -504,18 +548,30 @@ function ErrorState({ error, onRetry }) {
       </p>
       <p className="text-xs text-muted-foreground max-w-sm">
         {isUnavailable
-          ? "De server voor uitgaven is (nog) niet bereikbaar. Probeer het later opnieuw."
+          ? "De server voor uitgaven is (nog) niet bereikbaar. Je kunt wel handmatig uitgaven invoeren om de flow te bekijken."
           : error?.message}
       </p>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={onRetry}
-        className="mt-2 rounded-full text-xs"
-      >
-        <RefreshCw />
-        Opnieuw proberen
-      </Button>
+      <div className="flex items-center gap-2 mt-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onRetry}
+          className="rounded-full text-xs cursor-pointer"
+        >
+          <RefreshCw className="size-3.5 mr-1" />
+          Opnieuw proberen
+        </Button>
+        {onAddExpense && (
+          <Button
+            size="sm"
+            onClick={onAddExpense}
+            className="rounded-full text-xs font-semibold px-4 cursor-pointer gap-1.5"
+          >
+            <Plus className="size-3.5" />
+            Handmatig uitgave toevoegen
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

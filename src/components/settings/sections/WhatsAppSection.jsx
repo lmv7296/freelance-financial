@@ -40,9 +40,12 @@ export function WhatsAppSection() {
     setLoadError(null);
     try {
       const res = await settingsApi.getWhatsApp();
+      // The backend wraps it as { whatsapp: { receivingNumber, senders } }
+      const data = res?.whatsapp ?? res;
       setSettings({
-        receiving_number: res?.receiving_number ?? null,
-        senders: res?.senders ?? [],
+        receiving_number:
+          data?.receiving_number ?? data?.receivingNumber ?? null,
+        senders: data?.senders ?? [],
       });
     } catch (err) {
       setLoadError(err);
