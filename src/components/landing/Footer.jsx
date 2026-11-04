@@ -37,7 +37,7 @@ export function LandingFooter() {
         </div>
 
         <p className="text-[10px] opacity-60">
-          © {new Date().getFullYear()} FreelanceFin. Alle rechten voorbehouden.
+          © 2026 FreelanceFin. Alle rechten voorbehouden.
         </p>
       </div>
     </footer>

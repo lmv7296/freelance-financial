@@ -9,11 +9,11 @@ company) and **personal** settings (per user). Response types:
 | Method | Path | Body / returns |
 | --- | --- | --- |
 | GET / PATCH | `/api/v1/settings/company` | `{ company: CompanySettings }` |
-| POST | `/api/v1/settings/company/logo` | multipart field `logo` (PNG, JPG or SVG) → `{ company }` |
-| DELETE | `/api/v1/settings/company/logo` | → `{ company }` |
+| POST | `/api/v1/settings/company/logo` | multipart field `logo` (PNG, JPG or SVG) → `{ logo_url }` |
+| DELETE | `/api/v1/settings/company/logo` | → `{ message }` |
 | GET / PATCH | `/api/v1/settings/invoice-defaults` | `{ invoice_defaults: InvoiceDefaults }` |
 | GET / PUT | `/api/v1/settings/lists` | `{ lists: CompanyLists }` (PUT replaces all three lists) |
-| GET | `/api/v1/settings/whatsapp` | `WhatsAppSettings` |
+| GET | `/api/v1/settings/whatsapp` | `{ whatsapp: WhatsAppSettings }` (the backend currently sends `receivingNumber`; the frontend accepts both) |
 | POST | `/api/v1/settings/whatsapp/senders` | `{ name, phone }` → `{ sender }` |
 | PATCH / DELETE | `/api/v1/settings/whatsapp/senders/:id` | `{ name?, active? }` → `{ sender }` |
 

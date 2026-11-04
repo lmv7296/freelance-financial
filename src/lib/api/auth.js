@@ -1,7 +1,8 @@
 import { apiRequest } from "./client";
 
 const TOKEN_KEY = "ff_session_token";
-const USER_KEY = "ff_session_user";
+export const USER_KEY = "ff_session_user";
+const EXPIRES_KEY = "ff_session_expires_at";
 
 export const tokenStorage = {
   getToken: () => {
@@ -61,9 +62,31 @@ export const tokenStorage = {
       // storage unavailable
     }
   },
+  /** When the session ends (ISO timestamp from login), or null when unknown */
+  getExpiresAt: () => {
+    if (typeof window === "undefined") return null;
+    try {
+      return localStorage.getItem(EXPIRES_KEY);
+    } catch {
+      return null;
+    }
+  },
+  setExpiresAt: (expiresAt) => {
+    if (typeof window === "undefined") return;
+    try {
+      if (expiresAt) {
+        localStorage.setItem(EXPIRES_KEY, expiresAt);
+      } else {
+        localStorage.removeItem(EXPIRES_KEY);
+      }
+    } catch {
+      // storage unavailable
+    }
+  },
   clearAll: () => {
     tokenStorage.clearToken();
     tokenStorage.clearUser();
+    tokenStorage.setExpiresAt(null);
   },
 };
 
@@ -79,6 +102,7 @@ export const authApi = {
   register: async (payload) => {
     return apiRequest("/api/v1/auth/register", {
       method: "POST",
+      skipAuthRedirect: true,
       body: JSON.stringify({
         email: payload.email.trim(),
         password: payload.password,
@@ -95,6 +119,7 @@ export const authApi = {
   login: async (payload) => {
     const data = await apiRequest("/api/v1/auth/login", {
       method: "POST",
+      skipAuthRedirect: true,
       body: JSON.stringify({
         email: payload.email.trim(),
         password: payload.password,
@@ -107,6 +132,7 @@ export const authApi = {
     if (data?.user) {
       tokenStorage.setUser(data.user);
     }
+    tokenStorage.setExpiresAt(data?.expires_at || null);
 
     return data;
   },
@@ -122,12 +148,26 @@ export const authApi = {
     try {
       const result = await apiRequest("/api/v1/auth/logout", {
         method: "POST",
+        skipAuthRedirect: true,
         token: token || undefined,
       });
       return result;
     } finally {
       tokenStorage.clearAll();
     }
+  },
+
+  /**
+   * Ask the backend whether the current session is still valid
+   * Throws an ApiClientError with status 401 when it is not
+   * @returns {Promise<{ user: { id: string; email: string; created_at: string; updated_at: string } }>}
+   */
+  me: async () => {
+    return apiRequest("/api/v1/auth/me", {
+      method: "GET",
+      token: tokenStorage.getToken() || undefined,
+      skipAuthRedirect: true,
+    });
   },
 
   /**

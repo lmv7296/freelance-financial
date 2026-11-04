@@ -1,7 +1,9 @@
-import { LandingFeatures } from "@/components/LandingFeatures";
-import { LandingFooter } from "@/components/LandingFooter";
-import { LandingHero } from "@/components/LandingHero";
-import { LandingNavbar } from "@/components/LandingNavbar";
+import {
+  LandingFeatures,
+  LandingFooter,
+  LandingHero,
+  LandingNavbar,
+} from "@/components/landing";
 
 export const metadata = {
   title: "FreelanceFin — Eenvoudige Facturen & BTW-Kluis voor Vakmensen & ZZP",

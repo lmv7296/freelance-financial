@@ -1,6 +1,7 @@
 import { Download, FileArchive, Loader2, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { resolveApiUrl } from "@/lib/api/client";
 import { formatDutchDate } from "@/lib/dateUtils";
 
 /**
@@ -70,7 +71,7 @@ export function ExportsCard({
               )}
               {item.status === "ready" && item.download_url && (
                 <a
-                  href={item.download_url}
+                  href={resolveApiUrl(item.download_url)}
                   className="inline-flex items-center gap-1.5 rounded-full border border-border/70 px-3 py-1 text-[11px] font-semibold text-foreground hover:bg-muted transition-colors"
                 >
                   <Download className="size-3.5" />

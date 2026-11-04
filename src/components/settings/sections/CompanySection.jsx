@@ -18,6 +18,7 @@ import {
   isValidVatNumber,
 } from "@/components/settings/validators";
 import { Button } from "@/components/ui/button";
+import { resolveApiUrl } from "@/lib/api/client";
 import { settingsApi } from "@/lib/api/settings";
 import { useT } from "@/lib/preferences/PreferencesContext";
 
@@ -240,7 +241,14 @@ function LogoUploader({ initialUrl }) {
     setError(null);
     try {
       const res = await settingsApi.uploadLogo(file);
-      setLogoUrl(res?.company?.logo_url ?? null);
+      // The backend answers { logo_url }; older contract drafts used { company }
+      const uploadedUrl = res?.logo_url ?? res?.company?.logo_url ?? null;
+      // Same URL after a replace, so bust the browser cache
+      setLogoUrl(
+        uploadedUrl
+          ? `${uploadedUrl}${uploadedUrl.includes("?") ? "&" : "?"}v=${Date.now()}`
+          : null,
+      );
     } catch (err) {
       setError(err?.message || t("settings.common.saveFailed"));
     } finally {
@@ -268,7 +276,7 @@ function LogoUploader({ initialUrl }) {
         {logoUrl ? (
           // biome-ignore lint/performance/noImgElement: logo is served by the backend
           <img
-            src={logoUrl}
+            src={resolveApiUrl(logoUrl)}
             alt={t("settings.company.logo")}
             className="size-full object-contain p-1.5"
           />

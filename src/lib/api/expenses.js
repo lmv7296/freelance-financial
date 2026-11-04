@@ -35,6 +35,19 @@ export const expensesApi = {
   },
 
   /**
+   * Create a new expense manually
+   * @param {Record<string, any>} payload
+   * @returns {Promise<{ expense: import("@/types/api").Expense }>}
+   */
+  create: async (payload) => {
+    return apiRequest("/api/v1/expenses", {
+      method: "POST",
+      token: tokenStorage.getToken() || undefined,
+      body: JSON.stringify(payload),
+    });
+  },
+
+  /**
    * Get a single expense
    * @param {string} id
    * @returns {Promise<{ expense: import("@/types/api").Expense }>}

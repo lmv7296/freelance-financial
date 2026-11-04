@@ -3,7 +3,8 @@
  * Missing keys fall back to Dutch, then to the key itself.
  * Placeholders: t("settings.invoices.termDays", { count: 14 }) fills {count}.
  *
- * Translated so far: sidebar, sidebar tax widget and the Settings page.
+ * Translated so far: sidebar, sidebar tax widget, the Settings page, onboarding
+ * and email verification.
  * Other pages are still Dutch-only and will be moved over step by step.
  */
 
@@ -264,6 +265,72 @@ const nl = {
       goToVault: "Naar de Belastingkluis",
     },
   },
+  onboarding: {
+    title: "Je account instellen",
+    subtitle: "Nog een paar gegevens, dan kun je aan de slag.",
+    step: "Stap {current} van {total}",
+    back: "Terug",
+    next: "Volgende",
+    finish: "Opslaan en beginnen",
+    saving: "Opslaan…",
+    saveFailed: "Opslaan is niet gelukt. Probeer het opnieuw.",
+    notSaved:
+      "De server heeft niet alles opgeslagen. Nog leeg: {fields}. Probeer het later opnieuw.",
+    required: "Verplicht",
+    steps: {
+      about: "Over jou",
+      business: "Je bedrijf",
+      review: "Controleren",
+    },
+    fullName: "Volledige naam",
+    fullNamePlaceholder: "Jan de Vries",
+    phone: "Telefoonnummer",
+    phoneHint: "Met landcode, bijvoorbeeld +31 6 1234 5678.",
+    phoneInvalid: "Vul een geldig telefoonnummer in.",
+    email: "E-mailadres",
+    businessName: "Bedrijfsnaam",
+    businessNamePlaceholder: "De Vries Bouw & Montage",
+    legalForm: "Rechtsvorm",
+    legalForms: {
+      eenmanszaak: "Eenmanszaak / zzp",
+      vof: "Vof",
+      bv: "Bv",
+    },
+    legalFormHints: {
+      eenmanszaak: "Je onderneemt alleen, op eigen naam.",
+      vof: "Je onderneemt samen met een of meer vennoten.",
+      bv: "Je bedrijf is een besloten vennootschap.",
+    },
+    legalFormLimited:
+      "De schattingen in de Belastingkluis werken voorlopig alleen voor een eenmanszaak.",
+    vatNumber: "Btw-identificatienummer (optioneel)",
+    vatNumberHint:
+      "Staat in je brief van de Belastingdienst. Mag je later invullen.",
+    vatNumberInvalid: "Dit is geen geldig btw-identificatienummer.",
+    vatNumberInvalidNl:
+      "Gebruik NL + 9 cijfers + B + 2 cijfers, bijvoorbeeld NL123456789B01.",
+    country: "Land",
+    notFilled: "Niet ingevuld",
+    edit: "Wijzigen",
+  },
+  verifyEmail: {
+    bannerTitle: "Bevestig je e-mailadres",
+    bannerText: "We hebben een bevestigingslink gestuurd naar {email}.",
+    resend: "Opnieuw versturen",
+    resending: "Versturen…",
+    resent: "Verstuurd, kijk ook in je spam.",
+    resendFailed: "Versturen is niet gelukt.",
+    checking: "Je e-mailadres wordt bevestigd…",
+    successTitle: "E-mailadres bevestigd",
+    successText: "Bedankt! Je account is nu volledig actief.",
+    failedTitle: "Bevestigen niet gelukt",
+    failedText:
+      "De link is ongeldig of verlopen. Vraag in de app een nieuwe link aan.",
+    missingToken:
+      "Deze link is onvolledig. Open de link opnieuw vanuit de e-mail.",
+    toDashboard: "Naar het dashboard",
+    toHome: "Naar de startpagina",
+  },
 };
 
 const en = {
@@ -512,6 +579,72 @@ const en = {
       open: "Open tax settings",
       goToVault: "Go to the Tax Vault",
     },
+  },
+  onboarding: {
+    title: "Set up your account",
+    subtitle: "Just a few details and you're ready to go.",
+    step: "Step {current} of {total}",
+    back: "Back",
+    next: "Next",
+    finish: "Save and start",
+    saving: "Saving…",
+    saveFailed: "Saving failed. Please try again.",
+    notSaved:
+      "The server didn't save everything. Still empty: {fields}. Please try again later.",
+    required: "Required",
+    steps: {
+      about: "About you",
+      business: "Your business",
+      review: "Review",
+    },
+    fullName: "Full name",
+    fullNamePlaceholder: "Jan de Vries",
+    phone: "Phone number",
+    phoneHint: "Including country code, e.g. +31 6 1234 5678.",
+    phoneInvalid: "Enter a valid phone number.",
+    email: "Email address",
+    businessName: "Business name",
+    businessNamePlaceholder: "De Vries Construction",
+    legalForm: "Legal form",
+    legalForms: {
+      eenmanszaak: "Sole proprietorship (eenmanszaak / zzp)",
+      vof: "General partnership (vof)",
+      bv: "Private limited company (bv)",
+    },
+    legalFormHints: {
+      eenmanszaak: "You run the business on your own, in your own name.",
+      vof: "You run the business together with one or more partners.",
+      bv: "Your business is a private limited company.",
+    },
+    legalFormLimited:
+      "Tax Vault estimates currently only work for a sole proprietorship.",
+    vatNumber: "VAT ID (optional)",
+    vatNumberHint:
+      "Shown in your letter from the Belastingdienst. You can add it later.",
+    vatNumberInvalid: "This is not a valid VAT ID.",
+    vatNumberInvalidNl:
+      "Use NL + 9 digits + B + 2 digits, e.g. NL123456789B01.",
+    country: "Country",
+    notFilled: "Not filled in",
+    edit: "Edit",
+  },
+  verifyEmail: {
+    bannerTitle: "Confirm your email address",
+    bannerText: "We sent a confirmation link to {email}.",
+    resend: "Send again",
+    resending: "Sending…",
+    resent: "Sent, check your spam folder too.",
+    resendFailed: "Sending failed.",
+    checking: "Confirming your email address…",
+    successTitle: "Email address confirmed",
+    successText: "Thanks! Your account is now fully active.",
+    failedTitle: "Confirmation failed",
+    failedText:
+      "The link is invalid or has expired. Request a new link in the app.",
+    missingToken:
+      "This link is incomplete. Open the link from the email again.",
+    toDashboard: "Go to the dashboard",
+    toHome: "Go to the home page",
   },
 };
 
