@@ -1246,5 +1246,108 @@
     "clientDefaultCompany": "Zakelijke klant",
     "clientDefaultPerson": "Particuliere klant",
     "addressMissing": "Adres nog niet ingevuld"
+  },
+  "clients": {
+    "tabs": {
+      "all": "Alle klanten",
+      "particulier": "Particulieren",
+      "bedrijf": "Bedrijven",
+      "unpaid": "Openstaand"
+    },
+    "category": {
+      "particulier": "Particulier",
+      "bedrijf": "Zakelijk"
+    },
+    "location": {
+      "particulier": "Werklocatie",
+      "bedrijf": "Bedrijfspand"
+    },
+    "page": {
+      "badge": "Klanten en werklocaties",
+      "title": "Klanten",
+      "subtitle": "Je particuliere en zakelijke klanten met hun adressen. Bel, app of navigeer direct.",
+      "add": "Nieuwe klant",
+      "searchPlaceholder": "Zoek op naam, adres of telefoon…"
+    },
+    "card": {
+      "copyKvk": "Kopieer KvK-nummer",
+      "active": "Actieve klant",
+      "defaultRole": "Eigenaar",
+      "vat": "Btw: {number}",
+      "call": "Bel",
+      "whatsapp": "App",
+      "landline": "Vast",
+      "mobile": "Mobiel",
+      "copied": "Gekopieerd",
+      "copy": "Kopieer",
+      "navigate": "Navigeer",
+      "view": "Bekijk klant"
+    },
+    "dossier": {
+      "description": "Klant • {category}",
+      "id": "Klantnummer",
+      "type": "Soort klant",
+      "address": "Adres",
+      "phone": "Telefoon / WhatsApp",
+      "email": "E-mailadres",
+      "total": "Totaal gefactureerd",
+      "invoiceCount": "Aantal facturen",
+      "invoicesSent": "{count} facturen verstuurd",
+      "notes": "Notities over de locatie",
+      "close": "Sluiten",
+      "call": "Bel klant",
+      "route": "Route openen",
+      "history": "Facturen voor {name}",
+      "historyCount": "{count} facturen",
+      "sentOn": "Verstuurd op {date}",
+      "empty": "Nog geen facturen naar deze klant gestuurd."
+    },
+    "form": {
+      "title": "Nieuwe klant",
+      "description": "Maak in 3 stappen een klant aan, particulier of zakelijk.",
+      "submit": "Klant opslaan",
+      "footer": "De klant staat daarna in je overzicht en is te kiezen bij een nieuwe factuur.",
+      "steps": {
+        "basis": {
+          "title": "Soort en naam",
+          "description": "Kies particulier of bedrijf en vul de naam in."
+        },
+        "contact": {
+          "title": "Contact",
+          "description": "Telefoonnummer, e-mailadres en eventueel btw-nummer."
+        },
+        "location": {
+          "title": "Adres",
+          "description": "Straat, huisnummer en plaats voor klussen en facturen."
+        }
+      },
+      "type": "Soort klant",
+      "person": "Particulier",
+      "personHint": "Consument, huiseigenaar of huurder.",
+      "company": "Bedrijf",
+      "companyHint": "Bedrijf, winkel, handel of VvE.",
+      "companyName": "Bedrijfsnaam",
+      "personName": "Naam klant",
+      "companyNamePlaceholder": "Bijv. Bakkerij Van Dam",
+      "personNamePlaceholder": "Bijv. Jan en Sophie de Vries",
+      "situation": "Situatie (optioneel)",
+      "situationPlaceholder": "Bijv. eigenaar-bewoner of huurder",
+      "kvk": "KvK-nummer",
+      "kvkPlaceholder": "Bijv. 12345678",
+      "contactPerson": "Contactpersoon en functie",
+      "contactPersonPlaceholder": "Bijv. Pieter de Groot (eigenaar)",
+      "phone": "Telefoon / WhatsApp",
+      "phonePlaceholder": "+31 6 1234 5678",
+      "email": "E-mailadres voor facturen",
+      "companyEmailPlaceholder": "facturen@bedrijf.nl",
+      "personEmailPlaceholder": "jan@voorbeeld.nl",
+      "vatNumber": "Btw-nummer (optioneel)",
+      "vatNumberPlaceholder": "Bijv. NL123456789B01",
+      "companyAddress": "Adres bedrijfspand (straat en huisnummer)",
+      "personAddress": "Werklocatie (straat en huisnummer)",
+      "addressPlaceholder": "Bijv. Prinsengracht 242",
+      "postalCity": "Postcode en plaats",
+      "postalCityPlaceholder": "Bijv. 1016 HE Amsterdam"
+    }
   }
 }

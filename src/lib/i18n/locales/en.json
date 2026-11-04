@@ -1246,5 +1246,108 @@
     "clientDefaultCompany": "Business client",
     "clientDefaultPerson": "Private client",
     "addressMissing": "Address not filled in yet"
+  },
+  "clients": {
+    "tabs": {
+      "all": "All clients",
+      "particulier": "Private",
+      "bedrijf": "Business",
+      "unpaid": "Outstanding"
+    },
+    "category": {
+      "particulier": "Private",
+      "bedrijf": "Business"
+    },
+    "location": {
+      "particulier": "Work location",
+      "bedrijf": "Business premises"
+    },
+    "page": {
+      "badge": "Clients and work locations",
+      "title": "Clients",
+      "subtitle": "Your private and business clients with their addresses. Call, message or navigate straight away.",
+      "add": "New client",
+      "searchPlaceholder": "Search by name, address or phone…"
+    },
+    "card": {
+      "copyKvk": "Copy KvK number",
+      "active": "Active client",
+      "defaultRole": "Owner",
+      "vat": "VAT: {number}",
+      "call": "Call",
+      "whatsapp": "Message",
+      "landline": "Landline",
+      "mobile": "Mobile",
+      "copied": "Copied",
+      "copy": "Copy",
+      "navigate": "Navigate",
+      "view": "View client"
+    },
+    "dossier": {
+      "description": "Client • {category}",
+      "id": "Client number",
+      "type": "Client type",
+      "address": "Address",
+      "phone": "Phone / WhatsApp",
+      "email": "Email address",
+      "total": "Total invoiced",
+      "invoiceCount": "Number of invoices",
+      "invoicesSent": "{count} invoices sent",
+      "notes": "Notes about the location",
+      "close": "Close",
+      "call": "Call client",
+      "route": "Open route",
+      "history": "Invoices for {name}",
+      "historyCount": "{count} invoices",
+      "sentOn": "Sent on {date}",
+      "empty": "No invoices sent to this client yet."
+    },
+    "form": {
+      "title": "New client",
+      "description": "Create a client in 3 steps, private or business.",
+      "submit": "Save client",
+      "footer": "The client then shows up in your overview and can be chosen on a new invoice.",
+      "steps": {
+        "basis": {
+          "title": "Type and name",
+          "description": "Choose private or business and enter the name."
+        },
+        "contact": {
+          "title": "Contact",
+          "description": "Phone number, email address and VAT number if any."
+        },
+        "location": {
+          "title": "Address",
+          "description": "Street, house number and town for jobs and invoices."
+        }
+      },
+      "type": "Client type",
+      "person": "Private",
+      "personHint": "Consumer, homeowner or tenant.",
+      "company": "Business",
+      "companyHint": "Company, shop, trade or owners' association.",
+      "companyName": "Company name",
+      "personName": "Client name",
+      "companyNamePlaceholder": "E.g. Bakkerij Van Dam",
+      "personNamePlaceholder": "E.g. Jan and Sophie de Vries",
+      "situation": "Situation (optional)",
+      "situationPlaceholder": "E.g. owner-occupier or tenant",
+      "kvk": "KvK number",
+      "kvkPlaceholder": "E.g. 12345678",
+      "contactPerson": "Contact person and role",
+      "contactPersonPlaceholder": "E.g. Pieter de Groot (owner)",
+      "phone": "Phone / WhatsApp",
+      "phonePlaceholder": "+31 6 1234 5678",
+      "email": "Email address for invoices",
+      "companyEmailPlaceholder": "invoices@company.nl",
+      "personEmailPlaceholder": "jan@example.com",
+      "vatNumber": "VAT number (optional)",
+      "vatNumberPlaceholder": "E.g. NL123456789B01",
+      "companyAddress": "Business address (street and number)",
+      "personAddress": "Work location (street and number)",
+      "addressPlaceholder": "E.g. Prinsengracht 242",
+      "postalCity": "Postcode and town",
+      "postalCityPlaceholder": "E.g. 1016 HE Amsterdam"
+    }
   }
 }
