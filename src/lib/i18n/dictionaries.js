@@ -3,8 +3,8 @@
  * Missing keys fall back to Dutch, then to the key itself.
  * Placeholders: t("settings.invoices.termDays", { count: 14 }) fills {count}.
  *
- * Translated so far: sidebar, sidebar tax widget, the Settings page, onboarding
- * and email verification.
+ * Translated so far: sidebar, sidebar tax widget, the Settings page, onboarding,
+ * email verification and Reports.
  * Other pages are still Dutch-only and will be moved over step by step.
  */
 
@@ -331,6 +331,82 @@ const nl = {
     toDashboard: "Naar het dashboard",
     toHome: "Naar de startpagina",
   },
+  reports: {
+    badge: "Rapporten",
+    title: "Rapporten",
+    subtitle:
+      "Download een overzicht van je cijfers. Het rapport wordt gemaakt met je actuele gegevens.",
+    download: "Rapport downloaden",
+    downloaded: "{filename} staat in je downloads.",
+    loadFailed: "Rapporten konden niet geladen worden.",
+    notAvailable:
+      "Rapporten zijn nog niet beschikbaar. De server ondersteunt ze nog niet.",
+    reportNotAvailable: "Nog niet beschikbaar",
+    downloadFailed: "Het rapport kon niet gemaakt worden.",
+    retry: "Opnieuw proberen",
+    periodTypes: {
+      month: "Maand",
+      quarter: "Kwartaal",
+      year: "Heel jaar",
+      custom: "Eigen periode",
+    },
+    modal: {
+      description: "Kies de periode en het bestandstype.",
+      period: "Periode",
+      month: "Maand",
+      quarter: "Kwartaal",
+      quarterOption: "Kwartaal {quarter}",
+      year: "Jaar",
+      from: "Van",
+      to: "Tot en met",
+      format: "Bestandstype",
+      confirmTitle: "Wil je dit rapport downloaden?",
+      confirmText: "{report} over {period}, als {format}.",
+      invalidRange: "Kies een begindatum die vóór de einddatum ligt.",
+      cancel: "Annuleer",
+      confirm: "Ja, downloaden",
+      downloading: "Rapport maken…",
+    },
+    types: {
+      profit_loss: {
+        title: "Winst & verlies",
+        description: "Je omzet min je kosten over een periode.",
+        includes: [
+          "Omzet uit je facturen, zonder btw",
+          "Kosten per categorie, zonder btw",
+          "Resultaat: winst of verlies over de periode",
+        ],
+      },
+      vat_summary: {
+        title: "Btw-overzicht",
+        description:
+          "Gerekende en betaalde btw, om je aangifte te controleren.",
+        includes: [
+          "Btw over je omzet, per tarief",
+          "Btw op je kosten (voorbelasting)",
+          "Saldo: te betalen of terug te krijgen",
+        ],
+      },
+      invoices: {
+        title: "Facturen & openstaande posten",
+        description: "Je facturen in de periode en wat nog openstaat.",
+        includes: [
+          "Alle facturen in de periode, met status",
+          "Openstaande en te late facturen op de einddatum",
+          "Omzet per klant",
+        ],
+      },
+      expenses: {
+        title: "Uitgaven per categorie",
+        description: "Al je uitgaven in de periode, gegroepeerd per categorie.",
+        includes: [
+          "Alle uitgaven in de periode",
+          "Totalen per categorie, met btw",
+          "Welke uitgaven een bonnetje hebben",
+        ],
+      },
+    },
+  },
 };
 
 const en = {
@@ -645,6 +721,81 @@ const en = {
       "This link is incomplete. Open the link from the email again.",
     toDashboard: "Go to the dashboard",
     toHome: "Go to the home page",
+  },
+  reports: {
+    badge: "Reports",
+    title: "Reports",
+    subtitle:
+      "Download an overview of your numbers. The report is made from your current data.",
+    download: "Download report",
+    downloaded: "{filename} is in your downloads.",
+    loadFailed: "Reports could not be loaded.",
+    notAvailable:
+      "Reports are not available yet. The server doesn't support them yet.",
+    reportNotAvailable: "Not available yet",
+    downloadFailed: "The report could not be created.",
+    retry: "Try again",
+    periodTypes: {
+      month: "Month",
+      quarter: "Quarter",
+      year: "Full year",
+      custom: "Custom period",
+    },
+    modal: {
+      description: "Choose the period and the file type.",
+      period: "Period",
+      month: "Month",
+      quarter: "Quarter",
+      quarterOption: "Quarter {quarter}",
+      year: "Year",
+      from: "From",
+      to: "Up to and including",
+      format: "File type",
+      confirmTitle: "Do you want to download this report?",
+      confirmText: "{report} for {period}, as {format}.",
+      invalidRange: "Choose a start date before the end date.",
+      cancel: "Cancel",
+      confirm: "Yes, download",
+      downloading: "Creating report…",
+    },
+    types: {
+      profit_loss: {
+        title: "Profit & loss",
+        description: "Your revenue minus your costs over a period.",
+        includes: [
+          "Revenue from your invoices, excluding VAT",
+          "Costs per category, excluding VAT",
+          "Result: profit or loss for the period",
+        ],
+      },
+      vat_summary: {
+        title: "VAT summary",
+        description: "VAT charged and paid, to check your VAT return.",
+        includes: [
+          "VAT on your revenue, per rate",
+          "VAT on your costs (input VAT)",
+          "Balance: to pay or to get back",
+        ],
+      },
+      invoices: {
+        title: "Invoices & open items",
+        description: "Your invoices in the period and what is still unpaid.",
+        includes: [
+          "All invoices in the period, with status",
+          "Unpaid and overdue invoices on the end date",
+          "Revenue per client",
+        ],
+      },
+      expenses: {
+        title: "Expenses by category",
+        description: "All your expenses in the period, grouped by category.",
+        includes: [
+          "All expenses in the period",
+          "Totals per category, with VAT",
+          "Which expenses have a receipt",
+        ],
+      },
+    },
   },
 };
 
