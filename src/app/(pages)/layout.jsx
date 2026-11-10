@@ -3,19 +3,33 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Sidebar } from "@/components/Sidebar";
+import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { isProfileComplete } from "@/lib/auth/profile";
 
 export default function PagesLayout({ children }) {
-  const { isAuthenticated, isLoading, openLogin } = useAuth();
+  const { user, isAuthenticated, isLoading, sessionExpired, openLogin } =
+    useAuth();
   const router = useRouter();
+  const needsOnboarding = isAuthenticated && !isProfileComplete(user);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (isLoading) return;
+    if (!isAuthenticated) {
       // Redirect unauthenticated visitors to the public landing page
-      router.replace("/?auth=required");
+      router.replace(sessionExpired ? "/?auth=expired" : "/?auth=required");
       openLogin();
+    } else if (needsOnboarding) {
+      router.replace("/onboarding");
     }
-  }, [isLoading, isAuthenticated, router, openLogin]);
+  }, [
+    isLoading,
+    isAuthenticated,
+    needsOnboarding,
+    sessionExpired,
+    router,
+    openLogin,
+  ]);
 
   // Loading state while checking authentication credentials
   if (isLoading) {
@@ -30,14 +44,17 @@ export default function PagesLayout({ children }) {
   }
 
   // Prevent flash of protected UI content while redirecting
-  if (!isAuthenticated) {
+  if (!isAuthenticated || needsOnboarding) {
     return null;
   }
 
   return (
     <div className="flex min-h-screen bg-background font-sans">
       <Sidebar />
-      <main className="flex-1 min-w-0 overflow-y-auto">{children}</main>
+      <main className="flex-1 min-w-0 overflow-y-auto">
+        <VerifyEmailBanner />
+        {children}
+      </main>
     </div>
   );
 }

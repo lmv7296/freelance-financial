@@ -8,6 +8,7 @@ import {
   ZoomOut,
 } from "lucide-react";
 import { useState } from "react";
+import { resolveApiUrl } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 
 const MIN_ZOOM = 1;
@@ -17,7 +18,8 @@ const MAX_ZOOM = 3;
  * Shows the original receipt (photo or PDF) as sent in by the worker.
  * Images can be zoomed and rotated, since WhatsApp photos are often sideways.
  */
-export function ReceiptViewer({ url, contentType, alt, className }) {
+export function ReceiptViewer({ url: rawUrl, contentType, alt, className }) {
+  const url = resolveApiUrl(rawUrl);
   const [zoom, setZoom] = useState(MIN_ZOOM);
   const [rotation, setRotation] = useState(0);
   const [hasError, setHasError] = useState(false);

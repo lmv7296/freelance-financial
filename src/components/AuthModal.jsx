@@ -34,6 +34,7 @@ export function AuthModal() {
     login,
     register,
     rateLimitCountdown,
+    sessionExpired,
   } = useAuth();
 
   const [email, setEmail] = useState("");
@@ -127,6 +128,17 @@ export function AuthModal() {
       />
 
       <ModalBody>
+        {/* Logged out because the session ended */}
+        {sessionExpired && !isRegister && !serverError && (
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-medium animate-in fade-in">
+            <Clock className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+            <div>
+              <p className="font-semibold">Je sessie is verlopen</p>
+              <p className="opacity-90">Log opnieuw in om verder te gaan.</p>
+            </div>
+          </div>
+        )}
+
         {/* Rate limit warning banner */}
         {rateLimitCountdown > 0 && (
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-medium animate-in fade-in">

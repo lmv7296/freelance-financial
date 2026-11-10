@@ -1,5 +1,10 @@
 import { tokenStorage } from "./auth";
-import { ApiClientError, apiRequest, getApiBaseUrl } from "./client";
+import {
+  ApiClientError,
+  apiRequest,
+  getApiBaseUrl,
+  notifyUnauthorized,
+} from "./client";
 
 const authToken = () => tokenStorage.getToken() || undefined;
 
@@ -29,6 +34,8 @@ export const settingsApi = {
   changeEmail: async (payload) =>
     apiRequest("/api/v1/me/email", {
       method: "PATCH",
+      // 401 here means the current password is wrong, not that the session expired
+      skipAuthRedirect: true,
       token: authToken(),
       body: JSON.stringify(payload),
     }),
@@ -37,6 +44,7 @@ export const settingsApi = {
   changePassword: async (payload) =>
     apiRequest("/api/v1/auth/change-password", {
       method: "POST",
+      skipAuthRedirect: true,
       token: authToken(),
       body: JSON.stringify(payload),
     }),
@@ -68,7 +76,7 @@ export const settingsApi = {
   /**
    * Upload the company logo (multipart, so not through apiRequest's JSON headers)
    * @param {File} file
-   * @returns {Promise<{ company: import("@/types/settings").CompanySettings }>}
+   * @returns {Promise<{ logo_url: string }>}
    */
   uploadLogo: async (file) => {
     const body = new FormData();
@@ -93,6 +101,7 @@ export const settingsApi = {
     }
     const data = await response.json().catch(() => null);
     if (!response.ok) {
+      if (response.status === 401) notifyUnauthorized();
       throw new ApiClientError(
         data?.error || data?.message || `Upload mislukt (${response.status})`,
         response.status,
@@ -141,7 +150,7 @@ export const settingsApi = {
 
   // --- Company: WhatsApp receipt senders ---
 
-  /** @returns {Promise<import("@/types/settings").WhatsAppSettings>} */
+  /** @returns {Promise<{ whatsapp: import("@/types/settings").WhatsAppSettings }>} */
   getWhatsApp: async () =>
     apiRequest("/api/v1/settings/whatsapp", {
       method: "GET",

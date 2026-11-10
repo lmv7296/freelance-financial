@@ -107,6 +107,29 @@ export interface ExpenseResponse {
   expense: Expense;
 }
 
+export interface CreateExpenseRequest {
+  merchant_name: string;
+  merchant_address?: string | null;
+  receipt_date?: string | null;
+  payment_method?: string | null;
+  category?: string | null;
+  currency?: string;
+  subtotal_amount?: number | null;
+  vat_amount?: number | null;
+  total_amount: number;
+  vat_lines?: ExpenseVatLine[];
+  line_items?: ExpenseLineItem[];
+  receipt_url?: string;
+  receipt_content_type?: string | null;
+  client_id?: string | null;
+  client_name?: string | null;
+  invoice_id?: string | null;
+  invoice_number?: string | null;
+  notes?: string | null;
+  status?: ExpenseStatus;
+  source?: string;
+}
+
 export type UpdateExpenseRequest = Partial<
   Pick<
     Expense,

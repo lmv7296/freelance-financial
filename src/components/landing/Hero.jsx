@@ -14,8 +14,9 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { cn } from "@/lib/utils";
 
 export function LandingHero() {
   const router = useRouter();
@@ -59,24 +60,25 @@ export function LandingHero() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3">
             {isAuthenticated ? (
               <div className="flex flex-col sm:flex-row items-center gap-3">
-                <Button
-                  size="lg"
-                  asChild
-                  className="rounded-full px-7 font-bold shadow-md hover:shadow-lg cursor-pointer"
+                <Link
+                  href="/dashboard"
+                  className={cn(
+                    buttonVariants({ size: "lg" }),
+                    "rounded-full px-7 font-bold shadow-md hover:shadow-lg",
+                  )}
                 >
-                  <Link href="/dashboard" className="flex items-center gap-2">
-                    <span>Ga naar Dashboard ({user?.email})</span>
-                    <ArrowRight className="size-4" />
-                  </Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  asChild
-                  className="rounded-full px-6"
+                  <span>Ga naar Dashboard ({user?.email})</span>
+                  <ArrowRight className="size-4" />
+                </Link>
+                <Link
+                  href="/invoices"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "lg" }),
+                    "rounded-full px-6",
+                  )}
                 >
-                  <Link href="/invoices">Nieuwe Factuur Maken</Link>
-                </Button>
+                  Nieuwe Factuur Maken
+                </Link>
               </div>
             ) : (
               <>
@@ -96,14 +98,15 @@ export function LandingHero() {
                 >
                   <span>Inloggen</span>
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  asChild
-                  className="w-full sm:w-auto rounded-full px-6 text-muted-foreground hover:text-foreground h-12"
+                <a
+                  href="#features"
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "lg" }),
+                    "w-full sm:w-auto rounded-full px-6 text-muted-foreground hover:text-foreground h-12",
+                  )}
                 >
-                  <a href="#features">Bekijk alle functies</a>
-                </Button>
+                  Bekijk alle functies
+                </a>
               </>
             )}
           </div>
@@ -230,16 +233,16 @@ export function LandingHero() {
                     Excl. BTW over 18 opdrachten
                   </p>
                 </div>
-                <Button
-                  size="sm"
-                  asChild
-                  className="w-full rounded-xl text-xs font-semibold justify-center gap-1.5 cursor-pointer"
+                <Link
+                  href="/invoices"
+                  className={cn(
+                    buttonVariants({ size: "sm" }),
+                    "w-full rounded-xl text-xs font-semibold justify-center gap-1.5",
+                  )}
                 >
-                  <Link href="/invoices">
-                    <Plus className="size-3.5" />
-                    <span>Nieuwe factuur opstellen</span>
-                  </Link>
-                </Button>
+                  <Plus className="size-3.5" />
+                  <span>Nieuwe factuur opstellen</span>
+                </Link>
               </div>
             </div>
           </div>

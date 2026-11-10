@@ -1,5 +1,15 @@
 const DEFAULT_BASE_URL = "http://localhost:8085";
 
+/** Fired on window when a request comes back 401: the session is no longer valid */
+export const UNAUTHORIZED_EVENT = "ff:unauthorized";
+
+/** Tells the auth layer that the session expired, so it can log out and redirect */
+export function notifyUnauthorized() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
+  }
+}
+
 export class ApiClientError extends Error {
   constructor(message, status, payload = null) {
     super(message);
@@ -24,16 +34,37 @@ export function getApiBaseUrl() {
 }
 
 /**
+ * Makes a URL returned by the backend usable in <img src> or <a href>.
+ * Paths like "/api/v1/receipts/rec_1" are served by the API, not by Next.js,
+ * so they get the API base URL in front. Absolute, data: and blob: URLs stay as they are.
+ * @param {string | null | undefined} url
+ */
+export function resolveApiUrl(url) {
+  if (!url) return url ?? null;
+  if (url.startsWith("/") && !url.startsWith("//")) {
+    return `${getApiBaseUrl()}${url}`;
+  }
+  return url;
+}
+
+/**
  * Low-level HTTP request wrapper using native fetch
  * Sends `credentials: 'include'` to support HttpOnly cookies
  *
  * @template T
  * @param {string} endpoint - Path, e.g. '/api/v1/auth/login'
- * @param {RequestInit & { token?: string }} [options]
+ * @param {RequestInit & { token?: string; skipAuthRedirect?: boolean }} [options]
+ *   skipAuthRedirect: a 401 here means something else than an expired session
+ *   (wrong password on login or when confirming a change), so don't log out.
  * @returns {Promise<T>}
  */
 export async function apiRequest(endpoint, options = {}) {
-  const { token, headers = {}, ...restOptions } = options;
+  const {
+    token,
+    headers = {},
+    skipAuthRedirect = false,
+    ...restOptions
+  } = options;
   const baseUrl = getApiBaseUrl();
   const normalizedEndpoint = endpoint.startsWith("/")
     ? endpoint
@@ -70,6 +101,9 @@ export async function apiRequest(endpoint, options = {}) {
     }
 
     if (!response.ok) {
+      if (response.status === 401 && !skipAuthRedirect) {
+        notifyUnauthorized();
+      }
       const errorMessage =
         data?.error ||
         data?.message ||

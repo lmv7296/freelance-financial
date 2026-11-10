@@ -2,13 +2,10 @@
 
 import { ArrowRight, CheckCircle2, Quote, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import {
-  APP_FEATURES,
-  TESTIMONIAL,
-  WORKFLOW_STEPS,
-} from "@/data/landingFeatures";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { cn } from "@/lib/utils";
+import { APP_FEATURES, TESTIMONIAL, WORKFLOW_STEPS } from "./data";
 
 export function LandingFeatures() {
   const { isAuthenticated, openRegister, openLogin } = useAuth();
@@ -162,16 +159,16 @@ export function LandingFeatures() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             {isAuthenticated ? (
-              <Button
-                size="lg"
-                asChild
-                className="rounded-full px-8 font-bold shadow-md cursor-pointer"
+              <Link
+                href="/dashboard"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "rounded-full px-8 font-bold shadow-md",
+                )}
               >
-                <Link href="/dashboard" className="flex items-center gap-2">
-                  <span>Naar je Dashboard</span>
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
+                <span>Naar je Dashboard</span>
+                <ArrowRight className="size-4" />
+              </Link>
             ) : (
               <>
                 <Button
