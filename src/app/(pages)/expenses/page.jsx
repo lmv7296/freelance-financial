@@ -62,6 +62,9 @@ export default function ExpensesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [loadError, setLoadError] = useState(null);
+  // Reference date for the month/quarter stats. Captured when data loads (not
+  // during render) so it is never frozen into the prerendered static shell.
+  const [now, setNow] = useState(null);
 
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -78,6 +81,7 @@ export default function ExpensesPage() {
     try {
       const res = await expensesApi.list();
       setExpenses(res?.expenses ?? []);
+      setNow(new Date());
       setLoadError(null);
     } catch (err) {
       // On background refreshes keep the data we already have
@@ -122,16 +126,16 @@ export default function ExpensesPage() {
   }, [expenses, activeFilter, searchQuery]);
 
   const stats = useMemo(() => {
-    const now = new Date();
     const counted = expenses.filter((e) => e.status !== "rejected");
     const sum = (list, key) => list.reduce((acc, e) => acc + (e[key] ?? 0), 0);
-    const thisMonth = counted.filter((e) =>
-      isSameMonth(e.receipt_date || e.created_at, now),
+    const thisMonth = counted.filter(
+      (e) => now && isSameMonth(e.receipt_date || e.created_at, now),
     );
     const toReview = expenses.filter((e) => e.status === "needs_review");
     const approvedThisQuarter = expenses.filter(
       (e) =>
         e.status === "approved" &&
+        now &&
         isSameQuarter(e.receipt_date || e.created_at, now),
     );
     return {
@@ -140,10 +144,10 @@ export default function ExpensesPage() {
       reviewCount: toReview.length,
       reviewTotal: sum(toReview, "total_amount"),
       quarterVat: sum(approvedThisQuarter, "vat_amount"),
-      quarterNumber: Math.floor(now.getMonth() / 3) + 1,
+      quarterNumber: now ? Math.floor(now.getMonth() / 3) + 1 : null,
       processingCount: expenses.filter((e) => e.status === "processing").length,
     };
-  }, [expenses]);
+  }, [expenses, now]);
 
   const categoryOptions = useMemo(
     () => [...new Set(expenses.map((e) => e.category).filter(Boolean))].sort(),
@@ -230,7 +234,11 @@ export default function ExpensesPage() {
           iconColor="amber"
         />
         <Card
-          title={`Terug te vragen BTW Q${stats.quarterNumber}`}
+          title={
+            stats.quarterNumber
+              ? `Terug te vragen BTW Q${stats.quarterNumber}`
+              : "Terug te vragen BTW"
+          }
           description="Van goedgekeurde bonnetjes"
           value={isLoading ? "—" : formatEuro(stats.quarterVat)}
           icon={<FileText className="size-5" />}
