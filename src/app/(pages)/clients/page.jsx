@@ -12,26 +12,36 @@ import {
   MessageCircle,
   Phone,
   Plus,
+  RefreshCw,
   Search,
+  ServerCrash,
   Store,
   UserPlus,
   Zap,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FormModal } from "@/components/FormModal";
 import { InfoModal } from "@/components/InfoModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  createClientRecord,
   filterClients,
   getClientCounts,
-  getStoredClients,
-  INITIAL_CLIENTS,
-  saveStoredClients,
+  toClientInput,
+  toClientView,
 } from "@/data/clients";
+import { clientsApi } from "@/lib/api/clients";
+import { invoicesApi } from "@/lib/api/invoices";
 import { useClipboard } from "@/lib/clipboard";
+import { formatDate } from "@/lib/dateUtils";
+import { formatEuro } from "@/lib/formatCurrency";
 import { useT } from "@/lib/preferences/PreferencesContext";
+
+/** Local calendar date as YYYY-MM-DD, comparable with invoice due dates */
+function toIsoDate(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
 
 // Tab ids; labels are in the language files (clients.tabs.<id>)
 const FILTER_TABS = ["all", "particulier", "bedrijf", "unpaid"];
@@ -92,20 +102,16 @@ const ADD_CUSTOMER_FIELDS = [
     step: 0,
   },
   {
-    name: "subLabel",
-    label: "clients.form.situation",
-    placeholder: "clients.form.situationPlaceholder",
-    showIf: (values) => values.type === "particulier",
-    colSpan: 1,
-    step: 0,
-  },
-  {
     name: "kvk",
     label: "clients.form.kvk",
     placeholder: "clients.form.kvkPlaceholder",
     showIf: (values) => values.type === "bedrijf",
     colSpan: 1,
     step: 0,
+    validate: (value) =>
+      value && !/^\d{8}$/.test(String(value).replace(/\s/g, ""))
+        ? "clients.form.kvkInvalid"
+        : null,
   },
   {
     name: "contactPerson",
@@ -136,6 +142,10 @@ const ADD_CUSTOMER_FIELDS = [
         : "clients.form.personEmailPlaceholder",
     colSpan: 1,
     step: 1,
+    validate: (value) =>
+      value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value).trim())
+        ? "clients.form.emailInvalid"
+        : null,
   },
   {
     name: "btw",
@@ -166,6 +176,15 @@ const ADD_CUSTOMER_FIELDS = [
     colSpan: 1,
     step: 2,
   },
+  {
+    name: "siteNote",
+    label: "clients.form.siteNote",
+    placeholder: "clients.form.siteNotePlaceholder",
+    type: "textarea",
+    rows: 2,
+    colSpan: 2,
+    step: 2,
+  },
 ];
 
 // ==========================================
@@ -173,30 +192,55 @@ const ADD_CUSTOMER_FIELDS = [
 // ==========================================
 
 /**
- * Encapsulates all state, storage synchronization, filtering, and mutation logic.
+ * Loads clients and their invoices from the backend, plus filtering and creation.
  */
 function useClientsLogic() {
-  const [clients, setClients] = useState(INITIAL_CLIENTS);
+  const [apiClients, setApiClients] = useState([]);
+  const [invoices, setInvoices] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+  const [saveError, setSaveError] = useState(null);
+  // "Today" is captured when data loads, never during render (Cache Components
+  // would otherwise bake the build date into the prerendered page)
+  const [today, setToday] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedClientForInfo, setSelectedClientForInfo] = useState(null);
+  const [selectedClientId, setSelectedClientId] = useState(null);
 
   // Reusable clipboard hooks for address & KvK copying
   const addressClipboard = useClipboard(1800);
   const kvkClipboard = useClipboard(1800);
 
-  // Sync clients with shared storage & cross-tab events
-  useEffect(() => {
-    setClients(getStoredClients());
-    const handleUpdate = () => {
-      setClients(getStoredClients());
-    };
-    window.addEventListener("clients-updated", handleUpdate);
-    return () => window.removeEventListener("clients-updated", handleUpdate);
+  const loadClients = useCallback(async () => {
+    setIsLoading(true);
+    setLoadError(null);
+    try {
+      // Invoices only feed the totals; the page still works without them
+      const [clientsRes, invoicesRes] = await Promise.all([
+        clientsApi.list(),
+        invoicesApi.list().catch(() => ({ invoices: [] })),
+      ]);
+      setApiClients(clientsRes?.clients ?? []);
+      setInvoices(invoicesRes?.invoices ?? []);
+      setToday(toIsoDate(new Date()));
+    } catch (err) {
+      setLoadError(err);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadClients();
+  }, [loadClients]);
+
+  const clients = useMemo(
+    () => apiClients.map((c) => toClientView(c, invoices, today)),
+    [apiClients, invoices, today],
+  );
 
   // Filtered clients list based on tab and query
   const filteredClients = useMemo(() => {
@@ -208,19 +252,33 @@ function useClientsLogic() {
     return getClientCounts(clients);
   }, [clients]);
 
-  // Client creation handler using reusable domain record builder
-  const handleCreateClient = (formData) => {
-    const newClient = createClientRecord(formData);
-    setClients((prev) => {
-      const updated = [newClient, ...prev];
-      saveStoredClients(updated);
-      return updated;
-    });
-    setIsAddModalOpen(false);
+  const handleCreateClient = async (formData, { resetForm }) => {
+    setSaveError(null);
+    try {
+      const { client } = await clientsApi.create(toClientInput(formData));
+      setApiClients((prev) =>
+        [...prev, client].sort((a, b) => a.name.localeCompare(b.name)),
+      );
+      resetForm();
+      setIsAddModalOpen(false);
+    } catch (err) {
+      // Keep the modal open with what was typed
+      setSaveError(err);
+    }
+  };
+
+  const openAddModal = () => {
+    setSaveError(null);
+    setIsAddModalOpen(true);
   };
 
   return {
     clients,
+    isLoading,
+    loadError,
+    saveError,
+    loadClients,
+    openAddModal,
     activeTab,
     setActiveTab,
     searchQuery,
@@ -229,8 +287,11 @@ function useClientsLogic() {
     counts,
     isAddModalOpen,
     setIsAddModalOpen,
-    selectedClientForInfo,
-    setSelectedClientForInfo,
+    // Looked up by id so the dossier always shows the latest data
+    selectedClientForInfo:
+      clients.find((c) => c.id === selectedClientId) ?? null,
+    setSelectedClientForInfo: (client) =>
+      setSelectedClientId(client?.id ?? null),
     addressClipboard,
     kvkClipboard,
     handleCreateClient,
@@ -371,36 +432,32 @@ function ClientCard({
 
             <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
               {isParticulier ? (
-                <>
-                  <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/25">
-                    {category}
-                  </span>
-                  <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-muted text-muted-foreground border border-border/40">
-                    {client.subLabel}
-                  </span>
-                </>
+                <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/25">
+                  {category}
+                </span>
               ) : (
                 <>
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
                     {category}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      client.kvk && onCopyKvk(client.kvk, client.id)
-                    }
-                    disabled={!client.kvk}
-                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-mono font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-all active:scale-95 cursor-pointer border border-border/40"
-                    title={t("clients.card.copyKvk")}
-                  >
-                    <span>{client.subLabel}</span>
-                    <Copy className="size-3 opacity-60" />
-                    {isCopiedKvk && (
-                      <span className="text-[10px] text-emerald-600 font-bold ml-0.5">
-                        ✓
+                  {client.kvk && (
+                    <button
+                      type="button"
+                      onClick={() => onCopyKvk(client.kvk, client.id)}
+                      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-mono font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-all active:scale-95 cursor-pointer border border-border/40"
+                      title={t("clients.card.copyKvk")}
+                    >
+                      <span>
+                        {t("clients.card.kvk", { number: client.kvk })}
                       </span>
-                    )}
-                  </button>
+                      <Copy className="size-3 opacity-60" />
+                      {isCopiedKvk && (
+                        <span className="text-[10px] text-emerald-600 font-bold ml-0.5">
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  )}
                 </>
               )}
             </div>
@@ -421,7 +478,7 @@ function ClientCard({
                   {client.contactPerson}
                 </span>{" "}
                 <span className="text-muted-foreground">
-                  ({client.contactRole || t("clients.card.defaultRole")})
+                  ({t("clients.card.defaultRole")})
                 </span>
               </div>
               {client.btw && (
@@ -433,71 +490,47 @@ function ClientCard({
           )}
 
           {/* Phone & Direct Action Buttons */}
-          <div className="flex items-center justify-between gap-1.5 flex-wrap">
-            <div className="flex items-center gap-1.5 text-xs text-foreground min-w-0">
-              <Phone className="size-3.5 text-muted-foreground shrink-0" />
-              <span className="font-mono text-xs font-semibold tracking-tight truncate">
-                {client.phone}
-              </span>
-            </div>
+          {client.phone && (
+            <div className="flex items-center justify-between gap-1.5 flex-wrap">
+              <div className="flex items-center gap-1.5 text-xs text-foreground min-w-0">
+                <Phone className="size-3.5 text-muted-foreground shrink-0" />
+                <span className="font-mono text-xs font-semibold tracking-tight truncate">
+                  {client.phone}
+                </span>
+              </div>
 
-            <div className="flex items-center gap-1 shrink-0">
-              {isParticulier ? (
-                <>
-                  <a
-                    href={`tel:${client.phone}`}
-                    className="inline-flex items-center justify-center rounded-full bg-background border border-border/80 px-2.5 py-0.5 text-[11px] font-semibold text-foreground hover:bg-muted shadow-2xs active:scale-95 transition-all"
-                  >
-                    {t("clients.card.call")}
-                  </a>
-                  <a
-                    href={`https://wa.me/${client.phone.replace(/[^0-9]/g, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-bold hover:bg-emerald-500/25 active:scale-95 transition-all"
-                  >
-                    <MessageCircle className="size-3" />
-                    {t("clients.card.whatsapp")}
-                  </a>
-                </>
-              ) : (
-                <>
-                  <a
-                    href={`tel:${client.phone}`}
-                    className="inline-flex items-center justify-center rounded-full bg-background border border-border/80 px-2.5 py-0.5 text-[11px] font-semibold text-foreground hover:bg-muted shadow-2xs active:scale-95 transition-all"
-                  >
-                    {t("clients.card.landline")}
-                  </a>
-                  <a
-                    href={`tel:${client.mobilePhone || client.phone}`}
-                    className="inline-flex items-center justify-center rounded-full bg-background border border-border/80 px-2.5 py-0.5 text-[11px] font-semibold text-foreground hover:bg-muted shadow-2xs active:scale-95 transition-all"
-                  >
-                    {t("clients.card.mobile")}
-                  </a>
-                  <a
-                    href={`https://wa.me/${client.phone.replace(/[^0-9]/g, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-bold hover:bg-emerald-500/25 active:scale-95 transition-all"
-                  >
-                    <MessageCircle className="size-3" />
-                    {t("clients.card.whatsapp")}
-                  </a>
-                </>
-              )}
+              <div className="flex items-center gap-1 shrink-0">
+                <a
+                  href={`tel:${client.phone}`}
+                  className="inline-flex items-center justify-center rounded-full bg-background border border-border/80 px-2.5 py-0.5 text-[11px] font-semibold text-foreground hover:bg-muted shadow-2xs active:scale-95 transition-all"
+                >
+                  {t("clients.card.call")}
+                </a>
+                <a
+                  href={`https://wa.me/${client.phone.replace(/[^0-9]/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-bold hover:bg-emerald-500/25 active:scale-95 transition-all"
+                >
+                  <MessageCircle className="size-3" />
+                  {t("clients.card.whatsapp")}
+                </a>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Email Row */}
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground pt-0.5">
-            <Mail className="size-3.5 shrink-0" />
-            <a
-              href={`mailto:${client.email}`}
-              className="hover:text-foreground hover:underline truncate"
-            >
-              {client.email}
-            </a>
-          </div>
+          {client.email && (
+            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground pt-0.5">
+              <Mail className="size-3.5 shrink-0" />
+              <a
+                href={`mailto:${client.email}`}
+                className="hover:text-foreground hover:underline truncate"
+              >
+                {client.email}
+              </a>
+            </div>
+          )}
         </div>
 
         {/* 3. Location / Address Box */}
@@ -560,35 +593,43 @@ function ClientCard({
           </div>
         </div>
 
-        {/* 4. Technical / Location Details Note Box */}
-        <div className="rounded-2xl bg-muted/30 border border-border/50 dark:border-white/[0.04] p-3 flex items-start gap-2.5 text-[11px] min-h-[52px] mt-auto">
-          <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-background border border-border/60 text-muted-foreground">
-            {client.siteNoteIcon === "cv" ? (
-              <Gauge className="size-3.5" />
-            ) : (
-              <Zap className="size-3.5" />
-            )}
+        {/* 4. Notes about the location */}
+        {client.siteNote && (
+          <div className="rounded-2xl bg-muted/30 border border-border/50 dark:border-white/[0.04] p-3 flex items-start gap-2.5 text-[11px] min-h-[52px] mt-auto">
+            <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-background border border-border/60 text-muted-foreground">
+              {isParticulier ? (
+                <Gauge className="size-3.5" />
+              ) : (
+                <Zap className="size-3.5" />
+              )}
+            </div>
+            <p className="leading-snug text-foreground/90 line-clamp-2">
+              {client.siteNote}
+            </p>
           </div>
-          <p className="leading-snug text-foreground/90 line-clamp-2">
-            <strong className="font-semibold text-foreground">
-              {client.siteNoteType}:
-            </strong>{" "}
-            {client.siteNoteText}
-          </p>
-        </div>
+        )}
       </div>
 
-      {/* 5. Footer: Dossier Status & Action */}
+      {/* 5. Footer: invoice status & action */}
       <div className="pt-3.5 mt-3 border-t border-border/40 flex items-center justify-between gap-2 shrink-0">
         <div className="min-w-0">
-          {isParticulier ? (
+          {client.unpaidCents > 0 ? (
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300 truncate">
+              <Clock className="size-3.5 shrink-0" />
+              <span className="truncate">
+                {t("clients.card.unpaid", {
+                  amount: formatEuro(client.unpaidCents / 100),
+                })}
+              </span>
+            </div>
+          ) : client.invoicesCount > 0 ? (
             <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 truncate">
               <CheckCircle2 className="size-3.5 shrink-0 text-emerald-600" />
-              <span className="truncate">{client.dossierStatus}</span>
+              <span className="truncate">{t("clients.card.allPaid")}</span>
             </div>
           ) : (
-            <p className="text-[11px] text-muted-foreground truncate font-mono">
-              {client.dossierStatus}
+            <p className="text-[11px] text-muted-foreground truncate">
+              {t("clients.card.noInvoices")}
             </p>
           )}
         </div>
@@ -604,6 +645,15 @@ function ClientCard({
   );
 }
 
+const INVOICE_STATUS_CHIP = {
+  Paid: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/25",
+  Pending:
+    "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/25",
+  Overdue: "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/25",
+  Draft: "bg-muted text-muted-foreground border-border/60",
+  Cancelled: "bg-muted text-muted-foreground border-border/40 line-through",
+};
+
 /**
  * Dossier Modal: Renders client summary details and invoice history.
  */
@@ -618,7 +668,9 @@ function ClientDossierModal({ client, onClose }) {
       onClose={onClose}
       title={client.name}
       description={t("clients.dossier.description", { category })}
-      badge={client.subLabel}
+      badge={
+        client.kvk ? t("clients.card.kvk", { number: client.kvk }) : undefined
+      }
       icon={
         client.type === "particulier" ? (
           <MapPin className="size-5" />
@@ -645,19 +697,19 @@ function ClientDossierModal({ client, onClose }) {
         },
         {
           label: t("clients.dossier.phone"),
-          value: client.phone,
-          href: `tel:${client.phone}`,
-          copyable: true,
+          value: client.phone || "—",
+          href: client.phone ? `tel:${client.phone}` : undefined,
+          copyable: Boolean(client.phone),
         },
         {
           label: t("clients.dossier.email"),
-          value: client.email,
-          href: `mailto:${client.email}`,
-          copyable: true,
+          value: client.email || "—",
+          href: client.email ? `mailto:${client.email}` : undefined,
+          copyable: Boolean(client.email),
         },
         {
           label: t("clients.dossier.total"),
-          value: client.totalSpent,
+          value: formatEuro(client.invoicedCents / 100),
           isMoney: true,
           highlight: "success",
         },
@@ -669,7 +721,7 @@ function ClientDossierModal({ client, onClose }) {
         },
         {
           label: t("clients.dossier.notes"),
-          value: `${client.siteNoteType}: ${client.siteNoteText}`,
+          value: client.siteNote || "—",
           colSpan: 2,
         },
       ]}
@@ -723,23 +775,24 @@ function ClientDossierModal({ client, onClose }) {
               >
                 <div>
                   <p className="font-semibold font-mono text-foreground">
-                    {inv.id}
+                    {inv.number}
                   </p>
                   <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5">
                     <Clock className="size-3" />
-                    {t("clients.dossier.sentOn", { date: inv.date })}
+                    {t("clients.dossier.sentOn", {
+                      date: formatDate(inv.issueDate),
+                    })}
                   </p>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <p className="font-mono font-bold text-foreground tabular-nums">
-                    {inv.amount}
+                    {formatEuro(inv.totalCents / 100)}
                   </p>
                   <span
                     className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold border ${
-                      inv.status === "Paid"
-                        ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/25"
-                        : "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/25"
+                      INVOICE_STATUS_CHIP[inv.status] ??
+                      INVOICE_STATUS_CHIP.Draft
                     }`}
                   >
                     {t(`invoices.status.${inv.status}`)}
@@ -758,12 +811,32 @@ function ClientDossierModal({ client, onClose }) {
   );
 }
 
+/** Centered message for the error, empty and no-results states */
+function ClientsMessage({ icon, title, text, action }) {
+  return (
+    <div className="rounded-3xl border border-dashed border-border/70 py-14 px-6 text-center flex flex-col items-center gap-2">
+      <div className="flex size-10 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+        {icon}
+      </div>
+      <p className="text-sm font-semibold text-foreground">{title}</p>
+      <p className="text-xs text-muted-foreground max-w-sm">{text}</p>
+      {action && <div className="mt-1">{action}</div>}
+    </div>
+  );
+}
+
 // ==========================================
 // 4. MAIN PAGE COMPONENT (Orchestration Layer)
 // ==========================================
 
 export default function ClientsPage() {
   const {
+    clients,
+    isLoading,
+    loadError,
+    saveError,
+    loadClients,
+    openAddModal,
     activeTab,
     setActiveTab,
     searchQuery,
@@ -783,7 +856,7 @@ export default function ClientsPage() {
   return (
     <div className="min-h-screen bg-background p-6 md:p-8 space-y-6 font-sans">
       {/* 1. Header */}
-      <ClientHeader onOpenAddModal={() => setIsAddModalOpen(true)} />
+      <ClientHeader onOpenAddModal={openAddModal} />
 
       {/* 2. Tabs & Search Bar */}
       <ClientFilterBar
@@ -795,19 +868,73 @@ export default function ClientsPage() {
       />
 
       {/* 3. Cards Grid: Responsive 3 Columns on Large Screens */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5 items-stretch">
-        {filteredClients.map((client) => (
-          <ClientCard
-            key={client.id}
-            client={client}
-            isCopiedAddress={addressClipboard.copiedId === client.id}
-            isCopiedKvk={kvkClipboard.copiedId === client.id}
-            onCopyAddress={addressClipboard.handleCopy}
-            onCopyKvk={kvkClipboard.handleCopy}
-            onViewDossier={setSelectedClientForInfo}
-          />
-        ))}
-      </div>
+      {loadError ? (
+        <ClientsMessage
+          icon={<ServerCrash className="size-5" />}
+          title={t("clients.page.loadFailed")}
+          text={
+            loadError.status === 0 || loadError.status === 404
+              ? t("clients.page.serverUnavailable")
+              : loadError.message
+          }
+          action={
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={loadClients}
+              className="rounded-full text-xs"
+            >
+              <RefreshCw />
+              {t("clients.page.retry")}
+            </Button>
+          }
+        />
+      ) : isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">
+          {["a", "b", "c"].map((key) => (
+            <div
+              key={key}
+              className="h-72 rounded-3xl border border-border/60 bg-muted/30 animate-pulse"
+            />
+          ))}
+        </div>
+      ) : clients.length === 0 ? (
+        <ClientsMessage
+          icon={<UserPlus className="size-5" />}
+          title={t("clients.page.emptyTitle")}
+          text={t("clients.page.emptyText")}
+          action={
+            <Button
+              onClick={openAddModal}
+              size="sm"
+              className="rounded-full text-xs"
+            >
+              <Plus />
+              {t("clients.page.add")}
+            </Button>
+          }
+        />
+      ) : filteredClients.length === 0 ? (
+        <ClientsMessage
+          icon={<Search className="size-5" />}
+          title={t("clients.page.noMatchesTitle")}
+          text={t("clients.page.noMatchesText")}
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5 items-stretch">
+          {filteredClients.map((client) => (
+            <ClientCard
+              key={client.id}
+              client={client}
+              isCopiedAddress={addressClipboard.copiedId === client.id}
+              isCopiedKvk={kvkClipboard.copiedId === client.id}
+              onCopyAddress={addressClipboard.handleCopy}
+              onCopyKvk={kvkClipboard.handleCopy}
+              onViewDossier={setSelectedClientForInfo}
+            />
+          ))}
+        </div>
+      )}
 
       {/* 4. Multi-Step Add Customer Modal */}
       <FormModal
@@ -822,7 +949,21 @@ export default function ClientsPage() {
         submitLabel={t("clients.form.submit")}
         maxWidth="lg"
         footerNote={t("clients.form.footer")}
-      />
+      >
+        {saveError && (
+          <p
+            role="alert"
+            className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-700 dark:text-rose-300"
+          >
+            {t("clients.form.saveFailed", {
+              message:
+                saveError.status === 0
+                  ? t("clients.page.serverUnavailable")
+                  : saveError.message,
+            })}
+          </p>
+        )}
+      </FormModal>
 
       {/* 5. Client Dossier View Modal */}
       <ClientDossierModal

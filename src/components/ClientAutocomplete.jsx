@@ -11,13 +11,15 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { getStoredClients } from "@/data/clients";
+import { toClientView } from "@/data/clients";
+import { clientsApi } from "@/lib/api/clients";
 import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 /**
- * ClientAutocomplete: Autocomplete input powered by client dossiers from ClientsPage.
- * Allows choosing an existing customer or freely typing a new custom client name.
+ * ClientAutocomplete: suggests your clients from the backend (GET /api/v1/clients).
+ * Allows choosing an existing customer or freely typing a new client name;
+ * a new name becomes a client when the invoice is saved.
  */
 export function ClientAutocomplete({
   clientType = "particulier",
@@ -42,16 +44,22 @@ export function ClientAutocomplete({
   const [clients, setClients] = useState([]);
   const [selectedMatch, setSelectedMatch] = useState(null);
 
-  // Sync clients from stored data and live updates
+  // Load the client list once; without it, typing a name still works
   useEffect(() => {
-    setClients(getStoredClients());
-
-    const handleUpdate = () => {
-      setClients(getStoredClients());
+    let cancelled = false;
+    clientsApi
+      .list()
+      .then((res) => {
+        if (!cancelled) {
+          setClients(
+            (res?.clients ?? []).map((c) => toClientView(c, [], null)),
+          );
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
     };
-
-    window.addEventListener("clients-updated", handleUpdate);
-    return () => window.removeEventListener("clients-updated", handleUpdate);
   }, []);
 
   // Filter clients by category (particulier / bedrijf)

@@ -1038,7 +1038,8 @@
       "Paid": "Paid",
       "Pending": "Outstanding",
       "Overdue": "Overdue",
-      "Draft": "Draft"
+      "Draft": "Draft",
+      "Cancelled": "Cancelled"
     },
     "tradeTypes": {
       "Electrician": "Electrician",
@@ -1056,16 +1057,13 @@
       "new": "New invoice",
       "totalTitle": "Total invoiced",
       "totalDescription": "This year, excl. VAT",
-      "trendQuarter": "vs previous quarter",
       "openTitle": "Outstanding",
       "openDescription": "{count} invoices waiting for payment",
-      "openTrend": "Payment term 14 days",
       "overdueTitle": "Overdue",
       "overdueDescription": "{count} invoices overdue",
       "overdueTrend": "Send a reminder",
       "paidTitle": "Paid this month",
       "paidDescription": "Via card, Tikkie and bank",
-      "trendPrevious": "vs previous month",
       "searchPlaceholder": "Search by invoice, client or trade…",
       "columns": {
         "invoice": "Invoice and payment method",
@@ -1086,7 +1084,15 @@
       "createFooter": "The invoice then shows up in your overview and counts towards your VAT.",
       "defaultCompany": "Business client",
       "defaultPerson": "Private client",
-      "defaultDescription": "Work and materials supplied"
+      "defaultDescription": "Work and materials supplied",
+      "markPaid": "Mark as paid",
+      "markPaidFailed": "Could not mark as paid: {message}",
+      "loadFailed": "Invoices could not be loaded",
+      "serverUnavailable": "The server can't be reached (yet). Please try again later.",
+      "retry": "Try again",
+      "emptyTitle": "No invoices yet",
+      "emptyText": "Create your first invoice with 'New invoice'.",
+      "saveFailed": "Could not save the invoice: {message}"
     },
     "info": {
       "title": "Invoice {id}",
@@ -1148,7 +1154,7 @@
     "companyAddressPlaceholder": "E.g. Singel 240, 1016 AB Amsterdam",
     "tradeType": "Trade or type of work",
     "invoiceNumber": "Invoice number",
-    "invoiceNumberPlaceholder": "E.g. INV-2047",
+    "invoiceNumberPlaceholder": "Automatic",
     "vatRate": "VAT rate",
     "method": "Payment method",
     "due": "Due date",
@@ -1167,7 +1173,8 @@
     "defaultLines": {
       "labour": "Labour hours on site",
       "materials": "Materials and consumables"
-    }
+    },
+    "invoiceNumberAuto": "Leave empty to use the next number from your settings."
   },
   "lineItems": {
     "title": "Work and materials",
@@ -1265,7 +1272,8 @@
     },
     "clientDefaultCompany": "Business client",
     "clientDefaultPerson": "Private client",
-    "addressMissing": "Address not filled in yet"
+    "addressMissing": "Address not filled in yet",
+    "autoNumber": "(next number)"
   },
   "clients": {
     "tabs": {
@@ -1287,21 +1295,30 @@
       "title": "Clients",
       "subtitle": "Your private and business clients with their addresses. Call, message or navigate straight away.",
       "add": "New client",
-      "searchPlaceholder": "Search by name, address or phone…"
+      "searchPlaceholder": "Search by name, address or phone…",
+      "loadFailed": "Clients could not be loaded",
+      "serverUnavailable": "The server can't be reached (yet). Please try again later.",
+      "retry": "Try again",
+      "emptyTitle": "No clients yet",
+      "emptyText": "Add your first client. Clients you create here can be picked on a new invoice.",
+      "noMatchesTitle": "No clients found",
+      "noMatchesText": "Change your search or filter."
     },
     "card": {
       "copyKvk": "Copy KvK number",
       "active": "Active client",
-      "defaultRole": "Owner",
+      "defaultRole": "Contact person",
       "vat": "VAT: {number}",
       "call": "Call",
       "whatsapp": "Message",
-      "landline": "Landline",
-      "mobile": "Mobile",
       "copied": "Copied",
       "copy": "Copy",
       "navigate": "Navigate",
-      "view": "View client"
+      "view": "View client",
+      "kvk": "KvK {number}",
+      "unpaid": "{amount} outstanding",
+      "allPaid": "All paid",
+      "noInvoices": "No invoices yet"
     },
     "dossier": {
       "description": "Client • {category}",
@@ -1350,8 +1367,6 @@
       "personName": "Client name",
       "companyNamePlaceholder": "E.g. Bakkerij Van Dam",
       "personNamePlaceholder": "E.g. Jan and Sophie de Vries",
-      "situation": "Situation (optional)",
-      "situationPlaceholder": "E.g. owner-occupier or tenant",
       "kvk": "KvK number",
       "kvkPlaceholder": "E.g. 12345678",
       "contactPerson": "Contact person and role",
@@ -1367,7 +1382,12 @@
       "personAddress": "Work location (street and number)",
       "addressPlaceholder": "E.g. Prinsengracht 242",
       "postalCity": "Postcode and town",
-      "postalCityPlaceholder": "E.g. 1016 HE Amsterdam"
+      "postalCityPlaceholder": "E.g. 1016 HE Amsterdam",
+      "kvkInvalid": "A KvK number has 8 digits.",
+      "emailInvalid": "Enter a valid email address.",
+      "siteNote": "Note about the location (optional)",
+      "siteNotePlaceholder": "E.g. main water valve in the hall cupboard, park at the back",
+      "saveFailed": "Could not save the client: {message}"
     }
   },
   "authLayout": {

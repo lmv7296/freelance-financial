@@ -10,109 +10,258 @@ import {
   FileText,
   Mail,
   Plus,
+  RefreshCw,
   Search,
+  ServerCrash,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FormModal } from "@/components/FormModal";
 import { InfoModal } from "@/components/InfoModal";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  DEFAULT_LINE_ITEMS,
-  INITIAL_INVOICES,
-  STATUS_FILTERS,
-} from "@/data/invoices";
-import { getRelativeDueDateLabel } from "@/lib/dateUtils";
-import { calculateLineItemsTotals, formatEuro } from "@/lib/formatCurrency";
+import { invoiceDisplayStatus } from "@/data/clients";
+import { DEFAULT_LINE_ITEMS, STATUS_FILTERS } from "@/data/invoices";
+import { clientsApi } from "@/lib/api/clients";
+import { invoicesApi } from "@/lib/api/invoices";
+import { formatDate, getRelativeDueDateLabel } from "@/lib/dateUtils";
+import { formatEuro, parseCurrency } from "@/lib/formatCurrency";
 import { useT } from "@/lib/preferences/PreferencesContext";
 import {
   CREATE_INVOICE_FIELDS,
   CREATE_INVOICE_STEPS,
 } from "@/schemas/invoiceFormSchema";
 
+// Form status → backend status
+const FORM_STATUS = { Pending: "SENT", Paid: "PAID", Draft: "DRAFT" };
+
+/** Local calendar date as YYYY-MM-DD, comparable with invoice dates */
+function toIsoDate(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/** Backend invoice → the row the table and info modal show */
+function toInvoiceView(inv, today) {
+  const status = invoiceDisplayStatus(inv, today);
+  return {
+    id: inv.id,
+    number: inv.invoice_number,
+    client: inv.client_name || "—",
+    tradeType: inv.trade_type || "",
+    project: inv.description || "",
+    issueDate: inv.issue_date,
+    dueDate: inv.due_date,
+    paidAt: inv.paid_at,
+    issued: formatDate(inv.issue_date),
+    due: formatDate(inv.due_date),
+    dueDateRelative:
+      status === "Cancelled"
+        ? ""
+        : getRelativeDueDateLabel(inv.due_date, status),
+    totalCents: inv.total_cents ?? 0,
+    subtotalCents: inv.subtotal_cents ?? 0,
+    amount: formatEuro((inv.total_cents ?? 0) / 100),
+    status,
+    method: inv.payment_method || "",
+  };
+}
+
+const sumCents = (list, key = "totalCents") =>
+  list.reduce((acc, inv) => acc + (inv[key] ?? 0), 0);
+
 export default function InvoicesPage() {
   const t = useT();
-  const [invoices, setInvoices] = useState(INITIAL_INVOICES);
+  const [apiInvoices, setApiInvoices] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+  const [saveError, setSaveError] = useState(null);
+  const [markingPaidId, setMarkingPaidId] = useState(null);
+  // "Today" is captured when data loads, never during render (Cache Components
+  // would otherwise bake the build date into the prerendered page)
+  const [today, setToday] = useState(null);
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
   // Modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedInvoiceForInfo, setSelectedInvoiceForInfo] = useState(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState(null);
+
+  const loadInvoices = useCallback(async () => {
+    setIsLoading(true);
+    setLoadError(null);
+    try {
+      // Clients are only needed to reuse one when creating an invoice
+      const [invoicesRes, clientsRes] = await Promise.all([
+        invoicesApi.list(),
+        clientsApi.list().catch(() => ({ clients: [] })),
+      ]);
+      setApiInvoices(invoicesRes?.invoices ?? []);
+      setClients(clientsRes?.clients ?? []);
+      setToday(toIsoDate(new Date()));
+    } catch (err) {
+      setLoadError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadInvoices();
+  }, [loadInvoices]);
+
+  const invoices = useMemo(
+    () => apiInvoices.map((inv) => toInvoiceView(inv, today)),
+    [apiInvoices, today],
+  );
+  const selectedInvoiceForInfo =
+    invoices.find((inv) => inv.id === selectedInvoiceId) ?? null;
+  const setSelectedInvoiceForInfo = (inv) =>
+    setSelectedInvoiceId(inv?.id ?? null);
 
   // Filter invoices based on status tab and search query
   const filteredInvoices = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
     return invoices.filter((inv) => {
       const matchesFilter =
         activeFilter === "All" || inv.status === activeFilter;
       const matchesSearch =
-        inv.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        inv.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        inv.project.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        inv.tradeType.toLowerCase().includes(searchQuery.toLowerCase());
+        !query ||
+        [inv.client, inv.number, inv.project, inv.tradeType].some((v) =>
+          v?.toLowerCase().includes(query),
+        );
       return matchesFilter && matchesSearch;
     });
   }, [invoices, activeFilter, searchQuery]);
 
-  // Aggregate stats
-  const pendingCount = invoices.filter((i) => i.status === "Pending").length;
-  const overdueCount = invoices.filter((i) => i.status === "Overdue").length;
+  // Key figures, all from the invoices above
+  const stats = useMemo(() => {
+    const year = today?.slice(0, 4);
+    const month = today?.slice(0, 7);
+    const billed = invoices.filter(
+      (i) => i.status !== "Draft" && i.status !== "Cancelled",
+    );
+    const pending = invoices.filter(
+      (i) => i.status === "Pending" || i.status === "Overdue",
+    );
+    const overdue = invoices.filter((i) => i.status === "Overdue");
+    const paidThisMonth = invoices.filter(
+      (i) => i.status === "Paid" && month && i.paidAt?.startsWith(month),
+    );
+    return {
+      invoicedThisYear: sumCents(
+        billed.filter((i) => year && i.issueDate?.startsWith(year)),
+        "subtotalCents",
+      ),
+      pendingCount: pending.length,
+      pendingCents: sumCents(pending),
+      overdueCount: overdue.length,
+      overdueCents: sumCents(overdue),
+      paidThisMonthCents: sumCents(paidThisMonth),
+    };
+  }, [invoices, today]);
+  const statValue = (cents) => (isLoading ? "—" : formatEuro(cents / 100));
 
   // Payment links, reminders and exports don't exist yet; say so instead of pretending
   const comingSoon = () => alert(t("common.comingSoon"));
   const tradeLabel = (value) => {
+    if (!value) return "";
     const label = t(`invoices.tradeTypes.${value}`);
     return label.startsWith("invoices.") ? value : label;
   };
 
-  const handleCreateInvoice = (formData) => {
+  /** Reuses a client with the same name and type, or creates one from the form */
+  const findOrCreateClient = async (formData) => {
     const isBedrijf = formData.clientType === "bedrijf";
-    const clientName = isBedrijf
-      ? formData.companyName?.trim() || t("invoices.page.defaultCompany")
-      : formData.clientName?.trim() || t("invoices.page.defaultPerson");
+    const name = (
+      isBedrijf ? formData.companyName : formData.clientName
+    )?.trim();
+    const type = isBedrijf ? "bedrijf" : "particulier";
+    const existing = clients.find(
+      (c) =>
+        c.type === type && c.name.trim().toLowerCase() === name?.toLowerCase(),
+    );
+    if (existing) return existing;
 
+    const text = (value) => (typeof value === "string" ? value.trim() : "");
+    const { client } = await clientsApi.create({
+      type,
+      name,
+      phone: text(isBedrijf ? formData.companyPhone : formData.clientPhone),
+      email: text(isBedrijf ? formData.companyEmail : formData.clientEmail),
+      address_line1: text(
+        isBedrijf ? formData.companyAddress : formData.clientAddress,
+      ),
+      ...(isBedrijf && {
+        contact_person: text(formData.contactPerson),
+        vat_number: text(formData.vatNumber),
+        kvk_number: text(formData.kvkNumber).replace(/\s/g, ""),
+      }),
+    });
+    setClients((prev) => [...prev, client]);
+    return client;
+  };
+
+  const handleCreateInvoice = async (formData, { resetForm }) => {
+    setSaveError(null);
     const items =
       Array.isArray(formData.items) && formData.items.length > 0
         ? formData.items
         : DEFAULT_LINE_ITEMS;
-
-    const { total } = calculateLineItemsTotals(items, formData.vatRate || "21");
-    const formattedAmount = formatEuro(total);
-
-    const mainProjectDesc =
-      items
-        .map((it) => t(it.description)?.trim())
+    const lineItems = items.map((it) => ({
+      // Default lines are translation keys
+      description: t(it.description || "")?.trim() || "",
+      quantity: Number.parseFloat(it.quantity) || 0,
+      unit_price_cents: Math.round(parseCurrency(it.unitPrice) * 100),
+    }));
+    const description =
+      lineItems
+        .map((it) => it.description)
         .filter(Boolean)
         .join(" • ") || t("invoices.page.defaultDescription");
 
-    const newInvoice = {
-      id:
-        formData.invoiceNumber?.trim() ||
-        `INV-${Math.floor(2050 + Math.random() * 500)}`,
-      client: clientName,
-      tradeType: formData.tradeType || "Electrician",
-      project: mainProjectDesc,
-      issued: new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-      }).format(new Date()),
-      due: formData.due
-        ? new Intl.DateTimeFormat("en-US", {
-            month: "short",
-            day: "2-digit",
-            year: "numeric",
-          }).format(new Date(formData.due))
-        : "Oct 27, 2026",
-      dueDateRelative: getRelativeDueDateLabel(formData.due, formData.status),
-      amount: formattedAmount,
-      status: formData.status || "Pending",
-      method: formData.method || "Tikkie / iDEAL QR",
-    };
+    try {
+      const client = await findOrCreateClient(formData);
+      const { invoice } = await invoicesApi.create({
+        client_id: client.id,
+        invoice_number: formData.invoiceNumber?.trim() || undefined,
+        due_date: formData.due || undefined,
+        status: FORM_STATUS[formData.status] ?? "SENT",
+        vat_rate: Number.parseFloat(formData.vatRate ?? "21"),
+        trade_type: formData.tradeType || "",
+        payment_method: formData.method || "",
+        description,
+        line_items: lineItems,
+      });
+      setApiInvoices((prev) => [invoice, ...prev]);
+      resetForm();
+      setIsCreateModalOpen(false);
+    } catch (err) {
+      // Keep the modal open with what was typed
+      setSaveError(err);
+    }
+  };
 
-    setInvoices((prev) => [newInvoice, ...prev]);
-    setIsCreateModalOpen(false);
+  const handleMarkPaid = async (invoice) => {
+    setMarkingPaidId(invoice.id);
+    try {
+      const { invoice: updated } = await invoicesApi.update(invoice.id, {
+        status: "PAID",
+      });
+      setApiInvoices((prev) =>
+        prev.map((inv) => (inv.id === updated.id ? updated : inv)),
+      );
+    } catch (err) {
+      alert(t("invoices.page.markPaidFailed", { message: err.message }));
+    } finally {
+      setMarkingPaidId(null);
+    }
+  };
+
+  const openCreateModal = () => {
+    setSaveError(null);
+    setIsCreateModalOpen(true);
   };
 
   const getStatusChip = (status) => {
@@ -139,10 +288,13 @@ export default function InvoicesPage() {
           </span>
         );
       default:
+        // Draft or Cancelled
         return (
-          <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold border bg-muted text-muted-foreground border-border/60">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold border bg-muted text-muted-foreground border-border/60 ${status === "Cancelled" ? "line-through" : ""}`}
+          >
             <span className="size-1.5 rounded-full bg-muted-foreground" />
-            {t("invoices.status.Draft")}
+            {t(`invoices.status.${status}`)}
           </span>
         );
     }
@@ -180,7 +332,7 @@ export default function InvoicesPage() {
             {t("invoices.page.exportCsv")}
           </Button>
           <Button
-            onClick={() => setIsCreateModalOpen(true)}
+            onClick={openCreateModal}
             className="rounded-full px-4.5 shadow-sm hover:shadow-md active:scale-[0.97] transition-all font-semibold text-xs h-9 cursor-pointer"
           >
             <Plus className="size-4 mr-1.5" />
@@ -194,9 +346,7 @@ export default function InvoicesPage() {
         <Card
           title={t("invoices.page.totalTitle")}
           description={t("invoices.page.totalDescription")}
-          value="€28.790,00"
-          trend="+16.4%"
-          trendLabel={t("invoices.page.trendQuarter")}
+          value={statValue(stats.invoicedThisYear)}
           icon={<FileText className="size-5" />}
           iconColor="primary"
           variant="elevated"
@@ -205,11 +355,9 @@ export default function InvoicesPage() {
         <Card
           title={t("invoices.page.openTitle")}
           description={t("invoices.page.openDescription", {
-            count: pendingCount,
+            count: stats.pendingCount,
           })}
-          value="€4.090,00"
-          trend={t("invoices.page.openTrend")}
-          trendDirection="neutral"
+          value={statValue(stats.pendingCents)}
           icon={<Clock className="size-5" />}
           iconColor="amber"
           variant="elevated"
@@ -218,10 +366,12 @@ export default function InvoicesPage() {
         <Card
           title={t("invoices.page.overdueTitle")}
           description={t("invoices.page.overdueDescription", {
-            count: overdueCount,
+            count: stats.overdueCount,
           })}
-          value="€620,00"
-          trend={t("invoices.page.overdueTrend")}
+          value={statValue(stats.overdueCents)}
+          trend={
+            stats.overdueCount > 0 ? t("invoices.page.overdueTrend") : undefined
+          }
           trendDirection="down"
           icon={<Mail className="size-5" />}
           iconColor="rose"
@@ -231,9 +381,7 @@ export default function InvoicesPage() {
         <Card
           title={t("invoices.page.paidTitle")}
           description={t("invoices.page.paidDescription")}
-          value="€14.850,00"
-          trend="+11.2%"
-          trendLabel={t("invoices.page.trendPrevious")}
+          value={statValue(stats.paidThisMonthCents)}
           icon={<Check className="size-5" />}
           iconColor="emerald"
           variant="elevated"
@@ -317,7 +465,54 @@ export default function InvoicesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/40 text-xs">
-              {filteredInvoices.length > 0 ? (
+              {loadError ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <ServerCrash className="size-5 text-rose-600" />
+                      <p className="text-sm font-medium text-foreground">
+                        {t("invoices.page.loadFailed")}
+                      </p>
+                      <p className="text-xs text-muted-foreground max-w-sm">
+                        {loadError.status === 0 || loadError.status === 404
+                          ? t("invoices.page.serverUnavailable")
+                          : loadError.message}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={loadInvoices}
+                        className="rounded-full text-xs mt-1"
+                      >
+                        <RefreshCw />
+                        {t("invoices.page.retry")}
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ) : isLoading ? (
+                ["a", "b", "c"].map((key) => (
+                  <tr key={key}>
+                    <td colSpan={6} className="py-3.5 px-5">
+                      <div className="h-8 rounded-lg bg-muted/60 animate-pulse" />
+                    </td>
+                  </tr>
+                ))
+              ) : invoices.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="py-12 text-center text-muted-foreground"
+                  >
+                    <p className="text-sm font-medium">
+                      {t("invoices.page.emptyTitle")}
+                    </p>
+                    <p className="text-xs mt-1">
+                      {t("invoices.page.emptyText")}
+                    </p>
+                  </td>
+                </tr>
+              ) : filteredInvoices.length > 0 ? (
                 filteredInvoices.map((inv) => (
                   <tr
                     key={inv.id}
@@ -330,7 +525,9 @@ export default function InvoicesPage() {
                           <FileText className="size-4" />
                         </div>
                         <div>
-                          <p className="font-bold text-foreground">{inv.id}</p>
+                          <p className="font-bold text-foreground">
+                            {inv.number}
+                          </p>
                           <p className="text-[10px] text-muted-foreground font-sans">
                             {inv.method}
                           </p>
@@ -344,9 +541,11 @@ export default function InvoicesPage() {
                         <p className="font-semibold text-foreground">
                           {inv.client}
                         </p>
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-muted text-muted-foreground font-medium shrink-0">
-                          {tradeLabel(inv.tradeType)}
-                        </span>
+                        {inv.tradeType && (
+                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-muted text-muted-foreground font-medium shrink-0">
+                            {tradeLabel(inv.tradeType)}
+                          </span>
+                        )}
                       </div>
                       <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
                         {inv.project}
@@ -390,17 +589,29 @@ export default function InvoicesPage() {
                           <Copy className="size-3.5" />
                         </button>
 
-                        {/* Remind */}
+                        {/* Remind & mark as paid */}
                         {inv.status === "Overdue" ||
                         inv.status === "Pending" ? (
-                          <button
-                            type="button"
-                            onClick={comingSoon}
-                            className="size-7.5 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:scale-90 transition-all cursor-pointer"
-                            title={t("invoices.page.remind")}
-                          >
-                            <Mail className="size-3.5" />
-                          </button>
+                          <>
+                            <button
+                              type="button"
+                              onClick={comingSoon}
+                              className="size-7.5 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground active:scale-90 transition-all cursor-pointer"
+                              title={t("invoices.page.remind")}
+                            >
+                              <Mail className="size-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMarkPaid(inv)}
+                              disabled={markingPaidId === inv.id}
+                              className="size-7.5 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-700 active:scale-90 transition-all cursor-pointer disabled:opacity-50"
+                              title={t("invoices.page.markPaid")}
+                              aria-label={t("invoices.page.markPaid")}
+                            >
+                              <Check className="size-3.5" />
+                            </button>
+                          </>
                         ) : null}
 
                         {/* View Invoice -> Opens InfoModal */}
@@ -449,15 +660,36 @@ export default function InvoicesPage() {
         submitLabel={t("invoices.page.createSubmit")}
         maxWidth="xl"
         footerNote={t("invoices.page.createFooter")}
-      />
+      >
+        {saveError && (
+          <p
+            role="alert"
+            className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-700 dark:text-rose-300"
+          >
+            {t("invoices.page.saveFailed", {
+              message:
+                saveError.status === 0
+                  ? t("invoices.page.serverUnavailable")
+                  : saveError.message,
+            })}
+          </p>
+        )}
+      </FormModal>
 
       {/* 6. Reusable InfoModal: View Invoice Information (Entirely Driven by Props) */}
       {selectedInvoiceForInfo && (
         <InfoModal
           isOpen={Boolean(selectedInvoiceForInfo)}
           onClose={() => setSelectedInvoiceForInfo(null)}
-          title={t("invoices.info.title", { id: selectedInvoiceForInfo.id })}
-          description={`${selectedInvoiceForInfo.client} • ${tradeLabel(selectedInvoiceForInfo.tradeType)}`}
+          title={t("invoices.info.title", {
+            id: selectedInvoiceForInfo.number,
+          })}
+          description={[
+            selectedInvoiceForInfo.client,
+            tradeLabel(selectedInvoiceForInfo.tradeType),
+          ]
+            .filter(Boolean)
+            .join(" • ")}
           badge={t(`invoices.status.${selectedInvoiceForInfo.status}`)}
           icon={<FileText className="size-5" />}
           maxWidth="lg"
@@ -475,7 +707,7 @@ export default function InvoicesPage() {
           items={[
             {
               label: t("invoices.info.id"),
-              value: selectedInvoiceForInfo.id,
+              value: selectedInvoiceForInfo.number,
               copyable: true,
             },
             {
@@ -484,7 +716,7 @@ export default function InvoicesPage() {
             },
             {
               label: t("invoices.info.trade"),
-              value: tradeLabel(selectedInvoiceForInfo.tradeType),
+              value: tradeLabel(selectedInvoiceForInfo.tradeType) || "—",
             },
             {
               label: t("invoices.info.total"),
@@ -499,7 +731,7 @@ export default function InvoicesPage() {
             },
             {
               label: t("invoices.info.method"),
-              value: selectedInvoiceForInfo.method,
+              value: selectedInvoiceForInfo.method || "—",
             },
             {
               label: t("invoices.info.issued"),
@@ -515,7 +747,7 @@ export default function InvoicesPage() {
             },
             {
               label: t("invoices.info.description"),
-              value: selectedInvoiceForInfo.project,
+              value: selectedInvoiceForInfo.project || "—",
               colSpan: 2,
             },
           ]}

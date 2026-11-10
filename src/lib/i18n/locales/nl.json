@@ -1038,7 +1038,8 @@
       "Paid": "Betaald",
       "Pending": "Openstaand",
       "Overdue": "Te laat",
-      "Draft": "Concept"
+      "Draft": "Concept",
+      "Cancelled": "Geannuleerd"
     },
     "tradeTypes": {
       "Electrician": "Elektricien",
@@ -1056,16 +1057,13 @@
       "new": "Nieuwe factuur",
       "totalTitle": "Totaal gefactureerd",
       "totalDescription": "Dit jaar, excl. btw",
-      "trendQuarter": "t.o.v. vorig kwartaal",
       "openTitle": "Openstaand",
       "openDescription": "{count} facturen wachten op betaling",
-      "openTrend": "Betaaltermijn 14 dagen",
       "overdueTitle": "Te laat betaald",
       "overdueDescription": "{count} facturen te laat",
       "overdueTrend": "Stuur een herinnering",
       "paidTitle": "Betaald deze maand",
       "paidDescription": "Via pin, Tikkie en bank",
-      "trendPrevious": "t.o.v. vorige maand",
       "searchPlaceholder": "Zoek op factuur, klant of vak…",
       "columns": {
         "invoice": "Factuur en betaalwijze",
@@ -1086,7 +1084,15 @@
       "createFooter": "De factuur staat daarna in je overzicht en telt mee in je btw.",
       "defaultCompany": "Zakelijke klant",
       "defaultPerson": "Particuliere klant",
-      "defaultDescription": "Geleverde werkzaamheden en materialen"
+      "defaultDescription": "Geleverde werkzaamheden en materialen",
+      "markPaid": "Markeer als betaald",
+      "markPaidFailed": "Markeren als betaald mislukt: {message}",
+      "loadFailed": "Facturen konden niet geladen worden",
+      "serverUnavailable": "De server is (nog) niet bereikbaar. Probeer het later opnieuw.",
+      "retry": "Opnieuw proberen",
+      "emptyTitle": "Nog geen facturen",
+      "emptyText": "Maak je eerste factuur met 'Nieuwe factuur'.",
+      "saveFailed": "Factuur opslaan mislukt: {message}"
     },
     "info": {
       "title": "Factuur {id}",
@@ -1148,7 +1154,7 @@
     "companyAddressPlaceholder": "Bijv. Singel 240, 1016 AB Amsterdam",
     "tradeType": "Vak of soort werk",
     "invoiceNumber": "Factuurnummer",
-    "invoiceNumberPlaceholder": "Bijv. INV-2047",
+    "invoiceNumberPlaceholder": "Automatisch",
     "vatRate": "Btw-tarief",
     "method": "Betaalwijze",
     "due": "Vervaldatum",
@@ -1167,7 +1173,8 @@
     "defaultLines": {
       "labour": "Arbeidsuren op locatie",
       "materials": "Materialen en kleinverbruik"
-    }
+    },
+    "invoiceNumberAuto": "Laat leeg voor het volgende nummer uit je instellingen."
   },
   "lineItems": {
     "title": "Werkzaamheden en materialen",
@@ -1265,7 +1272,8 @@
     },
     "clientDefaultCompany": "Zakelijke klant",
     "clientDefaultPerson": "Particuliere klant",
-    "addressMissing": "Adres nog niet ingevuld"
+    "addressMissing": "Adres nog niet ingevuld",
+    "autoNumber": "(volgend nummer)"
   },
   "clients": {
     "tabs": {
@@ -1287,21 +1295,30 @@
       "title": "Klanten",
       "subtitle": "Je particuliere en zakelijke klanten met hun adressen. Bel, app of navigeer direct.",
       "add": "Nieuwe klant",
-      "searchPlaceholder": "Zoek op naam, adres of telefoon…"
+      "searchPlaceholder": "Zoek op naam, adres of telefoon…",
+      "loadFailed": "Klanten konden niet geladen worden",
+      "serverUnavailable": "De server is (nog) niet bereikbaar. Probeer het later opnieuw.",
+      "retry": "Opnieuw proberen",
+      "emptyTitle": "Nog geen klanten",
+      "emptyText": "Voeg je eerste klant toe. Klanten die je hier aanmaakt kun je kiezen bij een nieuwe factuur.",
+      "noMatchesTitle": "Geen klanten gevonden",
+      "noMatchesText": "Pas je zoekopdracht of filter aan."
     },
     "card": {
       "copyKvk": "Kopieer KvK-nummer",
       "active": "Actieve klant",
-      "defaultRole": "Eigenaar",
+      "defaultRole": "Contactpersoon",
       "vat": "Btw: {number}",
       "call": "Bel",
       "whatsapp": "App",
-      "landline": "Vast",
-      "mobile": "Mobiel",
       "copied": "Gekopieerd",
       "copy": "Kopieer",
       "navigate": "Navigeer",
-      "view": "Bekijk klant"
+      "view": "Bekijk klant",
+      "kvk": "KvK {number}",
+      "unpaid": "{amount} openstaand",
+      "allPaid": "Alles betaald",
+      "noInvoices": "Nog geen facturen"
     },
     "dossier": {
       "description": "Klant • {category}",
@@ -1350,8 +1367,6 @@
       "personName": "Naam klant",
       "companyNamePlaceholder": "Bijv. Bakkerij Van Dam",
       "personNamePlaceholder": "Bijv. Jan en Sophie de Vries",
-      "situation": "Situatie (optioneel)",
-      "situationPlaceholder": "Bijv. eigenaar-bewoner of huurder",
       "kvk": "KvK-nummer",
       "kvkPlaceholder": "Bijv. 12345678",
       "contactPerson": "Contactpersoon en functie",
@@ -1367,7 +1382,12 @@
       "personAddress": "Werklocatie (straat en huisnummer)",
       "addressPlaceholder": "Bijv. Prinsengracht 242",
       "postalCity": "Postcode en plaats",
-      "postalCityPlaceholder": "Bijv. 1016 HE Amsterdam"
+      "postalCityPlaceholder": "Bijv. 1016 HE Amsterdam",
+      "kvkInvalid": "Een KvK-nummer heeft 8 cijfers.",
+      "emailInvalid": "Vul een geldig e-mailadres in.",
+      "siteNote": "Notitie over de locatie (optioneel)",
+      "siteNotePlaceholder": "Bijv. hoofdkraan in de gangkast, parkeren achterom",
+      "saveFailed": "Klant opslaan mislukt: {message}"
     }
   },
   "authLayout": {
