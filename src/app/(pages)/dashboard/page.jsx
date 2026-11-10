@@ -87,6 +87,28 @@ function getSpendable(overview) {
   };
 }
 
+/**
+ * Invoices sent to a client but not paid yet. Drafts and cancelled invoices
+ * don't count. `today` is YYYY-MM-DD (or null before the first load).
+ */
+function getOpenInvoices(invoices, today) {
+  const open = invoices.filter((inv) => inv.status === "SENT");
+  return {
+    count: open.length,
+    total: open.reduce((sum, inv) => sum + (inv.total_cents ?? 0), 0) / 100,
+    overdueCount: today
+      ? open.filter((inv) => inv.due_date && inv.due_date < today).length
+      : 0,
+  };
+}
+
+function isOverdue(invoice, today) {
+  return (
+    invoice.status === "SENT" &&
+    Boolean(today && invoice.due_date && invoice.due_date < today)
+  );
+}
+
 function formatShare(share) {
   return `${Math.round(share * 100)}%`;
 }
@@ -134,15 +156,9 @@ export default function DashboardPage() {
   const invoiceList = invoices.data?.invoices ?? [];
   const clientList = clients.data?.clients ?? [];
   const clientNames = new Map(clientList.map((c) => [c.id, c.name]));
-  const recentInvoices = [...invoiceList]
-    .sort((a, b) =>
-      String(b.invoice_number ?? "").localeCompare(
-        String(a.invoice_number ?? ""),
-        undefined,
-        { numeric: true },
-      ),
-    )
-    .slice(0, RECENT_INVOICES_LIMIT);
+  // The backend already returns the newest invoices first (by issue date)
+  const recentInvoices = invoiceList.slice(0, RECENT_INVOICES_LIMIT);
+  const openInvoices = getOpenInvoices(invoiceList, today);
 
   const isLoading = overview.status === "loading";
   const isAnyLoading = [overview, company, invoices, clients].some(
@@ -350,11 +366,33 @@ export default function DashboardPage() {
           variant="elevated"
         />
 
-        {/* No endpoint returns invoice amounts or payment status yet */}
         <Card
           title={t("dashboard.openTitle")}
-          description={t("dashboard.openUnavailable")}
-          value="—"
+          description={
+            invoices.status === "error"
+              ? t("dashboard.loadFailed")
+              : invoices.status === "loading"
+                ? t("dashboard.openDescription")
+                : openInvoices.count === 0
+                  ? t("dashboard.openNone")
+                  : t(
+                      openInvoices.count === 1
+                        ? "dashboard.openCountOne"
+                        : "dashboard.openCount",
+                      { count: openInvoices.count },
+                    )
+          }
+          value={
+            invoices.status === "ready" ? formatEuro(openInvoices.total) : "—"
+          }
+          trendLabel={
+            openInvoices.overdueCount > 0
+              ? t("dashboard.openOverdue", {
+                  count: openInvoices.overdueCount,
+                })
+              : undefined
+          }
+          trendDirection="down"
           icon={<FileText className="size-5" />}
           iconColor="amber"
           variant="elevated"
@@ -365,14 +403,7 @@ export default function DashboardPage() {
           description={
             clients.status === "error"
               ? t("dashboard.loadFailed")
-              : invoices.status === "ready"
-                ? t(
-                    invoiceList.length === 1
-                      ? "dashboard.invoiceCountOne"
-                      : "dashboard.invoiceCount",
-                    { count: invoiceList.length },
-                  )
-                : t("dashboard.clientsDescription")
+              : t("dashboard.clientsDescription")
           }
           value={
             clients.status === "ready"
@@ -417,7 +448,6 @@ export default function DashboardPage() {
             title={t("dashboard.recentTitle")}
             description={t("dashboard.recentDescription")}
             variant="elevated"
-            footer={t("dashboard.recentFooter")}
             footerActions={
               <Link href="/invoices">
                 <Button
@@ -452,14 +482,27 @@ export default function DashboardPage() {
                   >
                     <div className="min-w-0 pr-3">
                       <p className="text-sm font-semibold text-foreground truncate">
-                        {clientNames.get(inv.client_id) ??
+                        {inv.client_name ||
+                          clientNames.get(inv.client_id) ||
                           (clients.status === "loading"
                             ? "—"
                             : t("dashboard.unknownClient"))}
                       </p>
                       <p className="text-xs text-muted-foreground font-mono mt-0.5">
                         {inv.invoice_number}
+                        {inv.due_date &&
+                          ` · ${t("dashboard.dueOn", { date: formatDate(inv.due_date) })}`}
                       </p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <span className="text-sm font-bold text-foreground font-mono tabular-nums">
+                        {inv.total_cents != null
+                          ? formatEuro(inv.total_cents / 100)
+                          : "—"}
+                      </span>
+                      <InvoiceStatusBadge
+                        status={isOverdue(inv, today) ? "OVERDUE" : inv.status}
+                      />
                     </div>
                   </div>
                 ))}
@@ -568,6 +611,26 @@ function VatPeriodSummary({ period }) {
         </span>
       </div>
     </div>
+  );
+}
+
+const INVOICE_STATUS_STYLES = {
+  PAID: "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+  SENT: "border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+  OVERDUE: "border-rose-500/25 bg-rose-500/10 text-rose-700 dark:text-rose-300",
+  DRAFT: "border-border/60 bg-muted/40 text-muted-foreground",
+  CANCELLED: "border-border/40 bg-muted/20 text-muted-foreground line-through",
+};
+
+function InvoiceStatusBadge({ status }) {
+  const t = useT();
+  if (!INVOICE_STATUS_STYLES[status]) return null;
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${INVOICE_STATUS_STYLES[status]}`}
+    >
+      {t(`dashboard.invoiceStatus.${status}`)}
+    </span>
   );
 }
 

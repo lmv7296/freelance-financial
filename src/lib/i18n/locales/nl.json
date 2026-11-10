@@ -981,11 +981,8 @@
     "revenueTrend": "Winst {profit} na {expenses} kosten",
     "loadFailed": "Kon niet geladen worden",
     "openTitle": "Openstaand saldo",
-    "openUnavailable": "Niet beschikbaar: facturen bevatten nog geen bedragen of betaalstatus",
     "clientsTitle": "Klanten",
     "clientsDescription": "Klanten in je dossier",
-    "invoiceCountOne": "{count} factuur in totaal",
-    "invoiceCount": "{count} facturen in totaal",
     "clientCountOne": "{count} dossier",
     "clientCount": "{count} dossiers",
     "quickTitle": "Snelle factuur / verzoek",
@@ -995,7 +992,6 @@
     "quickText": "Maak ter plaatse een factuur, een iDEAL QR-code of een betaallink om te versturen.",
     "recentTitle": "Recente facturen",
     "recentDescription": "Laatste factuurnummers en klanten",
-    "recentFooter": "Bedragen en betaalstatus volgen zodra de backend ze levert",
     "viewAll": "Alles bekijken",
     "invoicesLoadFailed": "Facturen konden niet geladen worden",
     "noInvoicesTitle": "Nog geen facturen",
@@ -1021,7 +1017,20 @@
     "inputVat": "Voorbelasting:",
     "vatDeadline": "Aangifte en betaling uiterlijk {date}.",
     "serverUnavailable": "De server is (nog) niet bereikbaar. Probeer het later opnieuw.",
-    "retry": "Opnieuw proberen"
+    "retry": "Opnieuw proberen",
+    "openDescription": "Verstuurde facturen die nog niet betaald zijn",
+    "openNone": "Geen openstaande facturen",
+    "openCountOne": "{count} factuur wacht op betaling",
+    "openCount": "{count} facturen wachten op betaling",
+    "openOverdue": "{count} over de vervaldatum",
+    "dueOn": "vervalt {date}",
+    "invoiceStatus": {
+      "DRAFT": "Concept",
+      "SENT": "Openstaand",
+      "PAID": "Betaald",
+      "OVERDUE": "Te laat",
+      "CANCELLED": "Geannuleerd"
+    }
   },
   "invoices": {
     "status": {

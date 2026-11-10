@@ -981,11 +981,8 @@
     "revenueTrend": "Profit {profit} after {expenses} in costs",
     "loadFailed": "Could not be loaded",
     "openTitle": "Outstanding",
-    "openUnavailable": "Not available: invoices don't include amounts or payment status yet",
     "clientsTitle": "Clients",
     "clientsDescription": "Clients in your files",
-    "invoiceCountOne": "{count} invoice in total",
-    "invoiceCount": "{count} invoices in total",
     "clientCountOne": "{count} client",
     "clientCount": "{count} clients",
     "quickTitle": "Quick invoice / request",
@@ -995,7 +992,6 @@
     "quickText": "Create an invoice on site, an iDEAL QR code, or a payment link to send.",
     "recentTitle": "Recent invoices",
     "recentDescription": "Latest invoice numbers and clients",
-    "recentFooter": "Amounts and payment status will follow once the backend provides them",
     "viewAll": "View all",
     "invoicesLoadFailed": "Invoices could not be loaded",
     "noInvoicesTitle": "No invoices yet",
@@ -1021,7 +1017,20 @@
     "inputVat": "Input VAT:",
     "vatDeadline": "File and pay by {date}.",
     "serverUnavailable": "The server can't be reached (yet). Please try again later.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "openDescription": "Sent invoices that haven't been paid yet",
+    "openNone": "No outstanding invoices",
+    "openCountOne": "{count} invoice waiting for payment",
+    "openCount": "{count} invoices waiting for payment",
+    "openOverdue": "{count} past the due date",
+    "dueOn": "due {date}",
+    "invoiceStatus": {
+      "DRAFT": "Draft",
+      "SENT": "Outstanding",
+      "PAID": "Paid",
+      "OVERDUE": "Overdue",
+      "CANCELLED": "Cancelled"
+    }
   },
   "invoices": {
     "status": {
