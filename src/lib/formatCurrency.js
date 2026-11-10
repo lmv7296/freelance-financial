@@ -1,3 +1,5 @@
+import { currentLanguage, localeFor } from "@/lib/i18n/dictionaries";
+
 /**
  * Currency and financial formatting utilities.
  * Designed as reusable building blocks for invoices, quotes, receipts and summaries.
@@ -9,14 +11,14 @@
  *
  * @param {number|string} value - The numeric value to format.
  * @param {string} [currency="EUR"] - Currency code (e.g. 'EUR', 'USD', 'GBP').
- * @param {string} [locale="nl-NL"] - Target locale (defaults to Dutch 'nl-NL').
+ * @param {string} [locale] - Target locale (defaults to the user's language, e.g. "nl-NL").
  * @param {Intl.NumberFormatOptions} [options={}] - Additional Intl options.
  * @returns {string} Formatted currency string.
  */
 export function formatCurrency(
   value,
   currency = "EUR",
-  locale = "nl-NL",
+  locale = localeFor(currentLanguage()),
   options = {},
 ) {
   const numericValue =
@@ -39,7 +41,7 @@ export function formatCurrency(
  * @returns {string} Formatted euro string (e.g. "€ 1.250,00").
  */
 export function formatEuro(value, options = {}) {
-  return formatCurrency(value, "EUR", "nl-NL", options);
+  return formatCurrency(value, "EUR", undefined, options);
 }
 
 /**

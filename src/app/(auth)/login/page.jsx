@@ -9,7 +9,6 @@ import {
   KeyRound,
   Lock,
   Mail,
-  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,9 +16,11 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { validateLogin } from "@/schemas/authSchema";
+import { useT } from "@/lib/preferences/PreferencesContext";
+import { AUTH_MESSAGE_VARS, validateLogin } from "@/schemas/authSchema";
 
 export default function LoginPage() {
+  const t = useT();
   const router = useRouter();
   const { login, isAuthenticated, rateLimitCountdown } = useAuth();
 
@@ -54,9 +55,7 @@ export default function LoginPage() {
       await login({ email, password });
       router.push("/dashboard");
     } catch (err) {
-      setServerError(
-        err?.message || "Inloggen mislukt. Controleer je gegevens.",
-      );
+      setServerError(err?.message || t("auth.loginFailedText"));
     } finally {
       setIsSubmitting(false);
     }
@@ -69,10 +68,10 @@ export default function LoginPage() {
           <KeyRound className="size-5" />
         </div>
         <h1 className="text-xl font-bold tracking-tight text-foreground">
-          Welkom terug
+          {t("auth.loginPageTitle")}
         </h1>
         <p className="text-xs text-muted-foreground">
-          Vul je e-mailadres en wachtwoord in om in te loggen
+          {t("auth.loginSubtitle")}
         </p>
       </div>
 
@@ -80,11 +79,9 @@ export default function LoginPage() {
         <div className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-medium animate-in fade-in">
           <Clock className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
           <div>
-            <p className="font-semibold">Te veel inlogpogingen</p>
+            <p className="font-semibold">{t("auth.rateLimitTitle")}</p>
             <p className="opacity-90">
-              Wacht nog{" "}
-              <span className="font-mono font-bold">{rateLimitCountdown}s</span>{" "}
-              voor een nieuwe poging.
+              {t("auth.rateLimitText", { seconds: rateLimitCountdown })}
             </p>
           </div>
         </div>
@@ -94,7 +91,7 @@ export default function LoginPage() {
         <div className="flex items-start gap-2.5 p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs font-medium animate-in fade-in">
           <AlertCircle className="size-4 shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="font-semibold">Fout bij inloggen</p>
+            <p className="font-semibold">{t("auth.loginFailed")}</p>
             <p className="opacity-90">{serverError}</p>
           </div>
         </div>
@@ -107,10 +104,10 @@ export default function LoginPage() {
             htmlFor="page-login-email"
             className="text-xs font-semibold text-foreground flex items-center justify-between"
           >
-            <span>E-mailadres</span>
+            <span>{t("auth.email")}</span>
             {fieldErrors.email && (
               <span className="text-[11px] text-destructive font-normal">
-                {fieldErrors.email}
+                {t(fieldErrors.email, AUTH_MESSAGE_VARS)}
               </span>
             )}
           </label>
@@ -119,7 +116,7 @@ export default function LoginPage() {
             <Input
               id="page-login-email"
               type="email"
-              placeholder="naam@voorbeeld.nl"
+              placeholder={t("auth.emailPlaceholder")}
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -141,7 +138,7 @@ export default function LoginPage() {
             htmlFor="page-login-password"
             className="text-xs font-semibold text-foreground"
           >
-            Wachtwoord
+            {t("auth.password")}
           </label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -165,7 +162,9 @@ export default function LoginPage() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-              title={showPassword ? "Verberg wachtwoord" : "Toon wachtwoord"}
+              title={
+                showPassword ? t("auth.hidePassword") : t("auth.showPassword")
+              }
             >
               {showPassword ? (
                 <EyeOff className="size-4" />
@@ -176,14 +175,9 @@ export default function LoginPage() {
           </div>
           {fieldErrors.password && (
             <p className="text-[11px] text-destructive">
-              {fieldErrors.password}
+              {t(fieldErrors.password, AUTH_MESSAGE_VARS)}
             </p>
           )}
-        </div>
-
-        <div className="pt-1 text-[11px] text-muted-foreground/80 flex items-center gap-1.5">
-          <ShieldCheck className="size-3.5 text-emerald-500 shrink-0" />
-          <span>Automatisch beveiligd met SameSite=Strict cookies.</span>
         </div>
 
         <Button
@@ -194,11 +188,11 @@ export default function LoginPage() {
           {isSubmitting ? (
             <span className="flex items-center gap-2">
               <span className="size-4 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
-              <span>Inloggen...</span>
+              <span>{t("auth.loggingIn")}</span>
             </span>
           ) : (
             <>
-              <span>Inloggen</span>
+              <span>{t("auth.login")}</span>
               <ArrowRight className="size-4" />
             </>
           )}
@@ -206,12 +200,12 @@ export default function LoginPage() {
       </form>
 
       <div className="pt-4 border-t border-border/50 text-center text-xs text-muted-foreground">
-        Nog geen account?{" "}
+        {t("auth.noAccount")}{" "}
         <Link
           href="/register"
           className="font-semibold text-primary hover:underline"
         >
-          Maak een account aan
+          {t("auth.register")}
         </Link>
       </div>
     </div>

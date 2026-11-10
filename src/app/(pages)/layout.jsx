@@ -6,10 +6,12 @@ import { Sidebar } from "@/components/Sidebar";
 import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { isProfileComplete } from "@/lib/auth/profile";
+import { useT } from "@/lib/preferences/PreferencesContext";
 
 export default function PagesLayout({ children }) {
   const { user, isAuthenticated, isLoading, sessionExpired, openLogin } =
     useAuth();
+  const t = useT();
   const router = useRouter();
   const needsOnboarding = isAuthenticated && !isProfileComplete(user);
 
@@ -37,7 +39,7 @@ export default function PagesLayout({ children }) {
       <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground gap-3">
         <div className="size-9 rounded-full border-3 border-primary border-t-transparent animate-spin" />
         <p className="text-xs font-semibold text-muted-foreground animate-pulse">
-          Toegang controleren...
+          {t("common.checkingAccess")}
         </p>
       </div>
     );

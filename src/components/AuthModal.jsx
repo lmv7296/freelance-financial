@@ -18,13 +18,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal, ModalBody, ModalHeader } from "@/components/ui/modal";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import {
+  AUTH_MESSAGE_VARS,
   AUTH_RULES,
   validateLogin,
   validateRegister,
 } from "@/schemas/authSchema";
 
 export function AuthModal() {
+  const t = useT();
   const router = useRouter();
   const {
     authModalOpen,
@@ -95,7 +98,7 @@ export function AuthModal() {
     } catch (err) {
       setServerError(
         err?.message ||
-          "Er is een onverwachte fout opgetreden bij het inloggen.",
+          t(isRegister ? "auth.registerFailedText" : "auth.loginFailedText"),
       );
     } finally {
       setIsSubmitting(false);
@@ -112,11 +115,9 @@ export function AuthModal() {
       maxWidth="md"
     >
       <ModalHeader
-        title={isRegister ? "Account aanmaken" : "Inloggen bij FreelanceFin"}
+        title={isRegister ? t("auth.registerTitle") : t("auth.loginTitle")}
         description={
-          isRegister
-            ? "Start met het beheren van facturen, BTW-reserveringen en klanten."
-            : "Toegang tot je financiële dashboard en facturen."
+          isRegister ? t("auth.registerSubtitle") : t("auth.loginSubtitle")
         }
         icon={
           isRegister ? (
@@ -133,8 +134,8 @@ export function AuthModal() {
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-medium animate-in fade-in">
             <Clock className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
             <div>
-              <p className="font-semibold">Je sessie is verlopen</p>
-              <p className="opacity-90">Log opnieuw in om verder te gaan.</p>
+              <p className="font-semibold">{t("auth.sessionExpiredTitle")}</p>
+              <p className="opacity-90">{t("auth.sessionExpiredText")}</p>
             </div>
           </div>
         )}
@@ -144,14 +145,9 @@ export function AuthModal() {
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-medium animate-in fade-in">
             <Clock className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
             <div>
-              <p className="font-semibold">Te veel inlogpogingen</p>
+              <p className="font-semibold">{t("auth.rateLimitTitle")}</p>
               <p className="opacity-90">
-                Wacht nog{" "}
-                <span className="font-mono font-bold">
-                  {rateLimitCountdown}s
-                </span>{" "}
-                voordat je het opnieuw probeert (maximaal 5 pogingen per
-                minuut).
+                {t("auth.rateLimitText", { seconds: rateLimitCountdown })}
               </p>
             </div>
           </div>
@@ -162,7 +158,9 @@ export function AuthModal() {
           <div className="flex items-start gap-2.5 p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs font-medium animate-in fade-in">
             <AlertCircle className="size-4 shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="font-semibold">Fout bij verifiëren</p>
+              <p className="font-semibold">
+                {isRegister ? t("auth.registerFailed") : t("auth.loginFailed")}
+              </p>
               <p className="opacity-90">{serverError}</p>
             </div>
           </div>
@@ -183,10 +181,10 @@ export function AuthModal() {
               htmlFor="auth-email"
               className="text-xs font-semibold text-foreground flex items-center justify-between"
             >
-              <span>E-mailadres</span>
+              <span>{t("auth.email")}</span>
               {fieldErrors.email && (
                 <span className="text-[11px] text-destructive font-normal">
-                  {fieldErrors.email}
+                  {t(fieldErrors.email, AUTH_MESSAGE_VARS)}
                 </span>
               )}
             </label>
@@ -195,7 +193,7 @@ export function AuthModal() {
               <Input
                 id="auth-email"
                 type="email"
-                placeholder="naam@voorbeeld.nl"
+                placeholder={t("auth.emailPlaceholder")}
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -218,11 +216,14 @@ export function AuthModal() {
                 htmlFor="auth-password"
                 className="text-xs font-semibold text-foreground"
               >
-                Wachtwoord
+                {t("auth.password")}
               </label>
               {isRegister && (
                 <span className="text-[10px] text-muted-foreground">
-                  {password.length}/{AUTH_RULES.PASSWORD_MIN_LENGTH}+ tekens
+                  {t("auth.passwordCount", {
+                    count: password.length,
+                    min: AUTH_RULES.PASSWORD_MIN_LENGTH,
+                  })}
                 </span>
               )}
             </div>
@@ -251,7 +252,9 @@ export function AuthModal() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-                title={showPassword ? "Verberg wachtwoord" : "Toon wachtwoord"}
+                title={
+                  showPassword ? t("auth.hidePassword") : t("auth.showPassword")
+                }
               >
                 {showPassword ? (
                   <EyeOff className="size-4" />
@@ -262,7 +265,7 @@ export function AuthModal() {
             </div>
             {fieldErrors.password && (
               <p className="text-[11px] text-destructive">
-                {fieldErrors.password}
+                {t(fieldErrors.password, AUTH_MESSAGE_VARS)}
               </p>
             )}
           </div>
@@ -274,10 +277,10 @@ export function AuthModal() {
                 htmlFor="auth-confirm-password"
                 className="text-xs font-semibold text-foreground flex items-center justify-between"
               >
-                <span>Bevestig wachtwoord</span>
+                <span>{t("auth.confirmPassword")}</span>
                 {fieldErrors.confirmPassword && (
                   <span className="text-[11px] text-destructive font-normal">
-                    {fieldErrors.confirmPassword}
+                    {t(fieldErrors.confirmPassword, AUTH_MESSAGE_VARS)}
                   </span>
                 )}
               </label>
@@ -315,11 +318,13 @@ export function AuthModal() {
             {isSubmitting ? (
               <span className="flex items-center gap-2">
                 <span className="size-4 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
-                <span>Verwerken...</span>
+                <span>
+                  {isRegister ? t("auth.registering") : t("auth.loggingIn")}
+                </span>
               </span>
             ) : (
               <>
-                <span>{isRegister ? "Registreren" : "Inloggen"}</span>
+                <span>{isRegister ? t("auth.register") : t("auth.login")}</span>
                 <ArrowRight className="size-4" />
               </>
             )}
@@ -330,24 +335,24 @@ export function AuthModal() {
         <div className="pt-3 border-t border-border/50 text-center text-xs text-muted-foreground">
           {isRegister ? (
             <p>
-              Heb je al een account?{" "}
+              {t("auth.haveAccount")}{" "}
               <button
                 type="button"
                 onClick={() => handleModeSwitch("login")}
                 className="font-semibold text-primary hover:underline cursor-pointer"
               >
-                Inloggen
+                {t("auth.login")}
               </button>
             </p>
           ) : (
             <p>
-              Nog geen account?{" "}
+              {t("auth.noAccount")}{" "}
               <button
                 type="button"
                 onClick={() => handleModeSwitch("register")}
                 className="font-semibold text-primary hover:underline cursor-pointer"
               >
-                Account aanmaken
+                {t("auth.register")}
               </button>
             </p>
           )}

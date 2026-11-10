@@ -24,8 +24,9 @@ import { VatPeriodsCard } from "@/components/tax-vault/VatPeriodsCard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { taxVaultApi } from "@/lib/api/taxVault";
-import { formatDutchDate } from "@/lib/dateUtils";
+import { formatDate } from "@/lib/dateUtils";
 import { formatEuro } from "@/lib/formatCurrency";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 // While an export is being generated, refresh the export list periodically
@@ -40,6 +41,7 @@ const WARNING_STYLES = {
 };
 
 export default function TaxVaultPage() {
+  const t = useT();
   const [year, setYear] = useState(null); // null = let the backend pick the current tax year
   const [overview, setOverview] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -77,7 +79,7 @@ export default function TaxVaultPage() {
       setExports(res?.exports ?? []);
       setExportsError(null);
     } catch {
-      setExportsError("Exports konden niet geladen worden.");
+      setExportsError("taxVault.page.exportsFailed");
     }
   }, []);
 
@@ -99,9 +101,7 @@ export default function TaxVaultPage() {
     taxVaultApi
       .getExportOptions()
       .then((res) => setExportFormats(res?.formats ?? []))
-      .catch(() =>
-        setExportFormatsError("Exportformaten konden niet geladen worden."),
-      );
+      .catch(() => setExportFormatsError("taxVault.page.formatsFailed"));
   }, []);
 
   useEffect(() => {
@@ -162,25 +162,24 @@ export default function TaxVaultPage() {
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wider uppercase border border-violet-500/25 bg-violet-500/10 text-violet-700 dark:text-violet-300">
               <Wallet className="size-3" />
-              Belastingkluis
+              {t("taxVault.page.badge")}
             </span>
             <span className="text-xs text-muted-foreground font-mono">
-              Btw • Inkomstenbelasting • Zvw
+              {t("taxVault.page.taxes")}
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground mt-1">
-            Tax Vault
+            {t("taxVault.page.title")}
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-            Wat je ongeveer moet betalen, wanneer, en alles netjes klaar voor je
-            boekhouder.
+            {t("taxVault.page.subtitle")}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {overview?.available_years?.length > 1 && (
             <select
-              aria-label="Belastingjaar"
+              aria-label={t("taxVault.page.year")}
               value={taxYear ?? ""}
               onChange={(e) => setYear(Number(e.target.value))}
               className="h-9 rounded-full border border-border/80 bg-background px-3 text-xs font-semibold"
@@ -198,7 +197,7 @@ export default function TaxVaultPage() {
             className="rounded-full px-4 text-xs h-9"
           >
             <Settings2 className="size-3.5" />
-            Instellingen
+            {t("taxVault.page.settings")}
           </Button>
           <Button
             onClick={() => setIsExportOpen(true)}
@@ -206,7 +205,7 @@ export default function TaxVaultPage() {
             className="rounded-full px-4 text-xs h-9"
           >
             <FileDown className="size-3.5" />
-            Exporteren voor boekhouder
+            {t("taxVault.page.export")}
           </Button>
         </div>
       </div>
@@ -220,23 +219,21 @@ export default function TaxVaultPage() {
           {/* 2. Disclaimer, profile and backend warnings */}
           <div className="space-y-2">
             <Notice tone="info" icon={Info}>
-              Dit zijn <strong>schattingen</strong> op basis van je facturen,
-              goedgekeurde uitgaven en de belastingregels van{" "}
-              {overview.tax_year} (bronnen onderaan). Het is geen fiscaal
-              advies: de echte aangifte doe je met je boekhouder.
+              {t("taxVault.page.disclaimer", { year: overview.tax_year })}
               {overview.generated_at &&
-                ` Berekend op ${formatDutchDate(overview.generated_at)}.`}
+                ` ${t("taxVault.page.calculatedOn", {
+                  date: formatDate(overview.generated_at),
+                })}`}
             </Notice>
             {!overview.profile_complete && (
               <Notice tone="warning" icon={Settings2}>
-                Je fiscale instellingen zijn nog niet compleet, waardoor de
-                schatting minder nauwkeurig is.{" "}
+                {t("taxVault.page.profileIncomplete")}{" "}
                 <button
                   type="button"
                   onClick={() => setIsProfileOpen(true)}
                   className="font-semibold underline cursor-pointer"
                 >
-                  Vul ze aan
+                  {t("taxVault.page.completeProfile")}
                 </button>
               </Notice>
             )}
@@ -256,35 +253,43 @@ export default function TaxVaultPage() {
             <Card
               title={
                 nextVatPeriod
-                  ? `Btw ${nextVatPeriod.label}`
-                  : "Btw volgende aangifte"
+                  ? t("taxVault.page.vatPeriod", {
+                      period: nextVatPeriod.label,
+                    })
+                  : t("taxVault.page.vatNext")
               }
               description={
                 nextVatPeriod
-                  ? `Uiterlijk ${formatDutchDate(nextVatPeriod.deadline)}`
+                  ? t("taxVault.page.vatDeadline", {
+                      date: formatDate(nextVatPeriod.deadline),
+                    })
                   : overview.vat.enabled
-                    ? "Geen open periode"
-                    : "Niet van toepassing (KOR)"
+                    ? t("taxVault.page.noOpenPeriod")
+                    : t("taxVault.page.korNotApplicable")
               }
               value={nextVatPeriod ? formatEuro(nextVatPeriod.balance) : "—"}
               icon={<Percent className="size-5" />}
               iconColor="violet"
             />
             <Card
-              title="Inkomstenbelasting + Zvw"
+              title={t("taxVault.page.incomeTaxTitle")}
               description={
-                projected ? "Nog te betalen (prognose)" : "Nog niet beschikbaar"
+                projected
+                  ? t("taxVault.page.incomeTaxProjected")
+                  : t("taxVault.page.notAvailable")
               }
               value={projected ? formatEuro(projected.still_to_pay) : "—"}
               icon={<Landmark className="size-5" />}
               iconColor="blue"
             />
             <Card
-              title="Opzij zetten per maand"
+              title={t("taxVault.page.setAsideMonthly")}
               description={
                 overview.set_aside
-                  ? `Nog ${overview.set_aside.months_remaining} maanden dit jaar`
-                  : "Nog niet beschikbaar"
+                  ? t("taxVault.page.monthsRemaining", {
+                      count: overview.set_aside.months_remaining,
+                    })
+                  : t("taxVault.page.notAvailable")
               }
               value={
                 overview.set_aside
@@ -295,9 +300,11 @@ export default function TaxVaultPage() {
               iconColor="emerald"
             />
             <Card
-              title="Volgende deadline"
-              description={nextDeadline?.label ?? "Geen openstaande deadlines"}
-              value={nextDeadline ? formatDutchDate(nextDeadline.date) : "—"}
+              title={t("taxVault.page.nextDeadline")}
+              description={
+                nextDeadline?.label ?? t("taxVault.page.noDeadlines")
+              }
+              value={nextDeadline ? formatDate(nextDeadline.date) : "—"}
               icon={<CalendarClock className="size-5" />}
               iconColor="amber"
             />
@@ -318,7 +325,7 @@ export default function TaxVaultPage() {
               <DeadlinesCard deadlines={overview.deadlines} />
               <ExportsCard
                 exports={exports}
-                error={exportsError}
+                error={exportsError && t(exportsError)}
                 formatLabels={formatLabels}
                 onNewExport={() => setIsExportOpen(true)}
               />
@@ -347,7 +354,7 @@ export default function TaxVaultPage() {
           taxYear={overview.tax_year}
           periods={overview.vat.periods}
           formats={exportFormats}
-          formatsError={exportFormatsError}
+          formatsError={exportFormatsError && t(exportFormatsError)}
           defaultFormats={profile?.default_export_formats ?? []}
           accountantEmail={profile?.accountant_email ?? null}
         />
@@ -357,24 +364,25 @@ export default function TaxVaultPage() {
 }
 
 function SetAsideCard({ advice }) {
+  const t = useT();
   return (
     <Card
       variant="outlined"
-      title="Opzij zetten"
-      description="Zodat de aanslagen geen verrassing zijn"
+      title={t("taxVault.page.setAsideTitle")}
+      description={t("taxVault.page.setAsideDescription")}
       icon={<PiggyBank className="size-5" />}
       iconColor="emerald"
     >
       {!advice ? (
         <p className="text-xs text-muted-foreground">
-          Nog geen advies beschikbaar.
+          {t("taxVault.page.noAdvice")}
         </p>
       ) : (
         <>
           <p className="font-mono text-2xl font-bold tabular-nums text-foreground">
             {formatEuro(advice.monthly_amount)}
             <span className="ml-1 text-xs font-sans font-medium text-muted-foreground">
-              per maand
+              {t("taxVault.page.perMonth")}
             </span>
           </p>
           <ul className="mt-3 space-y-1 text-xs">
@@ -427,6 +435,7 @@ function LoadingState() {
 }
 
 function ErrorState({ error, onRetry }) {
+  const t = useT();
   const isUnavailable = error?.status === 0 || error?.status === 404;
   return (
     <Card variant="outlined">
@@ -436,13 +445,11 @@ function ErrorState({ error, onRetry }) {
         </div>
         <p className="text-sm font-semibold text-foreground">
           {isUnavailable
-            ? "De belastingkluis is nog niet beschikbaar"
-            : "Belastinggegevens konden niet geladen worden"}
+            ? t("taxVault.page.unavailableTitle")
+            : t("taxVault.page.loadFailedTitle")}
         </p>
         <p className="text-xs text-muted-foreground max-w-sm">
-          {isUnavailable
-            ? "De server voor belastingschattingen is (nog) niet bereikbaar. We tonen geen cijfers zonder actuele regels."
-            : error?.message}
+          {isUnavailable ? t("taxVault.page.unavailableText") : error?.message}
         </p>
         <Button
           variant="outline"
@@ -451,7 +458,7 @@ function ErrorState({ error, onRetry }) {
           className="mt-2 rounded-full text-xs"
         >
           <RefreshCw />
-          Opnieuw proberen
+          {t("taxVault.page.retry")}
         </Button>
       </div>
     </Card>

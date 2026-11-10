@@ -3,27 +3,24 @@
 import { ChevronDown, Percent } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { formatDutchDate } from "@/lib/dateUtils";
+import { formatDate } from "@/lib/dateUtils";
 import { formatEuro } from "@/lib/formatCurrency";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 const PERIOD_STATUS = {
   open: {
-    label: "Loopt nog",
     className:
       "bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/25",
   },
   to_file: {
-    label: "Aangifte doen",
     className:
       "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/25",
   },
   filed: {
-    label: "Aangegeven",
     className: "bg-muted text-muted-foreground border-border/60",
   },
   paid: {
-    label: "Betaald",
     className:
       "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/25",
   },
@@ -33,31 +30,34 @@ const PERIOD_STATUS = {
  * BTW per filing period, with the rubrieken of the official return per period.
  */
 export function VatPeriodsCard({ vat }) {
+  const t = useT();
   const [expandedKey, setExpandedKey] = useState(null);
 
   return (
     <Card
       variant="outlined"
-      title="Btw per aangifteperiode"
-      description="Verschuldigde btw (5a) min voorbelasting (5b), per rubriek zoals op de aangifte"
+      title={t("taxVault.vat.title")}
+      description={t("taxVault.vat.description")}
       icon={<Percent className="size-5" />}
       iconColor="violet"
       contentClassName="px-0 pb-0"
     >
       {!vat?.enabled ? (
         <p className="px-5 pb-5 text-xs text-muted-foreground">
-          Je gebruikt de kleineondernemersregeling (KOR): je rekent geen btw en
-          doet geen btw-aangifte.
+          {t("taxVault.vat.kor")}
         </p>
       ) : vat.periods.length === 0 ? (
         <p className="px-5 pb-5 text-xs text-muted-foreground">
-          Nog geen aangifteperiodes voor dit jaar.
+          {t("taxVault.vat.empty")}
         </p>
       ) : (
         <ul className="divide-y divide-border/50 border-t border-border/50">
           {vat.periods.map((period) => {
             const isExpanded = expandedKey === period.key;
-            const status = PERIOD_STATUS[period.status] ?? PERIOD_STATUS.open;
+            const statusKey = PERIOD_STATUS[period.status]
+              ? period.status
+              : "open";
+            const status = PERIOD_STATUS[statusKey];
             const isRefund = period.balance < 0;
             return (
               <li key={period.key}>
@@ -78,17 +78,18 @@ export function VatPeriodsCard({ vat }) {
                           status.className,
                         )}
                       >
-                        {status.label}
+                        {t(`taxVault.vat.status.${statusKey}`)}
                       </span>
                       {period.is_estimate && (
                         <span className="text-[10px] font-medium text-muted-foreground">
-                          schatting
+                          {t("taxVault.vat.estimate")}
                         </span>
                       )}
                     </div>
                     <p className="text-[11px] text-muted-foreground">
-                      Uiterlijk {formatDutchDate(period.deadline)} aangeven en
-                      betalen
+                      {t("taxVault.vat.deadline", {
+                        date: formatDate(period.deadline),
+                      })}
                     </p>
                   </div>
                   <div className="text-right">
@@ -103,7 +104,9 @@ export function VatPeriodsCard({ vat }) {
                       {formatEuro(Math.abs(period.balance))}
                     </p>
                     <p className="text-[10px] text-muted-foreground">
-                      {isRefund ? "terug te krijgen" : "te betalen"}
+                      {isRefund
+                        ? t("taxVault.vat.refund")
+                        : t("taxVault.vat.toPay")}
                     </p>
                   </div>
                   <ChevronDown
@@ -119,10 +122,18 @@ export function VatPeriodsCard({ vat }) {
                     <table className="w-full text-xs">
                       <thead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                         <tr className="border-b border-border/50">
-                          <th className="py-2 pr-2 text-left w-10">Rubriek</th>
-                          <th className="py-2 pr-2 text-left">Omschrijving</th>
-                          <th className="py-2 pr-2 text-right">Omzet</th>
-                          <th className="py-2 text-right">Btw</th>
+                          <th className="py-2 pr-2 text-left w-10">
+                            {t("taxVault.vat.code")}
+                          </th>
+                          <th className="py-2 pr-2 text-left">
+                            {t("taxVault.vat.description_col")}
+                          </th>
+                          <th className="py-2 pr-2 text-right">
+                            {t("taxVault.vat.turnover")}
+                          </th>
+                          <th className="py-2 text-right">
+                            {t("taxVault.vat.vat")}
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border/30">
@@ -149,8 +160,9 @@ export function VatPeriodsCard({ vat }) {
                         <tr className="border-t border-border font-semibold">
                           <td />
                           <td className="py-2 pr-2">
-                            {isRefund ? "Terug te ontvangen" : "Te betalen"} (5a
-                            − 5b)
+                            {isRefund
+                              ? t("taxVault.vat.totalRefund")
+                              : t("taxVault.vat.totalToPay")}
                           </td>
                           <td />
                           <td className="py-2 text-right font-mono tabular-nums">

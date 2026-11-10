@@ -1,3 +1,5 @@
+import { currentLanguage, translate } from "@/lib/i18n/dictionaries";
+
 const DEFAULT_BASE_URL = "http://localhost:8085";
 
 /** Fired on window when a request comes back 401: the session is no longer valid */
@@ -107,7 +109,9 @@ export async function apiRequest(endpoint, options = {}) {
       const errorMessage =
         data?.error ||
         data?.message ||
-        `Request failed with status ${response.status}`;
+        translate(currentLanguage(), "errors.requestFailed", {
+          status: response.status,
+        });
       throw new ApiClientError(errorMessage, response.status, data);
     }
 
@@ -117,7 +121,7 @@ export async function apiRequest(endpoint, options = {}) {
       throw err;
     }
     throw new ApiClientError(
-      err?.message || "Netwerkfout bij verbinden met de server",
+      translate(currentLanguage(), "errors.network"),
       0,
       null,
     );

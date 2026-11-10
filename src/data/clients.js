@@ -350,13 +350,13 @@ export function filterClients(clients, activeTab, searchQuery = "") {
       if (!matchesSearch) return false;
     }
 
-    if (activeTab === "Particulieren") {
+    if (activeTab === "particulier") {
       return client.type === "particulier";
     }
-    if (activeTab === "Bedrijven & Zakelijk") {
+    if (activeTab === "bedrijf") {
       return client.type === "bedrijf";
     }
-    if (activeTab === "Openstaand Saldo") {
+    if (activeTab === "unpaid") {
       return Boolean(client.unpaidAmount);
     }
 

@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 /**
@@ -17,6 +18,7 @@ export function Modal({
   closeOnBackdropClick = true,
   className,
 }) {
+  const t = useT();
   const [mounted, setMounted] = useState(false);
   const modalRef = useRef(null);
 
@@ -90,7 +92,7 @@ export function Modal({
             type="button"
             onClick={onClose}
             className="absolute right-4 top-4 z-20 flex size-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition-all cursor-pointer"
-            aria-label="Close modal"
+            aria-label={t("common.close")}
           >
             <X className="size-4" />
           </button>

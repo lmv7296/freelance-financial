@@ -2,16 +2,13 @@
 
 import { Check, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
-const OPTIONS = [
-  { id: "30d", label: "30 days" },
-  { id: "90d", label: "90 days" },
-  { id: "6m", label: "6 months" },
-  { id: "12m", label: "12 months" },
-];
+const OPTIONS = [{ id: "30d" }, { id: "90d" }, { id: "6m" }, { id: "12m" }];
 
 export function TimeFilterDropdown({ value = "30d", onChange, className }) {
+  const t = useT();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(value);
   const dropdownRef = useRef(null);
@@ -50,7 +47,7 @@ export function TimeFilterDropdown({ value = "30d", onChange, className }) {
   const handleSelect = (option) => {
     setSelectedId(option.id);
     setIsOpen(false);
-    onChange?.(option.id, option.label);
+    onChange?.(option.id, t(`timeFilter.${option.id}`));
   };
 
   return (
@@ -70,7 +67,7 @@ export function TimeFilterDropdown({ value = "30d", onChange, className }) {
           isOpen && "ring-2 ring-primary/20 border-primary/40",
         )}
       >
-        <span>{selectedOption.label}</span>
+        <span>{t(`timeFilter.${selectedOption.id}`)}</span>
         <ChevronDown
           className={cn(
             "size-3 text-muted-foreground transition-transform duration-200",
@@ -103,7 +100,7 @@ export function TimeFilterDropdown({ value = "30d", onChange, className }) {
                     : "text-foreground hover:bg-muted text-left font-medium",
                 )}
               >
-                <span>{option.label}</span>
+                <span>{t(`timeFilter.${option.id}`)}</span>
                 {isSelected && <Check className="size-3 text-primary" />}
               </button>
             );

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { getStoredClients } from "@/data/clients";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 /**
@@ -23,13 +24,14 @@ export function ClientAutocomplete({
   value = "",
   onChange,
   onSelectClient,
-  placeholder = "Typ om te zoeken of voer een nieuwe naam in...",
+  placeholder = "clientSearch.placeholder",
   label,
   required = false,
   error,
   disabled = false,
   id: customId,
 }) {
+  const t = useT();
   const autoId = useId();
   const inputId = customId || `client-autocomplete-${autoId}`;
   const containerRef = useRef(null);
@@ -197,15 +199,18 @@ export function ClientAutocomplete({
             htmlFor={inputId}
             className="flex items-center gap-1 cursor-pointer"
           >
-            <span>{label}</span>
+            <span>{t(label)}</span>
             {required && (
-              <span className="text-destructive ml-0.5" title="Verplicht">
+              <span
+                className="text-destructive ml-0.5"
+                title={t("common.required")}
+              >
                 *
               </span>
             )}
           </label>
           <span className="inline-flex items-center gap-1 text-[10.5px] font-normal text-muted-foreground bg-muted/60 hover:bg-muted px-2 py-0.5 rounded-full border border-border/50 transition-colors">
-            <span>Autocomplete uit dossier</span>
+            <span>{t("clientSearch.fromClients")}</span>
           </span>
         </div>
       )}
@@ -230,7 +235,7 @@ export function ClientAutocomplete({
           aria-controls={`${inputId}-dropdown`}
           value={value}
           disabled={disabled}
-          placeholder={placeholder}
+          placeholder={t(placeholder)}
           autoComplete="off"
           onFocus={() => setIsOpen(true)}
           onChange={(e) => {
@@ -256,8 +261,8 @@ export function ClientAutocomplete({
               type="button"
               onClick={handleClear}
               className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors cursor-pointer"
-              title="Wissen"
-              aria-label="Invoer wissen"
+              title={t("clientSearch.clear")}
+              aria-label={t("clientSearch.clearInput")}
             >
               <X className="size-3.5" />
             </button>
@@ -273,8 +278,8 @@ export function ClientAutocomplete({
               setIsOpen(!isOpen);
             }}
             className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors cursor-pointer"
-            title="Toon suggesties"
-            aria-label="Suggesties openen"
+            title={t("clientSearch.showSuggestions")}
+            aria-label={t("clientSearch.openSuggestions")}
           >
             <ChevronDown
               className={cn(
@@ -291,7 +296,9 @@ export function ClientAutocomplete({
         <div className="flex items-center justify-between px-2.5 py-1 rounded-lg border border-primary/25 bg-primary/5 text-[11px] text-foreground animate-in fade-in-50 duration-200">
           <div className="flex items-center gap-1.5 truncate">
             <Check className="size-3 text-primary shrink-0" />
-            <span className="text-muted-foreground">Klant gekoppeld:</span>
+            <span className="text-muted-foreground">
+              {t("clientSearch.linked")}
+            </span>
             <span className="font-semibold text-primary truncate">
               {selectedMatch.name}
             </span>
@@ -317,14 +324,13 @@ export function ClientAutocomplete({
               <span className="flex items-center gap-1.5">
                 <Search className="size-3 text-primary" />
                 {value?.trim()
-                  ? `Zoekresultaten voor "${value.trim()}":`
+                  ? t("clientSearch.resultsFor", { query: value.trim() })
                   : isBedrijf
-                    ? "Bestaande zakelijke klanten / bedrijven:"
-                    : "Bestaande particuliere klanten:"}
+                    ? t("clientSearch.existingCompanies")
+                    : t("clientSearch.existingPeople")}
               </span>
               <span className="text-[10px] font-mono text-muted-foreground/80">
-                {suggestions.length}{" "}
-                {suggestions.length === 1 ? "klant" : "klanten"}
+                {t("clientSearch.count", { count: suggestions.length })}
               </span>
             </div>
           )}
@@ -432,7 +438,7 @@ export function ClientAutocomplete({
                     >
                       <UserPlus className="size-3.5 shrink-0" />
                       <span className="truncate">
-                        Als nieuwe klant &ldquo;{value.trim()}&rdquo; gebruiken
+                        {t("clientSearch.useAsNew", { name: value.trim() })}
                       </span>
                     </button>
                   </div>
@@ -444,13 +450,13 @@ export function ClientAutocomplete({
               <div className="flex items-center justify-between px-1 text-xs">
                 <span className="text-muted-foreground flex items-center gap-1.5 truncate">
                   <UserPlus className="size-3.5 text-primary shrink-0" />
-                  Nieuwe klant:
+                  {t("clientSearch.newClient")}
                   <strong className="text-foreground truncate font-semibold">
-                    &ldquo;{value?.trim() || "Onbekend"}&rdquo;
+                    &ldquo;{value?.trim() || t("clientSearch.unknown")}&rdquo;
                   </strong>
                 </span>
                 <span className="text-[10px] text-muted-foreground/80 shrink-0 hidden sm:inline">
-                  (niet in dossier)
+                  {t("clientSearch.notInClients")}
                 </span>
               </div>
               <button
@@ -459,7 +465,7 @@ export function ClientAutocomplete({
                 className="w-full h-9 px-3 rounded-lg bg-primary text-primary-foreground font-semibold text-xs shadow-xs hover:bg-primary/90 active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <UserPlus className="size-3.5 shrink-0" />
-                <span>Als nieuwe klant toevoegen / gebruiken</span>
+                <span>{t("clientSearch.addNew")}</span>
               </button>
             </div>
           )}

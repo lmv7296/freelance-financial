@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { taxVaultApi } from "@/lib/api/taxVault";
-import { formatDutchDate, parseLocalDate } from "@/lib/dateUtils";
+import { formatDate, parseLocalDate } from "@/lib/dateUtils";
 import { formatEuro } from "@/lib/formatCurrency";
 import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
@@ -100,7 +100,7 @@ export function SidebarTaxWidget() {
                 )}
               >
                 {t("taxWidget.deadline", {
-                  date: formatDutchDate(nextPeriod.deadline),
+                  date: formatDate(nextPeriod.deadline),
                 })}
                 {days !== null &&
                   days >= 0 &&

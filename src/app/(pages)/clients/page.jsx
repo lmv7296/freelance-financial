@@ -31,31 +31,26 @@ import {
   saveStoredClients,
 } from "@/data/clients";
 import { useClipboard } from "@/lib/clipboard";
+import { useT } from "@/lib/preferences/PreferencesContext";
 
-const FILTER_TABS = [
-  "Alle Klanten",
-  "Particulieren",
-  "Bedrijven & Zakelijk",
-  "Openstaand Saldo",
-];
+// Tab ids; labels are in the language files (clients.tabs.<id>)
+const FILTER_TABS = ["all", "particulier", "bedrijf", "unpaid"];
 
 const ADD_CUSTOMER_STEPS = [
   {
     id: "basis",
-    title: "Klanttype & Naam",
-    description:
-      "Kies tussen particulier of bedrijf en voer de basisidentiteit in.",
+    title: "clients.form.steps.basis.title",
+    description: "clients.form.steps.basis.description",
   },
   {
     id: "contact",
-    title: "Contact & Facturatie",
-    description: "Telefoonnummer, e-mailadres en optionele facturatiegegevens.",
+    title: "clients.form.steps.contact.title",
+    description: "clients.form.steps.contact.description",
   },
   {
     id: "locatie",
-    title: "Werklocatie / Pand",
-    description:
-      "Straat, huisnummer en plaats voor werkopdrachten en facturen.",
+    title: "clients.form.steps.location.title",
+    description: "clients.form.steps.location.description",
   },
 ];
 
@@ -63,7 +58,7 @@ const ADD_CUSTOMER_FIELDS = [
   // STAP 1: Klanttype & Naam
   {
     name: "type",
-    label: "Klantcategorie",
+    label: "clients.form.type",
     type: "radio-cards",
     required: true,
     colSpan: 2,
@@ -72,48 +67,50 @@ const ADD_CUSTOMER_FIELDS = [
     options: [
       {
         value: "particulier",
-        label: "Particulier",
-        description: "Consument, woningeigenaar of huurder.",
+        label: "clients.form.person",
+        description: "clients.form.personHint",
       },
       {
         value: "bedrijf",
-        label: "Bedrijf / Zakelijk",
-        description: "MKB onderneming, winkelier, handel of VvE.",
+        label: "clients.form.company",
+        description: "clients.form.companyHint",
       },
     ],
   },
   {
     name: "name",
     label: (values) =>
-      values.type === "bedrijf" ? "Bedrijfsnaam" : "Naam Klant",
+      values.type === "bedrijf"
+        ? "clients.form.companyName"
+        : "clients.form.personName",
     placeholder: (values) =>
       values.type === "bedrijf"
-        ? "bijv. Bakkerij Van Dam of De Kaasboer B.V."
-        : "bijv. Jan & Sophie de Vries",
+        ? "clients.form.companyNamePlaceholder"
+        : "clients.form.personNamePlaceholder",
     required: true,
     colSpan: (values) => (values.type === "bedrijf" ? 2 : 1),
     step: 0,
   },
   {
     name: "subLabel",
-    label: "Woningtype / Situatie (optioneel)",
-    placeholder: "bijv. Eigenaar-bewoner of Huurder",
+    label: "clients.form.situation",
+    placeholder: "clients.form.situationPlaceholder",
     showIf: (values) => values.type === "particulier",
     colSpan: 1,
     step: 0,
   },
   {
     name: "kvk",
-    label: "KvK-nummer",
-    placeholder: "bijv. 54109823",
+    label: "clients.form.kvk",
+    placeholder: "clients.form.kvkPlaceholder",
     showIf: (values) => values.type === "bedrijf",
     colSpan: 1,
     step: 0,
   },
   {
     name: "contactPerson",
-    label: "Contactpersoon & Functie",
-    placeholder: "bijv. Dennis van Dam (Eigenaar)",
+    label: "clients.form.contactPerson",
+    placeholder: "clients.form.contactPersonPlaceholder",
     showIf: (values) => values.type === "bedrijf",
     colSpan: 1,
     step: 0,
@@ -122,28 +119,28 @@ const ADD_CUSTOMER_FIELDS = [
   // STAP 2: Contact & Facturatie
   {
     name: "phone",
-    label: "Telefoonnummer / WhatsApp",
+    label: "clients.form.phone",
     type: "tel",
-    placeholder: "+31 6 1234 5678",
+    placeholder: "clients.form.phonePlaceholder",
     required: true,
     colSpan: 1,
     step: 1,
   },
   {
     name: "email",
-    label: "E-mailadres Facturatie",
+    label: "clients.form.email",
     type: "email",
     placeholder: (values) =>
       values.type === "bedrijf"
-        ? "facturen@bakkerijvandam.nl"
-        : "jan.devries@gmail.com",
+        ? "clients.form.companyEmailPlaceholder"
+        : "clients.form.personEmailPlaceholder",
     colSpan: 1,
     step: 1,
   },
   {
     name: "btw",
-    label: "BTW-nummer (optioneel)",
-    placeholder: "bijv. NL84920194B01",
+    label: "clients.form.vatNumber",
+    placeholder: "clients.form.vatNumberPlaceholder",
     showIf: (values) => values.type === "bedrijf",
     colSpan: 2,
     step: 1,
@@ -154,17 +151,17 @@ const ADD_CUSTOMER_FIELDS = [
     name: "addressLine1",
     label: (values) =>
       values.type === "bedrijf"
-        ? "Adres Bedrijfspand (Straat en Huisnummer)"
-        : "Werklocatie (Straat en Huisnummer)",
-    placeholder: "bijv. Prinsengracht 242-II of Singel 380-Huis",
+        ? "clients.form.companyAddress"
+        : "clients.form.personAddress",
+    placeholder: "clients.form.addressPlaceholder",
     required: true,
     colSpan: 1,
     step: 2,
   },
   {
     name: "addressLine2",
-    label: "Postcode en Plaats",
-    placeholder: "bijv. 1016 HE Amsterdam",
+    label: "clients.form.postalCity",
+    placeholder: "clients.form.postalCityPlaceholder",
     required: true,
     colSpan: 1,
     step: 2,
@@ -180,7 +177,7 @@ const ADD_CUSTOMER_FIELDS = [
  */
 function useClientsLogic() {
   const [clients, setClients] = useState(INITIAL_CLIENTS);
-  const [activeTab, setActiveTab] = useState("Alle Klanten");
+  const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   // Modals state
@@ -248,24 +245,21 @@ function useClientsLogic() {
  * Top page header with title, description, and primary CTA button.
  */
 function ClientHeader({ onOpenAddModal }) {
+  const t = useT();
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wider uppercase border border-indigo-500/25 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300">
             <Store className="size-3" />
-            Klanten & Werklocaties
-          </span>
-          <span className="text-xs text-muted-foreground font-mono">
-            Vakmanschap Dossiers
+            {t("clients.page.badge")}
           </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground mt-1">
-          Klanten & Werkadressen
+          {t("clients.page.title")}
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-          Werklocaties voor particulieren en bedrijfspanden voor zakelijke
-          opdrachtgevers. Direct navigeren en bellen.
+          {t("clients.page.subtitle")}
         </p>
       </div>
 
@@ -275,7 +269,7 @@ function ClientHeader({ onOpenAddModal }) {
           className="rounded-full px-5 shadow-sm hover:shadow-md active:scale-[0.97] transition-all font-semibold text-xs h-9 cursor-pointer"
         >
           <Plus className="size-4 mr-1.5" />
-          Nieuwe Klant Toevoegen
+          {t("clients.page.add")}
         </Button>
       </div>
     </div>
@@ -292,6 +286,7 @@ function ClientFilterBar({
   onSearchChange,
   counts,
 }) {
+  const t = useT();
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       {/* Category Tabs */}
@@ -299,9 +294,9 @@ function ClientFilterBar({
         {FILTER_TABS.map((tab) => {
           const isActive = activeTab === tab;
           let count = counts.total;
-          if (tab === "Particulieren") count = counts.particulierCount;
-          if (tab === "Bedrijven & Zakelijk") count = counts.bedrijfCount;
-          if (tab === "Openstaand Saldo") count = counts.unpaidCount;
+          if (tab === "particulier") count = counts.particulierCount;
+          if (tab === "bedrijf") count = counts.bedrijfCount;
+          if (tab === "unpaid") count = counts.unpaidCount;
 
           return (
             <button
@@ -314,7 +309,7 @@ function ClientFilterBar({
                   : "bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground border border-border/50"
               }`}
             >
-              <span>{tab}</span>
+              <span>{t(`clients.tabs.${tab}`)}</span>
               <span
                 className={`rounded-full px-1.5 py-0.2 text-[10px] font-mono ${
                   isActive
@@ -333,7 +328,7 @@ function ClientFilterBar({
       <div className="relative w-full sm:w-80">
         <Search className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Zoek op naam, adres, telefoon..."
+          placeholder={t("clients.page.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-9.5 h-9 text-xs rounded-full border-border/70 dark:border-white/[0.08]"
@@ -354,7 +349,9 @@ function ClientCard({
   onCopyKvk,
   onViewDossier,
 }) {
+  const t = useT();
   const isParticulier = client.type === "particulier";
+  const category = t(`clients.category.${client.type}`);
 
   return (
     <div
@@ -376,7 +373,7 @@ function ClientCard({
               {isParticulier ? (
                 <>
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/25">
-                    {client.categoryLabel}
+                    {category}
                   </span>
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium bg-muted text-muted-foreground border border-border/40">
                     {client.subLabel}
@@ -385,15 +382,16 @@ function ClientCard({
               ) : (
                 <>
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
-                    {client.categoryLabel}
+                    {category}
                   </span>
                   <button
                     type="button"
                     onClick={() =>
-                      onCopyKvk(client.kvk || "84920194", client.id)
+                      client.kvk && onCopyKvk(client.kvk, client.id)
                     }
+                    disabled={!client.kvk}
                     className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-mono font-medium bg-muted text-muted-foreground hover:bg-muted/80 transition-all active:scale-95 cursor-pointer border border-border/40"
-                    title="Kopieer KvK"
+                    title={t("clients.card.copyKvk")}
                   >
                     <span>{client.subLabel}</span>
                     <Copy className="size-3 opacity-60" />
@@ -410,7 +408,7 @@ function ClientCard({
 
           <span
             className="size-2.5 rounded-full bg-emerald-500 shrink-0 mt-1 shadow-xs ring-4 ring-card"
-            title="Actief dossier"
+            title={t("clients.card.active")}
           />
         </div>
 
@@ -423,12 +421,12 @@ function ClientCard({
                   {client.contactPerson}
                 </span>{" "}
                 <span className="text-muted-foreground">
-                  ({client.contactRole || "Eigenaar"})
+                  ({client.contactRole || t("clients.card.defaultRole")})
                 </span>
               </div>
               {client.btw && (
                 <span className="font-mono text-muted-foreground shrink-0 text-[10px]">
-                  BTW: {client.btw}
+                  {t("clients.card.vat", { number: client.btw })}
                 </span>
               )}
             </div>
@@ -450,7 +448,7 @@ function ClientCard({
                     href={`tel:${client.phone}`}
                     className="inline-flex items-center justify-center rounded-full bg-background border border-border/80 px-2.5 py-0.5 text-[11px] font-semibold text-foreground hover:bg-muted shadow-2xs active:scale-95 transition-all"
                   >
-                    Bel
+                    {t("clients.card.call")}
                   </a>
                   <a
                     href={`https://wa.me/${client.phone.replace(/[^0-9]/g, "")}`}
@@ -459,7 +457,7 @@ function ClientCard({
                     className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-bold hover:bg-emerald-500/25 active:scale-95 transition-all"
                   >
                     <MessageCircle className="size-3" />
-                    App
+                    {t("clients.card.whatsapp")}
                   </a>
                 </>
               ) : (
@@ -468,13 +466,13 @@ function ClientCard({
                     href={`tel:${client.phone}`}
                     className="inline-flex items-center justify-center rounded-full bg-background border border-border/80 px-2.5 py-0.5 text-[11px] font-semibold text-foreground hover:bg-muted shadow-2xs active:scale-95 transition-all"
                   >
-                    Vast
+                    {t("clients.card.landline")}
                   </a>
                   <a
                     href={`tel:${client.mobilePhone || client.phone}`}
                     className="inline-flex items-center justify-center rounded-full bg-background border border-border/80 px-2.5 py-0.5 text-[11px] font-semibold text-foreground hover:bg-muted shadow-2xs active:scale-95 transition-all"
                   >
-                    Mobiel
+                    {t("clients.card.mobile")}
                   </a>
                   <a
                     href={`https://wa.me/${client.phone.replace(/[^0-9]/g, "")}`}
@@ -483,7 +481,7 @@ function ClientCard({
                     className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-bold hover:bg-emerald-500/25 active:scale-95 transition-all"
                   >
                     <MessageCircle className="size-3" />
-                    App
+                    {t("clients.card.whatsapp")}
                   </a>
                 </>
               )}
@@ -511,7 +509,7 @@ function ClientCard({
               ) : (
                 <Store className="size-3 text-primary" />
               )}
-              <span>{client.locationType}</span>
+              <span>{t(`clients.location.${client.type}`)}</span>
             </div>
 
             <div className="flex items-center gap-2 font-semibold lowercase tracking-normal">
@@ -528,7 +526,11 @@ function ClientCard({
                     className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                   >
                     <Copy className="size-2.5" />
-                    <span>{isCopiedAddress ? "Gekopieerd!" : "Kopieer"}</span>
+                    <span>
+                      {isCopiedAddress
+                        ? t("clients.card.copied")
+                        : t("clients.card.copy")}
+                    </span>
                   </button>
                   <span className="text-muted-foreground/40">•</span>
                 </>
@@ -543,7 +545,7 @@ function ClientCard({
                 className="flex items-center gap-1 text-primary hover:underline transition-colors font-medium"
               >
                 <MapIcon className="size-3" />
-                <span>Navigeer</span>
+                <span>{t("clients.card.navigate")}</span>
               </a>
             </div>
           </div>
@@ -595,7 +597,7 @@ function ClientCard({
           onClick={() => onViewDossier(client)}
           className="rounded-full px-4 h-8 text-xs font-semibold shrink-0 cursor-pointer active:scale-95 transition-all shadow-xs"
         >
-          Bekijk Dossier
+          {t("clients.card.view")}
         </Button>
       </div>
     </div>
@@ -606,14 +608,16 @@ function ClientCard({
  * Dossier Modal: Renders client summary details and invoice history.
  */
 function ClientDossierModal({ client, onClose }) {
+  const t = useT();
   if (!client) return null;
+  const category = t(`clients.category.${client.type}`);
 
   return (
     <InfoModal
       isOpen={Boolean(client)}
       onClose={onClose}
       title={client.name}
-      description={`Klantdossier • ${client.categoryLabel}`}
+      description={t("clients.dossier.description", { category })}
       badge={client.subLabel}
       icon={
         client.type === "particulier" ? (
@@ -625,63 +629,65 @@ function ClientDossierModal({ client, onClose }) {
       maxWidth="lg"
       items={[
         {
-          label: "Klant ID",
+          label: t("clients.dossier.id"),
           value: client.id,
           copyable: true,
         },
         {
-          label: "Klanttype",
-          value: client.categoryLabel,
+          label: t("clients.dossier.type"),
+          value: category,
         },
         {
-          label: "Adres (Werklocatie / Pand)",
+          label: t("clients.dossier.address"),
           value: `${client.addressLine1}, ${client.addressLine2}`,
           copyable: true,
           colSpan: 2,
         },
         {
-          label: "Telefoon / WhatsApp",
+          label: t("clients.dossier.phone"),
           value: client.phone,
           href: `tel:${client.phone}`,
           copyable: true,
         },
         {
-          label: "E-mailadres",
+          label: t("clients.dossier.email"),
           value: client.email,
           href: `mailto:${client.email}`,
           copyable: true,
         },
         {
-          label: "Totaal Gefactureerd",
+          label: t("clients.dossier.total"),
           value: client.totalSpent,
           isMoney: true,
           highlight: "success",
         },
         {
-          label: "Aantal Facturen",
-          value: `${client.invoicesCount} facturen verzonden`,
+          label: t("clients.dossier.invoiceCount"),
+          value: t("clients.dossier.invoicesSent", {
+            count: client.invoicesCount,
+          }),
         },
         {
-          label: "Installatie- & Toegangsnotities",
+          label: t("clients.dossier.notes"),
           value: `${client.siteNoteType}: ${client.siteNoteText}`,
           colSpan: 2,
         },
       ]}
       footerActions={[
         {
-          label: "Sluiten",
+          label: t("clients.dossier.close"),
           variant: "outline",
           onClick: onClose,
         },
         {
-          label: "Bel Klant",
+          label: t("clients.dossier.call"),
           variant: "secondary",
           onClick: () => {
             window.location.href = `tel:${client.phone}`;
           },
         },
         {
-          label: "Route Openen",
+          label: t("clients.dossier.route"),
           variant: "default",
           onClick: () => {
             window.open(
@@ -699,10 +705,12 @@ function ClientDossierModal({ client, onClose }) {
         <div className="flex items-center justify-between">
           <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <FileText className="size-3.5 text-primary" />
-            Facturenhistorie voor {client.name}
+            {t("clients.dossier.history", { name: client.name })}
           </h4>
           <span className="text-[11px] font-mono text-muted-foreground">
-            {client.invoices?.length || 0} facturen
+            {t("clients.dossier.historyCount", {
+              count: client.invoices?.length || 0,
+            })}
           </span>
         </div>
 
@@ -719,7 +727,7 @@ function ClientDossierModal({ client, onClose }) {
                   </p>
                   <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5">
                     <Clock className="size-3" />
-                    Verzonden {inv.date}
+                    {t("clients.dossier.sentOn", { date: inv.date })}
                   </p>
                 </div>
 
@@ -734,7 +742,7 @@ function ClientDossierModal({ client, onClose }) {
                         : "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/25"
                     }`}
                   >
-                    {inv.status}
+                    {t(`invoices.status.${inv.status}`)}
                   </span>
                 </div>
               </div>
@@ -742,7 +750,7 @@ function ClientDossierModal({ client, onClose }) {
           </div>
         ) : (
           <p className="text-xs text-muted-foreground italic py-3 text-center border rounded-xl bg-muted/20">
-            Nog geen facturen verzonden naar deze klant.
+            {t("clients.dossier.empty")}
           </p>
         )}
       </div>
@@ -770,6 +778,7 @@ export default function ClientsPage() {
     kvkClipboard,
     handleCreateClient,
   } = useClientsLogic();
+  const t = useT();
 
   return (
     <div className="min-h-screen bg-background p-6 md:p-8 space-y-6 font-sans">
@@ -805,14 +814,14 @@ export default function ClientsPage() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleCreateClient}
-        title="Nieuwe Klant Aanmaken"
-        description="Maak in 3 overzichtelijke stappen een klantprofiel aan voor een particulier of zakelijke klant."
+        title={t("clients.form.title")}
+        description={t("clients.form.description")}
         icon={<UserPlus className="size-5" />}
         steps={ADD_CUSTOMER_STEPS}
         fields={ADD_CUSTOMER_FIELDS}
-        submitLabel="Klant Opslaan"
+        submitLabel={t("clients.form.submit")}
         maxWidth="lg"
-        footerNote="Werklocaties, contactgegevens en facturatie worden direct gesynchroniseerd in het overzicht."
+        footerNote={t("clients.form.footer")}
       />
 
       {/* 5. Client Dossier View Modal */}

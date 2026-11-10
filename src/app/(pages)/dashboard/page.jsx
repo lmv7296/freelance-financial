@@ -21,8 +21,9 @@ import { clientsApi } from "@/lib/api/clients";
 import { invoicesApi } from "@/lib/api/invoices";
 import { settingsApi } from "@/lib/api/settings";
 import { taxVaultApi } from "@/lib/api/taxVault";
-import { formatDutchDate } from "@/lib/dateUtils";
+import { formatDate } from "@/lib/dateUtils";
 import { formatEuro } from "@/lib/formatCurrency";
+import { useT } from "@/lib/preferences/PreferencesContext";
 
 const RECENT_INVOICES_LIMIT = 5;
 
@@ -91,6 +92,7 @@ function formatShare(share) {
 }
 
 export default function DashboardPage() {
+  const t = useT();
   const [overview, setOverview] = useState(LOADING);
   const [company, setCompany] = useState(LOADING);
   const [invoices, setInvoices] = useState(LOADING);
@@ -136,7 +138,7 @@ export default function DashboardPage() {
     .sort((a, b) =>
       String(b.invoice_number ?? "").localeCompare(
         String(a.invoice_number ?? ""),
-        "nl",
+        undefined,
         { numeric: true },
       ),
     )
@@ -157,20 +159,21 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2 flex-wrap">
             <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wider uppercase border border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
               <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Live Administratie •{" "}
-              {currentPeriod?.label ?? (tax ? tax.tax_year : "—")}
+              {t("dashboard.liveBadge", {
+                period: currentPeriod?.label ?? (tax ? tax.tax_year : "—"),
+              })}
             </span>
             {kvkNumber && (
               <span className="text-xs text-muted-foreground font-mono">
-                KvK {kvkNumber}
+                {t("dashboard.kvk", { number: kvkNumber })}
               </span>
             )}
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground mt-1">
-            Financieel Dashboard
+            {t("dashboard.title")}
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-            Overzicht van omzet, winst, BTW-reserve en je laatste facturen.
+            {t("dashboard.subtitle")}
           </p>
         </div>
 
@@ -184,7 +187,7 @@ export default function DashboardPage() {
             <RefreshCw
               className={`size-3.5 mr-1.5 ${isAnyLoading ? "animate-spin" : ""}`}
             />
-            Vernieuwen
+            {t("dashboard.refresh")}
           </Button>
           <Link href="/tax-vault">
             <Button
@@ -192,13 +195,13 @@ export default function DashboardPage() {
               className="rounded-full px-4 shadow-2xs hover:bg-muted/70 active:scale-[0.97] transition-all font-medium text-xs h-9 cursor-pointer"
             >
               <Download className="size-3.5 mr-1.5" />
-              BTW-Overzicht
+              {t("dashboard.vatOverview")}
             </Button>
           </Link>
           <Link href="/invoices">
             <Button className="rounded-full px-4.5 shadow-sm hover:shadow-md active:scale-[0.97] transition-all font-semibold text-xs h-9 cursor-pointer">
               <Plus className="size-4 mr-1.5" />
-              Nieuwe Factuur / Verzoek
+              {t("dashboard.newInvoice")}
             </Button>
           </Link>
         </div>
@@ -208,7 +211,7 @@ export default function DashboardPage() {
       <div className="rounded-3xl border border-border/80 dark:border-white/[0.08] bg-gradient-to-br from-card via-card/90 to-muted/30 p-5 sm:p-6 shadow-xs backdrop-blur-xl space-y-4">
         {overview.status === "error" ? (
           <SectionError
-            title="Saldo kon niet geladen worden"
+            title={t("dashboard.balanceLoadFailed")}
             error={overview.error}
             onRetry={loadDashboard}
           />
@@ -217,7 +220,9 @@ export default function DashboardPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-border/60">
               <div className="space-y-1">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Vrij besteedbaar {tax ? tax.tax_year : ""}
+                  {tax
+                    ? t("dashboard.freeTitleYear", { year: tax.tax_year })
+                    : t("dashboard.freeTitle")}
                 </span>
                 <div className="flex items-baseline gap-3 flex-wrap">
                   <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-mono tabular-nums">
@@ -226,27 +231,25 @@ export default function DashboardPage() {
                   {spendable?.free != null && (
                     <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25">
                       <TrendingUp className="size-3.5" />
-                      Na belasting
+                      {t("dashboard.afterTax")}
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {isLoading ? (
-                    "Gegevens laden…"
+                    t("dashboard.loading")
                   ) : spendable?.free != null ? (
-                    <>
-                      Winst t/m vandaag na aftrek van de inkomstenbelasting. Zet{" "}
-                      {formatEuro(spendable.reserve)} apart voor de
-                      Belastingdienst.
-                    </>
+                    t("dashboard.freeText", {
+                      amount: formatEuro(spendable.reserve),
+                    })
                   ) : (
                     <>
-                      Schatting inkomstenbelasting nog niet beschikbaar.{" "}
+                      {t("dashboard.incomeTaxUnavailable")}{" "}
                       <Link
                         href="/tax-vault"
                         className="underline underline-offset-2 hover:text-foreground"
                       >
-                        Vul je belastingprofiel aan
+                        {t("dashboard.completeProfile")}
                       </Link>
                       .
                     </>
@@ -262,7 +265,7 @@ export default function DashboardPage() {
                     className="rounded-full gap-1.5 font-semibold text-xs h-8.5 active:scale-[0.97]"
                   >
                     <QrCode className="size-3.5 text-primary" />
-                    Tikkie / iDEAL QR
+                    {t("dashboard.paymentRequest")}
                   </Button>
                 </Link>
                 <Link href="/clients">
@@ -272,7 +275,7 @@ export default function DashboardPage() {
                     className="rounded-full gap-1.5 font-semibold text-xs h-8.5 active:scale-[0.97]"
                   >
                     <Users className="size-3.5" />
-                    Klanten Dossier
+                    {t("dashboard.clientsButton")}
                   </Button>
                 </Link>
               </div>
@@ -283,13 +286,13 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between gap-3 text-xs font-mono flex-wrap">
                 <span className="text-muted-foreground flex items-center gap-1.5">
                   <span className="size-2 rounded-full bg-primary" />
-                  Vrij besteedbaar
+                  {t("dashboard.freeTitle")}
                   {spendable?.freeShare != null &&
                     ` (${formatShare(spendable.freeShare)})`}
                 </span>
                 <span className="text-muted-foreground flex items-center gap-1.5">
                   <span className="size-2 rounded-full bg-amber-500" />
-                  BTW & belastingreserve{" "}
+                  {t("dashboard.reserve")}{" "}
                   {spendable ? formatEuro(spendable.reserve) : "—"}
                   {spendable?.freeShare != null &&
                     ` (${formatShare(1 - spendable.freeShare)})`}
@@ -322,16 +325,23 @@ export default function DashboardPage() {
       {/* 3. KPI cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card
-          title={tax ? `Omzet ${tax.tax_year}` : "Omzet"}
+          title={
+            tax
+              ? t("dashboard.revenueTitleYear", { year: tax.tax_year })
+              : t("dashboard.revenueTitle")
+          }
           description={
             overview.status === "error"
-              ? "Kon niet geladen worden"
-              : "Excl. BTW, t/m vandaag"
+              ? t("dashboard.loadFailed")
+              : t("dashboard.revenueDescription")
           }
           value={taxValue((d) => formatEuro(d.totals.revenue_excl_vat))}
           trendLabel={
             overview.status === "ready"
-              ? `Winst ${formatEuro(tax.totals.profit)} na ${formatEuro(tax.totals.expenses_excl_vat)} kosten`
+              ? t("dashboard.revenueTrend", {
+                  profit: formatEuro(tax.totals.profit),
+                  expenses: formatEuro(tax.totals.expenses_excl_vat),
+                })
               : undefined
           }
           trendDirection="neutral"
@@ -342,8 +352,8 @@ export default function DashboardPage() {
 
         {/* No endpoint returns invoice amounts or payment status yet */}
         <Card
-          title="Openstaand Saldo"
-          description="Niet beschikbaar: facturen bevatten nog geen bedragen of betaalstatus"
+          title={t("dashboard.openTitle")}
+          description={t("dashboard.openUnavailable")}
           value="—"
           icon={<FileText className="size-5" />}
           iconColor="amber"
@@ -351,17 +361,27 @@ export default function DashboardPage() {
         />
 
         <Card
-          title="Klanten"
+          title={t("dashboard.clientsTitle")}
           description={
             clients.status === "error"
-              ? "Kon niet geladen worden"
+              ? t("dashboard.loadFailed")
               : invoices.status === "ready"
-                ? `${invoiceList.length} ${invoiceList.length === 1 ? "factuur" : "facturen"} in totaal`
-                : "Klanten in je dossier"
+                ? t(
+                    invoiceList.length === 1
+                      ? "dashboard.invoiceCountOne"
+                      : "dashboard.invoiceCount",
+                    { count: invoiceList.length },
+                  )
+                : t("dashboard.clientsDescription")
           }
           value={
             clients.status === "ready"
-              ? `${clientList.length} ${clientList.length === 1 ? "dossier" : "dossiers"}`
+              ? t(
+                  clientList.length === 1
+                    ? "dashboard.clientCountOne"
+                    : "dashboard.clientCount",
+                  { count: clientList.length },
+                )
               : "—"
           }
           icon={<Users className="size-5" />}
@@ -371,20 +391,20 @@ export default function DashboardPage() {
 
         <Link href="/invoices" className="contents">
           <Card
-            title="Snelle Factuur / Verzoek"
-            description="Maak binnen 30 sec een betaalverzoek"
+            title={t("dashboard.quickTitle")}
+            description={t("dashboard.quickDescription")}
             interactive
             variant="elevated"
-            footer="Direct synchroniseren met BTW"
+            footer={t("dashboard.quickFooter")}
             footerActions={
               <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold hover:bg-primary/10 transition-all">
-                Start <ArrowUpRight className="size-3.5 ml-1" />
+                {t("dashboard.start")}{" "}
+                <ArrowUpRight className="size-3.5 ml-1" />
               </span>
             }
           >
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-              Genereer ter plaatse PIN-kwitanties, Tikkie iDEAL QR of zakelijke
-              BTW-facturen.
+              {t("dashboard.quickText")}
             </p>
           </Card>
         </Link>
@@ -394,10 +414,10 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Card
-            title="Recente Facturen"
-            description="Laatste factuurnummers en klanten"
+            title={t("dashboard.recentTitle")}
+            description={t("dashboard.recentDescription")}
             variant="elevated"
-            footer="Bedragen en betaalstatus volgen zodra de backend ze levert"
+            footer={t("dashboard.recentFooter")}
             footerActions={
               <Link href="/invoices">
                 <Button
@@ -405,14 +425,14 @@ export default function DashboardPage() {
                   size="sm"
                   className="rounded-full text-xs font-medium active:scale-[0.97]"
                 >
-                  Alles Bekijken
+                  {t("dashboard.viewAll")}
                 </Button>
               </Link>
             }
           >
             {invoices.status === "error" ? (
               <SectionError
-                title="Facturen konden niet geladen worden"
+                title={t("dashboard.invoicesLoadFailed")}
                 error={invoices.error}
                 onRetry={loadDashboard}
               />
@@ -420,8 +440,8 @@ export default function DashboardPage() {
               <SkeletonRows />
             ) : recentInvoices.length === 0 ? (
               <EmptyState
-                title="Nog geen facturen"
-                text="Zodra je een factuur maakt, verschijnt die hier."
+                title={t("dashboard.noInvoicesTitle")}
+                text={t("dashboard.noInvoicesText")}
               />
             ) : (
               <div className="divide-y divide-border/40">
@@ -435,7 +455,7 @@ export default function DashboardPage() {
                         {clientNames.get(inv.client_id) ??
                           (clients.status === "loading"
                             ? "—"
-                            : "Onbekende klant")}
+                            : t("dashboard.unknownClient"))}
                       </p>
                       <p className="text-xs text-muted-foreground font-mono mt-0.5">
                         {inv.invoice_number}
@@ -449,23 +469,23 @@ export default function DashboardPage() {
         </div>
 
         <Card
-          title="BTW-Kluis"
+          title={t("dashboard.vatTitle")}
           description={
             currentPeriod
-              ? `Aangifte ${currentPeriod.label}`
-              : "Huidige BTW-periode"
+              ? t("dashboard.vatReturn", { period: currentPeriod.label })
+              : t("dashboard.vatCurrentPeriod")
           }
           variant="elevated"
           badge={
             currentPeriod
               ? currentPeriod.is_estimate
-                ? "Lopend"
-                : "Aan te geven"
+                ? t("dashboard.vatOngoing")
+                : t("dashboard.vatToFile")
               : undefined
           }
           badgeVariant={currentPeriod?.is_estimate ? "success" : "warning"}
           badgeDot={Boolean(currentPeriod)}
-          footer="Berekend uit je facturen en goedgekeurde uitgaven"
+          footer={t("dashboard.vatFooter")}
           footerActions={
             <Link href="/tax-vault">
               <Button
@@ -473,14 +493,14 @@ export default function DashboardPage() {
                 variant="outline"
                 className="rounded-full text-xs font-semibold shadow-2xs active:scale-[0.97]"
               >
-                Details
+                {t("dashboard.details")}
               </Button>
             </Link>
           }
         >
           {overview.status === "error" ? (
             <SectionError
-              title="BTW kon niet geladen worden"
+              title={t("dashboard.vatLoadFailed")}
               error={overview.error}
               onRetry={loadDashboard}
             />
@@ -488,13 +508,13 @@ export default function DashboardPage() {
             <SkeletonRows rows={3} />
           ) : !tax.vat?.enabled ? (
             <EmptyState
-              title="Geen BTW-aangifte"
-              text="Je gebruikt de kleineondernemersregeling (KOR), dus er is geen BTW af te dragen."
+              title={t("dashboard.korTitle")}
+              text={t("dashboard.korText")}
             />
           ) : !currentPeriod ? (
             <EmptyState
-              title="Geen open BTW-periode"
-              text="Alle periodes van dit jaar zijn aangegeven."
+              title={t("dashboard.noOpenPeriodTitle")}
+              text={t("dashboard.noOpenPeriodText")}
             />
           ) : (
             <VatPeriodSummary period={currentPeriod} />
@@ -506,6 +526,7 @@ export default function DashboardPage() {
 }
 
 function VatPeriodSummary({ period }) {
+  const t = useT();
   const vatHigh = rubriekVat(period, "1a");
   const vatLow = rubriekVat(period, "1b");
   const isRefund = period.balance < 0;
@@ -516,20 +537,26 @@ function VatPeriodSummary({ period }) {
           {formatEuro(Math.abs(period.balance))}
         </p>
         <p className="text-xs text-muted-foreground mt-0.5">
-          {isRefund ? "Terug te ontvangen" : "Af te dragen"}
-          {period.is_estimate ? " (schatting, periode loopt nog)" : ""}
+          {isRefund ? t("dashboard.vatRefund") : t("dashboard.vatToPay")}
+          {period.is_estimate ? ` ${t("dashboard.vatEstimate")}` : ""}
         </p>
       </div>
 
       <div className="rounded-xl border border-border/60 bg-muted/30 p-3 space-y-2 text-xs font-mono">
         {vatHigh !== null && (
-          <SummaryRow label="BTW hoog (21%):" value={formatEuro(vatHigh)} />
+          <SummaryRow
+            label={t("dashboard.vatHigh")}
+            value={formatEuro(vatHigh)}
+          />
         )}
         {vatLow !== null && (
-          <SummaryRow label="BTW laag (9%):" value={formatEuro(vatLow)} />
+          <SummaryRow
+            label={t("dashboard.vatLow")}
+            value={formatEuro(vatLow)}
+          />
         )}
         <SummaryRow
-          label="Voorbelasting:"
+          label={t("dashboard.inputVat")}
           value={`− ${formatEuro(period.input_vat)}`}
         />
       </div>
@@ -537,7 +564,7 @@ function VatPeriodSummary({ period }) {
       <div className="flex items-center gap-2 pt-1 text-xs text-muted-foreground">
         <ShieldCheck className="size-4 text-emerald-600 shrink-0" />
         <span>
-          Aangifte en betaling uiterlijk {formatDutchDate(period.deadline)}.
+          {t("dashboard.vatDeadline", { date: formatDate(period.deadline) })}
         </span>
       </div>
     </div>
@@ -577,6 +604,7 @@ function EmptyState({ title, text }) {
 }
 
 function SectionError({ title, error, onRetry }) {
+  const t = useT();
   const isUnavailable = error?.status === 0 || error?.status === 404;
   return (
     <div className="py-8 px-4 text-center flex flex-col items-center gap-2">
@@ -585,9 +613,7 @@ function SectionError({ title, error, onRetry }) {
       </div>
       <p className="text-sm font-semibold text-foreground">{title}</p>
       <p className="text-xs text-muted-foreground max-w-sm">
-        {isUnavailable
-          ? "De server is (nog) niet bereikbaar. Probeer het later opnieuw."
-          : error?.message}
+        {isUnavailable ? t("dashboard.serverUnavailable") : error?.message}
       </p>
       <Button
         variant="outline"
@@ -596,7 +622,7 @@ function SectionError({ title, error, onRetry }) {
         className="mt-1 rounded-full text-xs"
       >
         <RefreshCw />
-        Opnieuw proberen
+        {t("dashboard.retry")}
       </Button>
     </div>
   );

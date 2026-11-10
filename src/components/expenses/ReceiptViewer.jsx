@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { resolveApiUrl } from "@/lib/api/client";
+import { useT } from "@/lib/preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
 
 const MIN_ZOOM = 1;
@@ -19,6 +20,7 @@ const MAX_ZOOM = 3;
  * Images can be zoomed and rotated, since WhatsApp photos are often sideways.
  */
 export function ReceiptViewer({ url: rawUrl, contentType, alt, className }) {
+  const t = useT();
   const url = resolveApiUrl(rawUrl);
   const [zoom, setZoom] = useState(MIN_ZOOM);
   const [rotation, setRotation] = useState(0);
@@ -39,7 +41,9 @@ export function ReceiptViewer({ url: rawUrl, contentType, alt, className }) {
         )}
       >
         <ImageOff className="size-8 opacity-60" />
-        <p className="text-xs font-medium">Bonnetje kon niet geladen worden</p>
+        <p className="text-xs font-medium">
+          {t("expenses.receipt.loadFailed")}
+        </p>
         {url && (
           <a
             href={url}
@@ -47,7 +51,7 @@ export function ReceiptViewer({ url: rawUrl, contentType, alt, className }) {
             rel="noopener noreferrer"
             className="text-[11px] text-primary hover:underline"
           >
-            Probeer in nieuw tabblad
+            {t("expenses.receipt.openInTab")}
           </a>
         )}
       </div>
@@ -64,7 +68,7 @@ export function ReceiptViewer({ url: rawUrl, contentType, alt, className }) {
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-1 border-b border-border/50 bg-card/80 px-2 py-1.5">
         <span className="px-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-          Origineel bonnetje
+          {t("expenses.receipt.original")}
         </span>
         <div className="flex items-center gap-0.5">
           {!isPdf && (
@@ -74,7 +78,7 @@ export function ReceiptViewer({ url: rawUrl, contentType, alt, className }) {
                 onClick={() => setZoom((z) => Math.max(MIN_ZOOM, z - 0.5))}
                 disabled={zoom <= MIN_ZOOM}
                 className={toolButtonClass}
-                title="Uitzoomen"
+                title={t("expenses.receipt.zoomOut")}
               >
                 <ZoomOut className="size-4" />
               </button>
@@ -83,7 +87,7 @@ export function ReceiptViewer({ url: rawUrl, contentType, alt, className }) {
                 onClick={() => setZoom((z) => Math.min(MAX_ZOOM, z + 0.5))}
                 disabled={zoom >= MAX_ZOOM}
                 className={toolButtonClass}
-                title="Inzoomen"
+                title={t("expenses.receipt.zoomIn")}
               >
                 <ZoomIn className="size-4" />
               </button>
@@ -91,7 +95,7 @@ export function ReceiptViewer({ url: rawUrl, contentType, alt, className }) {
                 type="button"
                 onClick={() => setRotation((r) => (r + 90) % 360)}
                 className={toolButtonClass}
-                title="Draaien"
+                title={t("expenses.receipt.rotate")}
               >
                 <RotateCw className="size-4" />
               </button>
@@ -102,7 +106,7 @@ export function ReceiptViewer({ url: rawUrl, contentType, alt, className }) {
             target="_blank"
             rel="noopener noreferrer"
             className={toolButtonClass}
-            title="Open in nieuw tabblad"
+            title={t("expenses.receipt.openInTab")}
           >
             <ExternalLink className="size-4" />
           </a>

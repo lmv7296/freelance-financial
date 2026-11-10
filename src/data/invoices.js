@@ -109,27 +109,28 @@ export const STATUS_FILTERS = ["All", "Pending", "Paid", "Overdue", "Draft"];
 export const DEFAULT_LINE_ITEMS = [
   {
     id: "item-1",
-    description: "Installatie- en montage-uren op locatie",
+    description: "invoiceForm.defaultLines.labour",
     quantity: 2,
     unitPrice: "65.00",
   },
   {
     id: "item-2",
-    description: "Materialen, bekabeling en kleinverbruik",
+    description: "invoiceForm.defaultLines.materials",
     quantity: 1,
     unitPrice: "45.00",
   },
 ];
 
+// Labels are translation keys (FormModal translates option labels)
 export const TRADE_TYPES = [
-  { label: "Elektricien (Elektra & Groepenkasten)", value: "Electrician" },
-  { label: "Loodgieter (Sanitair & CV)", value: "Plumber" },
+  { label: "invoices.tradeTypes.Electrician", value: "Electrician" },
+  { label: "invoices.tradeTypes.Plumber", value: "Plumber" },
   {
-    label: "Marktkoopman (Markt & Ambulante Handel)",
+    label: "invoices.tradeTypes.Market Trader (Markt)",
     value: "Market Trader (Markt)",
   },
-  { label: "Algemeen Vakman / Aannemer", value: "Contractor" },
-  { label: "Vastgoedbeheer / Commercieel", value: "Commercial" },
+  { label: "invoices.tradeTypes.Contractor", value: "Contractor" },
+  { label: "invoices.tradeTypes.Commercial", value: "Commercial" },
 ];
 
 export const getPaymentMethods = () => {

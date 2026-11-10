@@ -25,8 +25,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { resolveApiUrl } from "@/lib/api/client";
 import { expensesApi } from "@/lib/api/expenses";
-import { formatDutchDate, parseLocalDate } from "@/lib/dateUtils";
+import { formatDate, parseLocalDate } from "@/lib/dateUtils";
 import { formatCurrency, formatEuro } from "@/lib/formatCurrency";
+import { useT } from "@/lib/preferences/PreferencesContext";
 
 // While receipts are still being read by the backend, refresh the list periodically
 const PROCESSING_POLL_MS = 10_000;
@@ -58,6 +59,7 @@ function isImage(expense) {
 }
 
 export default function ExpensesPage() {
+  const t = useT();
   const [expenses, setExpenses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -178,19 +180,18 @@ export default function ExpensesPage() {
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold tracking-wider uppercase border border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
               <Receipt className="size-3" />
-              Uitgaven & Bonnetjes
+              {t("expenses.page.badge")}
             </span>
             <span className="text-xs text-muted-foreground font-mono flex items-center gap-1">
               <MessageCircle className="size-3" />
-              via WhatsApp
+              {t("expenses.page.viaWhatsapp")}
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground mt-1">
-            Uitgaven
+            {t("expenses.page.title")}
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-            Bonnetjes die via WhatsApp zijn ingestuurd worden automatisch
-            uitgelezen. Controleer, corrigeer en keur ze hier goed.
+            {t("expenses.page.subtitle")}
           </p>
         </div>
 
@@ -200,7 +201,7 @@ export default function ExpensesPage() {
             className="rounded-full px-4 shadow-xs text-xs font-semibold h-9 gap-1.5 cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Plus className="size-3.5" />
-            Nieuwe uitgave
+            {t("expenses.page.add")}
           </Button>
 
           <Button
@@ -212,7 +213,7 @@ export default function ExpensesPage() {
             <RefreshCw
               className={`size-3.5 ${isRefreshing ? "animate-spin" : ""}`}
             />
-            Vernieuwen
+            {t("expenses.page.refresh")}
           </Button>
         </div>
       </div>
@@ -220,15 +221,19 @@ export default function ExpensesPage() {
       {/* 2. Key metrics, all computed from backend data */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card
-          title="Uitgaven deze maand"
-          description={`${stats.monthCount} bonnetjes (excl. afgekeurd)`}
+          title={t("expenses.page.monthTitle")}
+          description={t("expenses.page.monthDescription", {
+            count: stats.monthCount,
+          })}
           value={isLoading ? "—" : formatEuro(stats.monthTotal)}
           icon={<Wallet className="size-5" />}
           iconColor="primary"
         />
         <Card
-          title="Te controleren"
-          description={`${formatEuro(stats.reviewTotal)} in afwachting`}
+          title={t("expenses.page.reviewTitle")}
+          description={t("expenses.page.reviewDescription", {
+            amount: formatEuro(stats.reviewTotal),
+          })}
           value={isLoading ? "—" : stats.reviewCount}
           icon={<ClipboardCheck className="size-5" />}
           iconColor="amber"
@@ -236,17 +241,17 @@ export default function ExpensesPage() {
         <Card
           title={
             stats.quarterNumber
-              ? `Terug te vragen BTW Q${stats.quarterNumber}`
-              : "Terug te vragen BTW"
+              ? t("expenses.page.vatTitle", { quarter: stats.quarterNumber })
+              : t("expenses.page.vatTitleNoQuarter")
           }
-          description="Van goedgekeurde bonnetjes"
+          description={t("expenses.page.vatDescription")}
           value={isLoading ? "—" : formatEuro(stats.quarterVat)}
           icon={<FileText className="size-5" />}
           iconColor="emerald"
         />
         <Card
-          title="Wordt verwerkt"
-          description="Bonnetjes die nog worden uitgelezen"
+          title={t("expenses.page.processingTitle")}
+          description={t("expenses.page.processingDescription")}
           value={isLoading ? "—" : stats.processingCount}
           icon={<Loader2 className="size-5" />}
           iconColor="blue"
@@ -275,8 +280,8 @@ export default function ExpensesPage() {
               >
                 <span>
                   {filter === "all"
-                    ? "Alle uitgaven"
-                    : EXPENSE_STATUS_META[filter].label}
+                    ? t("expenses.page.filterAll")
+                    : t(`expenses.status.${filter}`)}
                 </span>
                 <span
                   className={`rounded-full px-1.5 text-[10px] font-mono ${
@@ -295,7 +300,7 @@ export default function ExpensesPage() {
         <div className="relative w-full sm:w-72">
           <Search className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Zoek winkel, categorie of afzender..."
+            placeholder={t("expenses.page.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9.5 h-9 text-xs rounded-full border-border/70 dark:border-white/[0.08]"
@@ -319,12 +324,24 @@ export default function ExpensesPage() {
             <table className="w-full text-left text-sm border-collapse">
               <thead>
                 <tr className="border-b border-border/70 bg-muted/40 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  <th className="py-3 px-5">Bonnetje</th>
-                  <th className="py-3 px-5">Datum</th>
-                  <th className="py-3 px-5">Ingestuurd door</th>
-                  <th className="py-3 px-5">Gekoppeld aan</th>
-                  <th className="py-3 px-5 text-right">Bedrag</th>
-                  <th className="py-3 px-5 text-center">Status</th>
+                  <th className="py-3 px-5">
+                    {t("expenses.page.columns.receipt")}
+                  </th>
+                  <th className="py-3 px-5">
+                    {t("expenses.page.columns.date")}
+                  </th>
+                  <th className="py-3 px-5">
+                    {t("expenses.page.columns.sender")}
+                  </th>
+                  <th className="py-3 px-5">
+                    {t("expenses.page.columns.linked")}
+                  </th>
+                  <th className="py-3 px-5 text-right">
+                    {t("expenses.page.columns.amount")}
+                  </th>
+                  <th className="py-3 px-5 text-center">
+                    {t("expenses.page.columns.status")}
+                  </th>
                   <th className="py-3 px-3" />
                 </tr>
               </thead>
@@ -380,6 +397,7 @@ export default function ExpensesPage() {
 }
 
 function ExpenseRow({ expense, onOpen }) {
+  const t = useT();
   const currency = expense.currency || "EUR";
   const isProcessing = expense.status === "processing";
 
@@ -414,8 +432,8 @@ function ExpenseRow({ expense, onOpen }) {
           <div className="min-w-0">
             <p className="font-semibold text-foreground truncate">
               {isProcessing
-                ? "Wordt uitgelezen..."
-                : expense.merchant_name || "Onbekende winkel"}
+                ? t("expenses.page.reading")
+                : expense.merchant_name || t("expenses.page.unknownShop")}
             </p>
             {expense.category && (
               <span className="mt-0.5 inline-block text-[10px] px-1.5 rounded bg-muted text-muted-foreground font-medium">
@@ -428,10 +446,12 @@ function ExpenseRow({ expense, onOpen }) {
 
       <td className="py-3 px-5">
         <p className="font-medium text-foreground whitespace-nowrap">
-          {expense.receipt_date ? formatDutchDate(expense.receipt_date) : "—"}
+          {expense.receipt_date ? formatDate(expense.receipt_date) : "—"}
         </p>
         <p className="text-[10px] text-muted-foreground whitespace-nowrap">
-          ontvangen {formatDutchDate(expense.created_at)}
+          {t("expenses.page.received", {
+            date: formatDate(expense.created_at),
+          })}
         </p>
       </td>
 
@@ -459,7 +479,9 @@ function ExpenseRow({ expense, onOpen }) {
             )}
           </>
         ) : (
-          <span className="text-muted-foreground">Niet gekoppeld</span>
+          <span className="text-muted-foreground">
+            {t("expenses.page.notLinked")}
+          </span>
         )}
       </td>
 
@@ -471,7 +493,9 @@ function ExpenseRow({ expense, onOpen }) {
         </p>
         {expense.vat_amount !== null && expense.vat_amount !== undefined && (
           <p className="text-[10px] text-muted-foreground font-mono tabular-nums">
-            BTW {formatCurrency(expense.vat_amount, currency)}
+            {t("expenses.page.vatAmount", {
+              amount: formatCurrency(expense.vat_amount, currency),
+            })}
           </p>
         )}
       </td>
@@ -505,6 +529,7 @@ function SkeletonRows() {
 }
 
 function EmptyState({ hasAnyExpenses, onAddExpense }) {
+  const t = useT();
   return (
     <div className="py-14 px-6 text-center text-muted-foreground flex flex-col items-center gap-2">
       <div className="flex size-12 items-center justify-center rounded-2xl bg-muted">
@@ -513,19 +538,16 @@ function EmptyState({ hasAnyExpenses, onAddExpense }) {
       {hasAnyExpenses ? (
         <>
           <p className="text-sm font-medium text-foreground">
-            Geen uitgaven gevonden die voldoen aan je filter
+            {t("expenses.page.noMatchTitle")}
           </p>
-          <p className="text-xs">Probeer een andere zoekterm of filtertab.</p>
+          <p className="text-xs">{t("expenses.page.noMatchText")}</p>
         </>
       ) : (
         <>
           <p className="text-sm font-medium text-foreground">
-            Nog geen bonnetjes binnengekomen
+            {t("expenses.page.emptyTitle")}
           </p>
-          <p className="text-xs max-w-sm">
-            Stuur een foto van een bonnetje naar het WhatsApp-nummer of voeg
-            direct handmatig een zakelijke aankoop toe.
-          </p>
+          <p className="text-xs max-w-sm">{t("expenses.page.emptyText")}</p>
           {onAddExpense && (
             <Button
               size="sm"
@@ -533,7 +555,7 @@ function EmptyState({ hasAnyExpenses, onAddExpense }) {
               className="mt-2 rounded-full text-xs font-semibold px-4 cursor-pointer gap-1.5"
             >
               <Plus className="size-3.5" />
-              Nieuwe uitgave toevoegen
+              {t("expenses.page.emptyAdd")}
             </Button>
           )}
         </>
@@ -543,6 +565,7 @@ function EmptyState({ hasAnyExpenses, onAddExpense }) {
 }
 
 function ErrorState({ error, onRetry, onAddExpense }) {
+  const t = useT();
   const isUnavailable = error?.status === 0 || error?.status === 404;
   return (
     <div className="py-14 px-6 text-center flex flex-col items-center gap-2">
@@ -551,13 +574,11 @@ function ErrorState({ error, onRetry, onAddExpense }) {
       </div>
       <p className="text-sm font-semibold text-foreground">
         {isUnavailable
-          ? "Uitgaven zijn nog niet beschikbaar"
-          : "Uitgaven konden niet geladen worden"}
+          ? t("expenses.page.unavailableTitle")
+          : t("expenses.page.loadFailedTitle")}
       </p>
       <p className="text-xs text-muted-foreground max-w-sm">
-        {isUnavailable
-          ? "De server voor uitgaven is (nog) niet bereikbaar. Je kunt wel handmatig uitgaven invoeren om de flow te bekijken."
-          : error?.message}
+        {isUnavailable ? t("expenses.page.unavailableText") : error?.message}
       </p>
       <div className="flex items-center gap-2 mt-2">
         <Button
@@ -567,7 +588,7 @@ function ErrorState({ error, onRetry, onAddExpense }) {
           className="rounded-full text-xs cursor-pointer"
         >
           <RefreshCw className="size-3.5 mr-1" />
-          Opnieuw proberen
+          {t("expenses.page.retry")}
         </Button>
         {onAddExpense && (
           <Button
@@ -576,7 +597,7 @@ function ErrorState({ error, onRetry, onAddExpense }) {
             className="rounded-full text-xs font-semibold px-4 cursor-pointer gap-1.5"
           >
             <Plus className="size-3.5" />
-            Handmatig uitgave toevoegen
+            {t("expenses.page.addManually")}
           </Button>
         )}
       </div>
