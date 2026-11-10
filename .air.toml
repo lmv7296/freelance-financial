@@ -1,0 +1,20 @@
+# Air configuration for live reloading in Go (equivalent to nodemon)
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o ./tmp/main ./cmd/api"
+bin = "./tmp/main"
+include_ext = ["go", "env"]
+exclude_dir = ["bin", "tmp", "vendor", "docs"]
+include_dir = ["cmd", "internal"]
+delay = 500
+
+[log]
+time = true
+
+[color]
+main = "magenta"
+watcher = "cyan"
+build = "yellow"
+runner = "green"
