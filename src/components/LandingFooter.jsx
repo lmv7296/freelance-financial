@@ -1,4 +1,5 @@
 import { CreditCard } from "lucide-react";
+import { cacheLife } from "next/cache";
 import Link from "next/link";
 
 export function LandingFooter() {
@@ -37,9 +38,17 @@ export function LandingFooter() {
         </div>
 
         <p className="text-[10px] opacity-60">
-          © {new Date().getFullYear()} FreelanceFin. Alle rechten voorbehouden.
+          © <CopyrightYear /> FreelanceFin. Alle rechten voorbehouden.
         </p>
       </div>
     </footer>
   );
+}
+
+// The year is captured into the static shell and refreshed daily, so it
+// rolls over on its own without making the landing page dynamic.
+async function CopyrightYear() {
+  "use cache";
+  cacheLife("days");
+  return new Date().getFullYear();
 }
