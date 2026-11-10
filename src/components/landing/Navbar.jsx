@@ -1,6 +1,5 @@
 "use client";
 
-import { CreditCard, LogIn, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -13,13 +12,7 @@ export function LandingNavbar() {
     <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/80 backdrop-blur-xl transition-all">
       <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand */}
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 group active:scale-95 transition-transform"
-        >
-          <div className="flex size-9.5 items-center justify-center rounded-xl bg-gradient-to-br from-primary/25 via-primary/15 to-primary/5 text-primary border border-primary/25 shadow-2xs group-hover:scale-105 transition-transform duration-200">
-            <CreditCard className="size-5" />
-          </div>
+        <Link href="/" className="flex items-center">
           <div className="flex flex-col">
             <span className="text-base font-bold tracking-tight text-foreground leading-none">
               FreelanceFin
@@ -79,7 +72,6 @@ export function LandingNavbar() {
                 onClick={openLogin}
                 className="rounded-full text-xs font-semibold cursor-pointer text-muted-foreground hover:text-foreground"
               >
-                <LogIn className="size-3.5 mr-1.5" />
                 <span>Inloggen</span>
               </Button>
               <Button
@@ -87,7 +79,6 @@ export function LandingNavbar() {
                 onClick={openRegister}
                 className="rounded-full text-xs font-semibold px-4 shadow-xs cursor-pointer"
               >
-                <Sparkles className="size-3.5 mr-1.5" />
                 <span>Account maken</span>
               </Button>
             </>

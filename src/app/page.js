@@ -6,9 +6,9 @@ import {
 } from "@/components/landing";
 
 export const metadata = {
-  title: "FreelanceFin — Eenvoudige Facturen & BTW-Kluis voor Vakmensen & ZZP",
+  title: "FreelanceFin — Facturen, bonnetjes & btw voor vakmensen en zzp'ers",
   description:
-    "Factureer in 60 seconden vanuit je bus, laat klanten direct via iDEAL betalen en reserveer automatisch je BTW voor de Belastingdienst.",
+    "Maak je factuur direct na de klus, laat klanten betalen via iDEAL, stuur bonnetjes via WhatsApp en zie hoeveel btw en belasting je opzij moet zetten.",
 };
 
 export default function HomePage() {

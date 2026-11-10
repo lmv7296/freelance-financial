@@ -306,14 +306,6 @@ export function AuthModal() {
             </div>
           )}
 
-          {/* Dual Transport & Security hint */}
-          <div className="pt-1 text-[11px] text-muted-foreground/80 flex items-center gap-1.5">
-            <ShieldCheck className="size-3.5 text-emerald-500 shrink-0" />
-            <span>
-              Beveiligd met HttpOnly sessiecookies & timing-attack protectie.
-            </span>
-          </div>
-
           {/* Action Button */}
           <Button
             type="submit"
