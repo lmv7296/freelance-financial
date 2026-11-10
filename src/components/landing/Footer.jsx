@@ -3,7 +3,10 @@
 import Link from "next/link";
 import { useT } from "@/lib/preferences/PreferencesContext";
 
-export function LandingFooter() {
+/**
+ * @param {{ year: number }} props - Copyright year, computed (and cached) on the server
+ */
+export function LandingFooter({ year }) {
   const t = useT();
 
   return (
@@ -38,7 +41,7 @@ export function LandingFooter() {
         </div>
 
         <p className="text-[10px] opacity-60">
-          {t("landing.footer.copyright", { year: new Date().getFullYear() })}
+          {t("landing.footer.copyright", { year })}
         </p>
       </div>
     </footer>
