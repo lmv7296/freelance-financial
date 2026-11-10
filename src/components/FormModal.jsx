@@ -201,7 +201,8 @@ export function FormModal({
       if (f.validate) {
         const customErr = f.validate(val, formValues);
         if (customErr) {
-          newErrors[f.name] = customErr;
+          // Like labels, a message can be a translation key
+          newErrors[f.name] = t(customErr);
           hasError = true;
           continue;
         }
@@ -240,7 +241,8 @@ export function FormModal({
       if (f.validate) {
         const customErr = f.validate(val, formValues);
         if (customErr) {
-          newErrors[f.name] = customErr;
+          // Like labels, a message can be a translation key
+          newErrors[f.name] = t(customErr);
         }
       }
     }

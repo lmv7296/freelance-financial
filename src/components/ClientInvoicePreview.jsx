@@ -91,7 +91,9 @@ export function ClientInvoicePreview({ formValues = {} }) {
     (isBedrijf ? formValues.companyAddress : formValues.clientAddress) ||
     t("invoicePreview.addressMissing");
 
-  const invoiceNumber = formValues.invoiceNumber?.trim() || "INV-2047";
+  // Without a number, the next one from Settings → Invoices is used on save
+  const invoiceNumber =
+    formValues.invoiceNumber?.trim() || t("invoicePreview.autoNumber");
   const tradeKey = formValues.tradeType || "Electrician";
   const tradeLabel = t(`invoices.tradeTypes.${tradeKey}`);
   const trade = tradeLabel.startsWith("invoices.") ? tradeKey : tradeLabel;

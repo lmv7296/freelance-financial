@@ -242,11 +242,12 @@ export const CREATE_INVOICE_FIELDS = [
     name: "invoiceNumber",
     label: "invoiceForm.invoiceNumber",
     type: "text",
-    required: true,
     colSpan: 1,
     step: 1,
-    defaultValue: "INV-2047",
+    // Empty: the backend uses the next number from Settings → Invoices
+    defaultValue: "",
     placeholder: "invoiceForm.invoiceNumberPlaceholder",
+    helperText: "invoiceForm.invoiceNumberAuto",
   },
   {
     name: "items",
