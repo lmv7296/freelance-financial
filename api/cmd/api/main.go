@@ -109,6 +109,8 @@ func main() {
 
 	// 7. Build global defensive middleware stack
 	middlewares := []middleware.Middleware{
+		// First, so logging and rate limiting see the visitor's IP, not the Next.js proxy's
+		middleware.RealIP(cfg.TrustedProxies),
 		middleware.SecureHeaders(cfg.IsProduction()),
 		middleware.CORS(cfg.AllowedOrigins),
 		middleware.Recoverer(logger),

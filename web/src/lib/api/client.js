@@ -1,6 +1,8 @@
 import { currentLanguage, translate } from "@/lib/i18n/dictionaries";
 
-const DEFAULT_BASE_URL = "http://localhost:8085";
+// Empty = same origin: Next.js forwards /api/* to the Go backend (see rewrites in
+// next.config.mjs). Set NEXT_PUBLIC_API_BASE_URL only to call the backend directly.
+const DEFAULT_BASE_URL = "";
 
 /** Fired on window when a request comes back 401: the session is no longer valid */
 export const UNAUTHORIZED_EVENT = "ff:unauthorized";

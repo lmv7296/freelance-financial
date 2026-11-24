@@ -30,6 +30,9 @@ type Config struct {
 	// Security & CORS
 	AllowedOrigins []string
 
+	// Reverse proxies (IPs or CIDRs) whose X-Forwarded-For is trusted, e.g. the Next.js app
+	TrustedProxies []string
+
 	// Rate Limiting
 	RateLimitRequestsPerSecond float64
 	RateLimitBurst             int
@@ -68,6 +71,11 @@ func Load() *Config {
 
 		// CORS: Comma-separated list of origins
 		AllowedOrigins: parseCommaSeparated(getEnv("CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173")),
+
+		// Off by default: Next.js passes the browser's X-Forwarded-For through unchanged,
+		// so it can only be trusted when an edge proxy (Caddy/nginx) in front of Next.js
+		// overwrites it. Then list the address Next.js connects from (e.g. 127.0.0.1,::1).
+		TrustedProxies: parseCommaSeparated(getEnv("TRUSTED_PROXIES", "")),
 
 		// Rate Limiting (Token Bucket per IP)
 		RateLimitRequestsPerSecond: getEnvAsFloat("RATE_LIMIT_RPS", 20.0),

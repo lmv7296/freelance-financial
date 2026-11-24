@@ -16,9 +16,13 @@ const nextConfig = {
       validationLevel: "manual-warning",
     },
   },
+  // The browser only talks to Next.js; /api/* is forwarded to the Go backend in api/.
+  // API_PROXY_TARGET is server-side only (where Next.js can reach Go), so it can be
+  // an internal address such as http://api:8085 in Docker.
   async rewrites() {
-    const backendUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8085";
+    const backendUrl = (
+      process.env.API_PROXY_TARGET || "http://localhost:8085"
+    ).replace(/\/+$/, "");
     return [
       {
         source: "/api/v1/:path*",
