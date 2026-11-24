@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Freelance Financial
 
-## Getting Started
+Bookkeeping for Dutch freelancers: clients, invoices, expenses (including receipts via WhatsApp), the Tax Vault and reports.
 
-First, run the development server:
+| Folder | What | Tech |
+|---|---|---|
+| [`web/`](web) | The app people use | Next.js 16 (JavaScript), pnpm |
+| [`api/`](api) | The backend: all data, tax rules, PDF/XLSX reports, WhatsApp webhook | Go (standard library), Postgres |
+| [`docs/`](docs) | Shared docs: status report, backend specs, SQL notes | |
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## How the two fit together
+
+```
+browser ──► Next.js (web/, :3000) ──/api/*──► Go API (api/, :8085) ──► Postgres
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The browser only ever talks to Next.js. Requests to `/api/*` (and `/healthz`) are forwarded to the Go API by the `rewrites()` in [`web/next.config.mjs`](web/next.config.mjs). Because of that, everything runs on one origin: no CORS, and the login cookie just works.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- `API_PROXY_TARGET` (in `web/.env.local`) is where Next.js finds the API. Default: `http://localhost:8085`.
+- `NEXT_PUBLIC_API_BASE_URL` stays empty. Set it only if you want the browser to call the API directly.
+You can run both on one server: two processes (Next.js and the Go binary) plus Postgres. Only Next.js has to be reachable from the internet. The WhatsApp webhook also works through it (`/api/v1/webhooks/whatsapp`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Visitor IPs and rate limiting (production)
 
-## Learn More
+Behind the proxy, every request reaches the API from Next.js's address. That means the per-IP rate limits (login: 5 attempts/min) would count all users together. Next.js passes the browser's `X-Forwarded-For` header on unchanged, so the API can't just trust that header either: anyone could fake it.
 
-To learn more about Next.js, take a look at the following resources:
+For production:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Put Caddy or nginx in front of Next.js for HTTPS. Have it **set** `X-Forwarded-For` to the visitor's IP:
+   - Caddy does this by default.
+   - In nginx, use `proxy_set_header X-Forwarded-For $remote_addr;`.
+2. Set `TRUSTED_PROXIES` in `api/.env` to the address Next.js connects from, for example `127.0.0.1,::1`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+In development, leave `TRUSTED_PROXIES` empty.
 
-## Deploy on Vercel
+## Getting started
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+cp api/.env.example api/.env
+cp web/.env.local.example web/.env.local
+make db-up
+make dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Then open http://localhost:3000.
+
+Database migrations are in [`api/migrations`](api/migrations) and are applied by hand.
+
+## Common commands
+
+| Command | What it does |
+|---|---|
+| `make dev` | Web + API together |
+| `make dev-web` / `make dev-api` | One of them |
+| `make test` | Go tests, frontend lint and translation check |
+| `make build` | API binary + web production build |
+
+## History
+
+Until November 2026 the backend lived in its own repo (`lmv7296/GO_Freelancer`). Its history was merged into `api/`.

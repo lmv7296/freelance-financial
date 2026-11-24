@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: freelancer_db
+    restart: always
+    environment:
+      POSTGRES_USER: "${DB_USER:?DB_USER must be defined in .env}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:?DB_PASSWORD must be defined in .env}"
+      POSTGRES_DB: "${DB_NAME:?DB_NAME must be defined in .env}"
+    ports:
+      # Explicit loopback binding to 127.0.0.1 only (never expose 0.0.0.0 to public/LAN)
+      # No fallback port to prevent predictable port exposure or scan reconnaissance
+      - "127.0.0.1:${DB_PORT:?DB_PORT must be defined in .env}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer:latest
+    container_name: freelancer_db_gui
+    restart: always
+    ports:
+      # Explicit loopback binding to 127.0.0.1 only
+      # No fallback port to prevent collisions and port sniffing
+      - "127.0.0.1:${ADMINER_PORT:?ADMINER_PORT must be defined in .env}:8080"
+
+volumes:
+  postgres_data:
+    name: freelancer-financial-backend_postgres_data
+    external: true

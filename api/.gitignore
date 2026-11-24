@@ -1,0 +1,61 @@
+# -----------------------------------------------------------------------------
+# Security: Environment Variables & Secrets
+# NEVER commit files containing credentials, tokens, or sensitive variables.
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+id_rsa*
+secrets/
+credentials.json
+
+# -----------------------------------------------------------------------------
+# User uploads: customer receipts and company logos (./uploads/receipts,
+# ./uploads/logos). Personal financial data, never commit it.
+# -----------------------------------------------------------------------------
+uploads/
+
+# -----------------------------------------------------------------------------
+# Binaries and build artifacts
+# -----------------------------------------------------------------------------
+bin/
+dist/
+tmp/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+cover.out
+
+# -----------------------------------------------------------------------------
+# Dependency directories
+# -----------------------------------------------------------------------------
+vendor/
+
+# -----------------------------------------------------------------------------
+# Operating System & IDE artifacts
+# -----------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Receipt files written by tests and local runs
+internal/handler/uploads/
+uploads/
