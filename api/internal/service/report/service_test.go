@@ -180,7 +180,7 @@ func TestReportService_EndToEnd(t *testing.T) {
 	ctx := context.Background()
 	companyRepo := repository.NewMemoryCompanyRepository()
 	invoiceRepo := repository.NewMemoryClientInvoiceRepository()
-	expenseRepo := repository.NewMemoryExpenseRepository("./uploads/receipts")
+	expenseRepo := repository.NewMemoryExpenseRepository(t.TempDir())
 	taxVaultRepo := repository.NewMemoryTaxVaultRepository(companyRepo)
 
 	companyID := "comp_test_123"
