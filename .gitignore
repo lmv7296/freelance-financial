@@ -1,0 +1,3 @@
+# Each app has its own .gitignore (web/.gitignore, api/.gitignore).
+.DS_Store
+.worktrees/

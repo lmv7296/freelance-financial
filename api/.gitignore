@@ -49,3 +49,7 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Receipt files written by tests and local runs
+internal/handler/uploads/
+uploads/
