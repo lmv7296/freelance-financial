@@ -432,7 +432,9 @@ func (s *authService) createAndSendVerificationToken(ctx context.Context, userID
 	}
 
 	if s.emailSender != nil {
-		_ = s.emailSender.SendEmail(ctx, msg)
+		if err := s.emailSender.SendEmail(ctx, msg); err != nil {
+			return fmt.Errorf("send verification email: %w", err)
+		}
 	}
 	return nil
 }
