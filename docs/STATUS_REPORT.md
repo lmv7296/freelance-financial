@@ -2,6 +2,11 @@
 
 _Snapshot: 17 Nov 2026. Frontend `main` @ 3039178, backend `GO_Freelancer` @ 55d358f (plus one staged, uncommitted change in `internal/service/auth.go`)._
 
+> **Update 24 Nov 2026:** The project is now a monorepo (`web/` + `api/`), and the browser reaches the API through the Next.js `/api` proxy. Done since this snapshot:
+> - Frontend item 4 (the fake expense save) is fixed.
+> - The test receipt images are gone. This came from GO_Freelancer PR #1, which the snapshot below missed.
+> - The `auth.go` change is committed.
+
 This was put together by reading the code. Nothing was run, so "working" means "wired end-to-end in the code", not "tested in the browser".
 
 ---
@@ -29,22 +34,22 @@ This was put together by reading the code. Nothing was run, so "working" means "
 
 **Frontend**
 
-1. **Invoice actions are placeholders.** "Download PDF", "Copy payment link", "Send reminder" and the "Export" button on the Invoices page just show a "coming soon" alert ([invoices/page.jsx:167](src/app/(pages)/invoices/page.jsx:167)). The backend has no endpoints for any of these yet.
+1. **Invoice actions are placeholders.** "Download PDF", "Copy payment link", "Send reminder" and the "Export" button on the Invoices page just show a "coming soon" alert ([invoices/page.jsx:167](../web/src/app/(pages)/invoices/page.jsx:167)). The backend has no endpoints for any of these yet.
 2. **No edit/delete for clients.** `clientsApi.update` exists and the backend has `PATCH /clients/{id}`, but no screen calls it. Neither side can delete a client.
 3. **No edit/delete for invoices** apart from "mark as paid". There is no invoice detail editing and no `DELETE /invoices/{id}` on the backend.
-4. **Adding an expense fakes success when the backend fails.** If `POST /expenses` errors, [AddExpenseModal.jsx:331](src/components/expenses/AddExpenseModal.jsx:331) builds a local expense with a fake id and shows it as saved. It disappears on reload. This was written for before the endpoint existed and should now show the error instead.
-5. **`/config` silently falls back to hardcoded defaults** ([config.js](src/lib/api/config.js)) if the request fails, so a broken backend can go unnoticed.
+4. **Adding an expense fakes success when the backend fails.** If `POST /expenses` errors, [AddExpenseModal.jsx:331](../web/src/components/expenses/AddExpenseModal.jsx:331) builds a local expense with a fake id and shows it as saved. It disappears on reload. This was written for before the endpoint existed and should now show the error instead.
+5. **`/config` silently falls back to hardcoded defaults** ([config.js](../web/src/lib/api/config.js)) if the request fails, so a broken backend can go unnoticed.
 6. **Support page** is static (FAQ + support email from `NEXT_PUBLIC_SUPPORT_EMAIL`). There's no contact form or ticket backend.
 7. **Unused helpers:** `authApi.checkHealth` and `expensesApi.get` are defined but never called.
 
 **Backend**
 
-1. **Receipt "AI" extraction isn't real yet.** [receipt_extractor.go](../../GO_Freelancer/internal/service/receipt_extractor.go) reads `GEMINI_API_KEY`/`OPENAI_API_KEY` but never uses them. It does keyword matching on the raw file bytes (e.g. "GAMMA", "SHELL"), which can't work on a JPEG/PDF. In practice: merchant "Onbekende Leverancier", amount 0.
+1. **Receipt "AI" extraction isn't real yet.** [receipt_extractor.go](../api/internal/service/receipt_extractor.go) reads `GEMINI_API_KEY`/`OPENAI_API_KEY` but never uses them. It does keyword matching on the raw file bytes (e.g. "GAMMA", "SHELL"), which can't work on a JPEG/PDF. In practice: merchant "Onbekende Leverancier", amount 0.
 2. **The WhatsApp webhook doesn't match Meta's real payload.** It expects a flat custom JSON (`from`, `media_base64`, …). Meta sends a nested `entry[].changes[].value.messages[]` structure, and media has to be downloaded from the Graph API with a token. There's also no reply back to the sender. Signature check and verify-token handshake are in place.
 3. **No invoice PDF, payment link, reminder email or invoice delete** (see frontend item 1).
 4. **No client delete.**
 5. **Email** only works if `RESEND_API_KEY` or `SMTP_HOST` is set. None of the email/WhatsApp/AI variables are in `.env.example`.
-6. **Tax rules have open TODOs** to confirm with an accountant ([eenmanszaak.go:154](../../GO_Freelancer/internal/service/tax/eenmanszaak.go:154) and :164).
+6. **Tax rules have open TODOs** to confirm with an accountant ([eenmanszaak.go:154](../api/internal/service/tax/eenmanszaak.go:154) and :164).
 7. **Housekeeping:**
    - ~25 test receipt images are committed under `internal/handler/uploads/receipts/`. Tests write uploads into the source tree, and they should be gitignored.
    - Staged but uncommitted: `auth.go` now returns an error when the verification email fails to send.
