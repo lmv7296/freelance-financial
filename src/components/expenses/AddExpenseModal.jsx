@@ -325,42 +325,8 @@ export function AddExpenseModal({
     };
 
     try {
-      let createdExpense = null;
-      try {
-        const res = await expensesApi.create(payload);
-        createdExpense = res?.expense;
-      } catch (_err) {
-        // Fallback gracefully if backend POST /api/v1/expenses returns 404 or fails
-        createdExpense = {
-          id: `exp-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-          status: payload.status,
-          source: payload.source,
-          sender_name: t("expenses.add.manualSender"),
-          sender_phone: null,
-          merchant_name: payload.merchant_name,
-          merchant_address: payload.merchant_address,
-          receipt_date: payload.receipt_date,
-          payment_method: payload.payment_method,
-          category: payload.category,
-          currency: "EUR",
-          subtotal_amount: payload.subtotal_amount,
-          vat_amount: payload.vat_amount,
-          total_amount: payload.total_amount,
-          vat_lines: payload.vat_lines,
-          line_items: payload.line_items,
-          receipt_url: payload.receipt_url,
-          receipt_content_type: payload.receipt_content_type,
-          extraction_confidence: 1.0,
-          client_id: payload.client_id,
-          client_name: payload.client_name,
-          invoice_id: payload.invoice_id,
-          invoice_number: payload.invoice_number,
-          notes: payload.notes,
-          rejection_reason: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-      }
+      const res = await expensesApi.create(payload);
+      const createdExpense = res?.expense;
 
       if (onAdded && createdExpense) {
         onAdded(createdExpense);

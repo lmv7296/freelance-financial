@@ -790,7 +790,6 @@
       "cancel": "Cancel",
       "saving": "Saving…",
       "save": "Save expense",
-      "manualSender": "Entered manually",
       "errors": {
         "merchant": "Enter a shop or supplier.",
         "total": "Enter a valid total amount.",

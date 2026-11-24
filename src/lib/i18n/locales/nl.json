@@ -790,7 +790,6 @@
       "cancel": "Annuleer",
       "saving": "Opslaan…",
       "save": "Uitgave opslaan",
-      "manualSender": "Zelf ingevoerd",
       "errors": {
         "merchant": "Vul een winkel of leverancier in.",
         "total": "Vul een geldig totaalbedrag in.",
